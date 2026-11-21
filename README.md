@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HIJRA Travels — public website (Milestone 1.1)
 
-## Getting Started
+This is the English-only public frontend for **HIJRA Travels | Haj Group**, Hajj and Umrah specialists from Kerala.
+- The site is **enquiry-only**: visitors explore, send an enquiry, and an advisor follows up.
+- There is no booking engine, payment or live pricing.
+- Enquiries run in demo mode until Milestone 2 connects the backend.
 
-First, run the development server:
+**Stack:** Next.js 16.4 (App Router, Cache Components, Partial Prefetching) · React 19.3 · Tailwind CSS 4.3 · TypeScript (strict). There are no other runtime dependencies.
+
+## Run it
+
+Requirements: Node.js 20.9 or newer (built and tested on Node 22).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
+npm run build        # production build
+npm run start        # serve the production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Checks:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run lint         # ESLint (flat config, next/core-web-vitals + TypeScript)
+npm run typecheck    # tsc --noEmit
+npm run check:forms  # self-check of the enquiry validation rules
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The browser checks (navigation, forms, responsive sweep, SEO, JavaScript weight, performance) are in `scripts/qa/`; see its README.
 
-## Learn More
+## Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+They are read at **build time**, so changing one needs a rebuild.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Canonical URLs, sitemap and Open Graph links. **Set it for every deployed build**; without it the HTML points to localhost. |
+| `NEXT_PUBLIC_ALLOW_INDEXING` | unset (off) | Search engines are blocked (`robots.txt` and `noindex`) until this is `true`. Keep it off while sample content is on the site. Sample records stay `noindex` even when it is on. |
+| `NEXT_PUBLIC_SAMPLE_PINS` | unset | Development only: `1` draws dashed sample markers on the branch map to test its layout. Never shown in production. |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Where things live
 
-## Deploy on Vercel
+```
+app/                   every page (one English URL each), layout, 404, error boundary, sitemap and robots
+app/layout.tsx         root layout: fonts, navigation, footer, floating WhatsApp, preview notice
+app/globals.css        design tokens (Tailwind @theme) and the navigation, form and component styles
+components/site/       navigation (site-nav), footer, floating WhatsApp, the preview notice
+components/ui/         shared building blocks (Photo, Img, PhotoFrame and PriorityImg, SectionIntro, Breadcrumbs, FaqList, CtaBand,
+                       ContactAction, Pending/SampleTag/Note, KeralaMap, Icon)
+components/forms/      the enquiry form and its validation rules
+data/                  all content: site facts and contact details, routes and navigation, branches, packages,
+                       tours, blogs, stories, testimonials, FAQs, photo library and credits
+lib/                   interface strings (dictionary), SEO metadata, the image pipeline (server), the enquiry boundary
+proxy.ts               real 404 status for unknown tour, article and branch slugs
+docs/                  reference audit, delivery report (Milestones 1 and 1.1) and the Milestone 2 handover
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Replacing sample content
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Everything HIJRA has not confirmed is either `null` or a record flagged `sample: true` or `status: 'sample'`, shown with a "Sample" tag. In preview builds the `null` gaps are filled from **`data/demo.ts`** (demonstration contacts, figures and copy), so the client preview reads as finished. A real value always wins; a launch build (`NEXT_PUBLIC_ALLOW_INDEXING=true`) never shows demonstration values, and contact buttons never dial or message them. Replace values; never invent them:
+
+- **`data/site.ts`:** years of experience, branch count, central phone, WhatsApp, email, office hours and reply time (`contactLive`), and social profiles.
+- **`data/demo.ts`:** the leadership letter, the company's history, the story of the name, team roles, branch directions and the legal-draft defaults, until HIJRA's own text replaces them.
+- **`data/branches.ts`:** the six sample branch records become HIJRA's verified branches.
+  - Set `status: 'verified'` only after checking the Business Profile.
+  - Take coordinates from the profile pin; never geocode them.
+- **`data/packages.ts`, `data/tours.ts`:** package and tour data. Fares stay "on enquiry" unless HIJRA publishes them.
+- **`data/testimonials.ts`, `data/stories.ts`:** only reviews and stories with written consent.
+- **`data/blogs.ts`:** articles reviewed by HIJRA (religious guidance by its scholars, visa rules against current official sources).
+- **`data/images.ts` and `public/images/`:** the temporary licensed photographs become HIJRA's own photography. Keep the credit fields.
+
+## Integration points for Milestone 2
+
+See `docs/milestone-2-handover.md` for the full contract. In short:
+- **Enquiries:** `submitEnquiry()` in `lib/enquiry.ts` is the only function to replace. Today it is a demo that sends and stores nothing.
+  - `EnquiryPayload` and `EnquiryResult` are the contract.
+  - The form already handles failures (`invalid`, `rate_limited`, `unavailable`, `network`).
+  - Add `?demo-enquiry=network` to a page address to preview a failure.
+- **Content:** each `data/*.ts` module is the shape an admin or CMS API should return; pages read only from these modules.
+- **Branches:** `isPublishable()` controls indexing and local SEO. Add `TravelAgency` structured data per verified branch.
+- **Contact actions:** `ContactAction`, `SocialAction` and `DirectionsAction` switch from the preview notice to real `tel:`, `wa.me`, `mailto:` and Google Maps links as soon as the values exist.

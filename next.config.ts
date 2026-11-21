@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
     agentFeedback: true,
   },
   cacheComponents: true,
+  // The privacy notice lives at /privacy; the earlier address stays valid.
+  async redirects() {
+    return [{ source: '/privacy-policy', destination: '/privacy', permanent: true }];
+  },
   partialPrefetching: true,
   turbopack: {
     rules: {
