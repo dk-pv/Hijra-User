@@ -4,11 +4,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { branchPath, routes } from '@/data/navigation';
-import { branches, getBranch, isPublishable } from '@/data/branches';
+import { branchArea, branches, getBranch, isPublishable } from '@/data/branches';
 import { dictionary } from '@/lib/dictionary';
 import { pageMetadata } from '@/lib/seo';
 import { BranchSign } from '@/components/branches/branch-sign';
-import { demo } from '@/data/demo';
 import { site } from '@/data/site';
 import { BranchAddress } from '@/components/branches/branch-card';
 import { listPhrase, orderBranches, serviceInfo } from '@/components/branches/branch-data';
@@ -20,7 +19,7 @@ import { Note, Pending, SampleTag } from '@/components/ui/pending';
 import { ClientPhoto } from '@/components/ui/photo';
 
 // Branch page (report 8.4, mock-up 4). Built only from the branch record, so it cannot become a thin copy of its
-// neighbours (P17). Sample and draft records render for review but are never indexed.
+// neighbours (P17). Draft records render for review, with every unverified detail marked pending, but are never indexed.
 
 export function generateStaticParams() {
   return branches.map((b) => ({ slug: b.slug }));
@@ -40,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return pageMetadata({
     path: branchPath(b.slug),
     title: `${b.name} branch: ${what}`,
-    description: `Visit HIJRA Travels at the ${b.name} branch in ${b.address.locality}, ${b.address.state}: the address, opening hours in India time, phone, WhatsApp and directions.`,
+    description: `Visit HIJRA Travels at the ${b.name} ${b.isHeadOffice ? 'head office' : 'branch'} in ${branchArea(b)}: the address, opening hours in India time, phone, WhatsApp and directions.`,
     noindex: !isPublishable(b),
   });
 }
@@ -75,7 +74,7 @@ async function BranchDetail({ params }: Props) {
   const t = dictionary;
   const name = b.name;
   const others = orderBranches(branches).filter((o) => o.slug !== b.slug);
-  const sample = b.status !== 'verified';
+  const draft = b.status !== 'verified';
 
   return (
     <>
@@ -85,19 +84,19 @@ async function BranchDetail({ params }: Props) {
           <div className="rise mt-8 flex flex-wrap items-center gap-3 md:mt-10">
             <p className="eyebrow">HIJRA branch</p>
             {b.isHeadOffice ? <span className="tagline">Head office</span> : null}
-            {sample ? <SampleTag>Sample record</SampleTag> : null}
+            {draft ? <SampleTag>Details to be confirmed</SampleTag> : null}
           </div>
           <h1 className="rise rise-2 mt-4 text-h1">{name}</h1>
           <span className="rule-double rise rise-2 mt-5" aria-hidden="true" />
           <p className="rise rise-3 mt-5 max-w-[38rem] text-lead">
-            Plan {listPhrase(b.services.map((s) => serviceInfo[s].phrase))} face to face with an advisor, in Malayalam or English.
+            Plan {listPhrase(b.services.map((s) => serviceInfo[s].phrase))} face to face with an advisor.
           </p>
-          {sample ? (
+          {draft ? (
             <Note className="mt-8 max-w-[46rem] md:mt-10">
               <p>
-                <strong className="font-semibold text-navy">This is a sample branch record.</strong> It shows how each HIJRA branch will
-                appear. The name, address, contacts, hours and photographs are placeholders until HIJRA verifies them, and the page is kept
-                out of search results until then.
+                <strong className="font-semibold text-navy">Branch details are being confirmed.</strong> The address, phone, WhatsApp,
+                hours, directions and photographs appear here once HIJRA verifies them, and the page is kept out of search results until
+                then.
               </p>
             </Note>
           ) : null}
@@ -116,16 +115,16 @@ async function BranchDetail({ params }: Props) {
                 <BranchAddress branch={b} />
               </Line>
               <Line icon="phone" label="Phone">
-                {b.phone ?? site.contact.phone ? (
+                {b.phone ? (
                   <ContactAction kind="call" value={b.phone} className="link-inline">
-                    {b.phone ?? site.contact.phone}
+                    {b.phone}
                   </ContactAction>
                 ) : (
                   <Pending>Phone — to be confirmed</Pending>
                 )}
               </Line>
               <Line icon="whatsapp" label="WhatsApp">
-                {b.whatsapp ?? site.contact.whatsapp ?? <Pending>WhatsApp — to be confirmed</Pending>}
+                {b.whatsapp ?? <Pending>WhatsApp — to be confirmed</Pending>}
               </Line>
               <Line icon="clock" label="Hours (India time)">
                 {b.hours ? <TodayHours hours={b.hours} className="[&>span:first-child]:font-normal [&>span:first-child]:text-slate" /> : <Pending>Hours — to be confirmed</Pending>}
@@ -157,7 +156,7 @@ async function BranchDetail({ params }: Props) {
           </div>
           <BranchSign
             name={name}
-            town={b.address.locality}
+            town={branchArea(b)}
             className="col-span-full aspect-[4/3] rounded-lg md:aspect-[3/2] lg:col-span-7 lg:row-start-1 lg:aspect-auto lg:min-h-[30rem]"
           />
         </div>
@@ -181,15 +180,12 @@ async function BranchDetail({ params }: Props) {
             <p className="eyebrow">How to find us</p>
             <h2 className="mt-3 text-h3">Directions from nearby landmarks</h2>
             <p className="mt-6 max-w-[38rem]">
-              {b.directions ??
-                (site.demo ? (
-                  demo.directions(b.address.lines[1] ?? b.address.lines[0], b.address.locality)
-                ) : (
+              {b.directions ?? (
                 <Pending>
                   HIJRA’s own directions, 60–150 words: the landmarks people know, where to park and which entrance to
                   use. This is the page’s main unique text.
                 </Pending>
-                ))}
+              )}
             </p>
             <DirectionsAction url={b.mapsUrl} label={`${t.common.directions} to the ${name} branch`} className="btn btn-outline btn-sm mt-7">
               <Icon name="directions" />

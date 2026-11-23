@@ -33,20 +33,21 @@
   --font-sans: var(--font-hanken), Arial, Helvetica, sans-serif;
 
   --text-*: initial;
-  --text-display: clamp(2.75rem, 1.6rem + 4.2vw, 6rem);
-  --text-display--line-height: 1.02;
+  /* Type scale (visual refinement, Nov 2026): homepage hero > inner H1 > section H2 > card/editorial H3 > H4 */
+  --text-display: clamp(2.5rem, 1.45rem + 3.6vw, 5.25rem);
+  --text-display--line-height: 1.04;
   --text-display--letter-spacing: -0.02em;
-  --text-h1: clamp(2.5rem, 1.7rem + 3vw, 4.5rem);
-  --text-h1--line-height: 1.06;
+  --text-h1: clamp(2.25rem, 1.55rem + 2.5vw, 4rem);
+  --text-h1--line-height: 1.08;
   --text-h1--letter-spacing: -0.015em;
-  --text-h2: clamp(2rem, 1.5rem + 2vw, 3.25rem);
-  --text-h2--line-height: 1.1;
+  --text-h2: clamp(1.875rem, 1.45rem + 1.5vw, 2.875rem);
+  --text-h2--line-height: 1.12;
   --text-h2--letter-spacing: -0.01em;
-  --text-h3: clamp(1.5rem, 1.25rem + 1vw, 2rem);
-  --text-h3--line-height: 1.15;
-  --text-h4: clamp(1.125rem, 1rem + 0.4vw, 1.375rem);
-  --text-h4--line-height: 1.25;
-  --text-lead: clamp(1.1875rem, 1.1rem + 0.35vw, 1.375rem);
+  --text-h3: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);
+  --text-h3--line-height: 1.2;
+  --text-h4: clamp(1.125rem, 1.03rem + 0.3vw, 1.3125rem);
+  --text-h4--line-height: 1.3;
+  --text-lead: clamp(1.125rem, 1.07rem + 0.25vw, 1.3125rem);
   --text-lead--line-height: 1.55;
   --text-body: clamp(1.0625rem, 1.03rem + 0.15vw, 1.125rem);
   --text-body--line-height: 1.6;
@@ -75,7 +76,7 @@
 :root {
   --m: 16px;
   --g: 12px;
-  --sec: clamp(64px, 6vw + 40px, 160px);
+  --sec: clamp(56px, 4.5vw + 36px, 128px);
   --nav-clear: 96px;
   --focus: var(--color-navy);
 }
@@ -331,26 +332,30 @@
 /* Closed pill: R1, R2, R4, R5, F1, B4: logo at the left, menu button at the right, nothing else */
 .nav-pill {
   position: fixed; top: 8px; left: 50%; z-index: 50;
-  width: 330px; height: 64px; padding: 8px 10px 8px 20px;
-  display: flex; align-items: center; gap: 4px;
+  width: 352px; height: 64px; padding: 8px 10px 8px 24px;
+  display: flex; align-items: center; gap: 16px;
   border-radius: 999px; border: 1px solid rgb(1 32 82 / 0.08);
-  background: rgb(250 249 246 / 0.88); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+  background: rgb(250 249 246 / 0.92); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   box-shadow: var(--shadow-pill);
   translate: -50% 0;
+  transition: translate 0.35s var(--ease-out);
 }
+/* Out of the way while reading down the page; back as soon as the visitor scrolls up, near the top, or tabs to it. */
+.nav-pill[data-hidden]:not(:focus-within) { translate: -50% calc(-100% - 40px); } /* clear of the viewport, shadow included */
+@media (prefers-reduced-motion: reduce) { .nav-pill { transition: none; } }
 @media (prefers-reduced-motion: no-preference) {
   .nav-pill { animation: pill-in 0.4s cubic-bezier(0.12, 0.23, 0.5, 1) 0.2s both; }
 }
 @keyframes pill-in { from { opacity: 0; transform: translateY(-40px); } }
-.nav-logo { display: flex; align-items: center; flex: none; height: 48px; border-radius: 8px; }
-.nav-logo img { height: 48px; width: auto; }
+.nav-logo { display: flex; align-items: center; flex: none; height: 44px; border-radius: 8px; }
+.nav-logo img { height: 44px; width: auto; }
 .nav-burger { flex: none; margin-left: auto; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; cursor: pointer; color: var(--color-navy); }
 .nav-burger span, .nav-burger span::after { display: block; width: 20px; height: 2px; background: currentColor; border-radius: 1px; }
 .nav-burger span { position: relative; translate: 0 -5px; }
 .nav-burger span::after { content: ""; position: absolute; top: 10px; left: 0; }
 .nav-burger:hover { background: rgb(1 32 82 / 0.06); }
-@media (max-width: 809px) { .nav-pill { width: min(310px, 100vw - 24px); } }
-@media (max-width: 429px) { .nav-pill { padding-left: 14px; } .nav-logo, .nav-logo img { height: 42px; } }
+@media (max-width: 809px) { .nav-pill { width: min(332px, 100vw - 24px); } }
+@media (max-width: 429px) { .nav-pill { padding-left: 18px; } .nav-logo, .nav-logo img { height: 40px; } }
 html[data-menu] .nav-pill { visibility: hidden; }
 
 /* Open menu: R6–R14, F3–F15, B2, B3, O1, O3, O4, O5, O10.
@@ -426,10 +431,10 @@ html[data-menu="animating"] .menu-sheet { will-change: clip-path, transform; }
 /* The open-state pill (O4): the logo stays visible above the overlay (it fails on dark glass) */
 .menu-pill {
   position: fixed; top: 8px; left: 50%; translate: -50% 0; z-index: 2;
-  width: 330px; height: 64px; padding: 8px 10px 8px 20px; display: flex; align-items: center;
+  width: 352px; height: 64px; padding: 8px 10px 8px 24px; display: flex; align-items: center;
   border-radius: 999px; background: var(--color-warm-white); color: var(--color-navy); box-shadow: var(--shadow-pill);
 }
-.menu-pill img { height: 48px; width: auto; }
+.menu-pill img { height: 44px; width: auto; }
 @media (max-width: 809px) {
   .menu-pill { display: none; }
   .menu-content { flex-direction: column-reverse; align-items: center; margin-top: 12px; gap: 28px; }
@@ -461,3 +466,78 @@ html[data-menu] .wa-fab { opacity: 0; visibility: hidden; }
   background: #fff; color: var(--color-slate); box-shadow: var(--shadow-raise);
 }
 .demo-pop::backdrop { background: rgb(4 28 76 / 0.45); }
+
+/* ------------------------------------------------------------------ Branch map (Kerala terrain drawing + pins) */
+/* Pins scale with the map (32px on the full 420px map, 22px at the smallest) so they never crowd a narrow column */
+.kerala-map { position: relative; width: 100%; max-width: 420px; margin-inline: auto; border-radius: var(--radius-lg); background: #fdf9f7; container-type: inline-size; --pin: clamp(22px, 7.6cqi, 32px); }
+/* The pin box sits on the town (its bottom centre); only the pin head (the link) takes the pointer, so fanned pins never block each other */
+.map-pin {
+  position: absolute; z-index: 1; width: calc(var(--pin) * 1.375); height: calc(var(--pin) * 1.5625); translate: -50% -100%; pointer-events: none;
+}
+.map-pin.is-hq { z-index: 2; --pin: clamp(26px, 9.2cqi, 39px); }
+.map-pin:hover, .map-pin:focus-within { z-index: 3; }
+/* Leaned pins rotate about the tip, so the tip stays on the town */
+.map-pin-body { position: absolute; inset: 0; rotate: var(--lean, 0deg); transform-origin: 50% 100%; }
+/* Soft gold glow on the exact point, with a slow ripple (two for the head office) */
+.map-pin-ring {
+  position: absolute; left: 50%; bottom: 0; width: calc(var(--pin) * 0.8); height: calc(var(--pin) * 0.3); translate: -50% 50%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(197 160 89 / 0.75), rgb(197 160 89 / 0));
+}
+.map-pin-ring::before, .map-pin-ring::after {
+  content: ""; position: absolute; inset: -5px -9px; border-radius: 50%; border: 1.5px solid rgb(197 160 89 / 0.8); opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .map-pin-ring::after { animation: pin-ripple 3.6s cubic-bezier(0.2, 0.6, 0.35, 1) var(--pin-delay, 0s) infinite; }
+  .is-hq .map-pin-ring::before { animation: pin-ripple 3.6s cubic-bezier(0.2, 0.6, 0.35, 1) calc(var(--pin-delay, 0s) + 1.2s) infinite; }
+}
+@keyframes pin-ripple { 0% { scale: 0.45; opacity: 0.9; } 70%, 100% { scale: 1.9; opacity: 0; } }
+/* The pin: a HIJRA-red teardrop with a white rim, the emblem on a gold-edged white disc and a soft gold glow; the tip sits on the point */
+.map-pin-marker {
+  position: absolute; left: 50%; bottom: calc(var(--pin) * 0.22); width: var(--pin); height: var(--pin); translate: -50% 0; rotate: -45deg;
+  display: grid; place-items: center; border-radius: 50% 50% 50% 0; border: 1.5px solid #fff; pointer-events: auto; -webkit-tap-highlight-color: transparent;
+  background: radial-gradient(circle at 62% 30%, #e3302f, var(--color-red) 48%, var(--color-red-dark));
+  box-shadow: 0 8px 14px -6px rgb(4 28 76 / 0.55), 0 0 0 3px rgb(197 160 89 / 0.22), 0 0 14px 2px rgb(197 160 89 / 0.32);
+  transition: translate 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+.is-hq .map-pin-marker {
+  border: 2px solid rgb(197 160 89);
+  box-shadow: 0 9px 16px -6px rgb(4 28 76 / 0.6), 0 0 0 4px rgb(197 160 89 / 0.28), 0 0 20px 4px rgb(197 160 89 / 0.45);
+}
+.map-pin-emblem {
+  width: calc(var(--pin) * 0.7); height: calc(var(--pin) * 0.7); padding: calc(var(--pin) * 0.045); rotate: 45deg; object-fit: contain;
+  border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgb(197 160 89 / 0.85);
+}
+.map-pin:focus-within .map-pin-marker {
+  translate: -50% -3px; box-shadow: 0 11px 18px -6px rgb(4 28 76 / 0.6), 0 0 0 5px rgb(197 160 89 / 0.32), 0 0 20px 4px rgb(197 160 89 / 0.45);
+}
+.map-pin-marker:focus-visible { outline: 2px solid var(--color-navy); outline-offset: 2px; }
+/* Compact navy tooltip beside the pin head (left of it for pins that lean left), kept level on leaned pins */
+.map-pin-tip {
+  position: absolute; left: calc(50% + var(--pin) * 0.72); top: calc(var(--pin) * 0.84); padding: 6px 10px; border-radius: 7px; white-space: nowrap;
+  background: var(--color-navy); color: #fff; font: 600 0.875rem/1.25 var(--font-sans); text-align: left; box-shadow: 0 10px 24px -10px rgb(4 28 76 / 0.6);
+  rotate: calc(var(--lean, 0deg) * -1); transform-origin: 0 50%; translate: -4px -50%; opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 0.2s var(--ease-out), translate 0.2s var(--ease-out), visibility 0s linear 0.2s;
+}
+.tip-left .map-pin-tip { left: auto; right: calc(50% + var(--pin) * 0.72); transform-origin: 100% 50%; translate: 4px -50%; }
+.map-pin-tip small { display: block; font-size: 0.875rem; font-weight: 500; color: rgb(214 184 122); }
+.map-pin-tip::before {
+  content: ""; position: absolute; left: -4px; top: 50%; width: 9px; height: 9px; translate: 0 -50%; rotate: 45deg; background: var(--color-navy); border-radius: 1px;
+}
+.tip-left .map-pin-tip::before { left: auto; right: -4px; }
+/* Focus (keyboard, or the first tap on touch: see map-pin-link.tsx) shows the name; so does hover, but only where a
+   mouse can hover, so a tap never shows a hover state instead of focusing */
+.map-pin:focus-within .map-pin-tip {
+  opacity: 1; visibility: visible; translate: 0 -50%; transition: opacity 0.2s var(--ease-out), translate 0.2s var(--ease-out), visibility 0s;
+}
+@media (hover: hover) {
+  .map-pin:hover .map-pin-tip {
+    opacity: 1; visibility: visible; translate: 0 -50%; transition: opacity 0.2s var(--ease-out), translate 0.2s var(--ease-out), visibility 0s;
+  }
+  .map-pin:hover .map-pin-marker {
+    translate: -50% -3px; box-shadow: 0 11px 18px -6px rgb(4 28 76 / 0.6), 0 0 0 5px rgb(197 160 89 / 0.32), 0 0 20px 4px rgb(197 160 89 / 0.45);
+  }
+}
+/* Reduced motion: no fade, slide or lift (the show rules are listed so their own transitions are overridden too) */
+@media (prefers-reduced-motion: reduce) {
+  .map-pin-marker, .map-pin-tip, .map-pin:focus-within .map-pin-tip, .map-pin:hover .map-pin-tip { transition: none; }
+}

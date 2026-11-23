@@ -59,7 +59,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           </a>
           <SiteNav
             t={{ nav: t.nav, menu: t.menu, pending: t.pending }}
-            logo={fixedImg(logo, site.fullName, 158, 48)}
+            logo={fixedImg(logo, site.fullName, 145, 44)}
             // The menu portrait (B5): a temporary licensed photograph until HIJRA supplies its own.
             portrait={photoAsset('madinah-minaret-arcade')}
             social={site.social}

@@ -1,15 +1,62 @@
-// Outline of Kerala for the static branch map (Natural Earth admin-1 boundaries, public domain, simplified and projected).
-// City labels are geography for orientation only. Branch pins are drawn only from verified coordinates (C9);
-// sample records never get a pin in production.
+// Kerala for the branch map. Two layers:
+// - The Natural Earth admin-1 outline (public domain, simplified and projected) gives true geography.
+// - The terrain drawing supplied by HIJRA (public/images/Kerala’s Lush Terrain Map.png) is what visitors see. It is
+//   stylised, so pins are placed relative to its own coastline: a town sits as far across the drawing's land, at its
+//   latitude, as it sits across Kerala's real land (see terrainPosition).
+// Pins mark each branch's town (`pin` in data/branches.ts).
 export const keralaMap = {
   viewBox: '0 0 557.8 1000',
   width: 557.8,
   height: 1000,
   d: 'M80.5 168.6L77.9 169.7L77.5 171.7L74.2 168.6L72.6 164.3L71.4 156.3L63.3 137.6L60.5 127.3L62.4 118.2L59.6 118.8L54.9 124.3L53.5 113.7L50.0 105.5L35.9 81.3L34.1 74.8L30.1 70.8L28.7 64.2L22.1 54.0L5.6 12.1L0.3 4.6L0.0 3.3L9.5 0.3L17.3 0.4L20.4 2.0L22.1 9.3L24.1 12.0L32.6 14.0L32.2 17.6L33.6 19.8L37.3 20.8L42.4 17.2L45.3 17.2L53.8 21.8L53.1 28.1L56.0 33.4L64.5 32.6L71.9 40.6L81.2 37.2L91.1 39.9L85.9 50.9L86.9 54.1L99.6 68.8L109.6 67.1L112.4 68.9L111.2 73.3L106.4 78.2L106.2 83.5L112.5 93.2L117.0 108.0L125.1 108.6L149.3 135.9L152.8 139.1L164.4 143.5L169.5 150.8L176.9 150.8L185.4 156.3L194.7 156.8L198.4 158.2L201.7 171.3L210.2 180.8L220.8 185.5L242.0 189.4L246.9 188.9L262.8 181.6L266.4 181.7L268.9 184.6L268.5 200.4L272.2 204.6L275.9 205.2L281.0 203.1L287.2 204.1L291.1 207.2L297.0 216.4L307.2 216.7L318.2 229.2L325.6 230.8L331.8 229.0L335.8 230.5L338.3 243.3L342.3 249.3L341.5 251.7L332.5 255.5L324.8 264.4L316.1 265.3L303.3 261.6L301.3 265.7L302.5 271.3L301.0 278.3L303.7 285.8L306.7 289.6L340.1 298.8L348.6 305.6L356.7 308.7L363.6 317.7L369.3 320.8L367.4 326.3L354.2 335.8L347.8 343.9L347.1 348.4L348.7 350.0L352.6 350.3L359.1 348.2L368.9 351.4L390.9 349.6L404.3 343.0L401.2 357.3L407.9 365.1L413.7 380.3L418.5 385.7L417.4 387.9L413.9 389.6L405.6 386.7L401.0 388.6L397.7 398.4L398.8 405.7L404.5 413.4L418.8 418.4L431.9 425.0L437.5 437.2L443.9 441.1L445.2 444.9L442.1 467.5L439.5 470.8L432.0 473.2L430.2 477.6L431.4 495.8L430.6 507.4L428.1 514.2L427.5 521.2L429.4 528.4L433.9 535.5L434.7 549.4L443.3 555.9L452.2 565.3L459.9 568.8L466.4 567.0L485.7 551.0L511.2 540.3L515.6 544.2L522.2 555.2L525.0 567.2L530.4 573.3L529.4 579.9L518.4 603.9L526.3 629.1L519.0 647.0L521.3 667.7L510.2 708.2L522.7 716.8L526.9 717.0L536.9 712.2L543.9 711.9L556.5 729.7L557.7 738.4L550.2 745.5L543.5 764.4L537.6 774.0L525.0 813.8L519.6 826.7L515.3 833.1L505.4 840.7L513.6 864.5L522.7 871.1L524.8 874.2L520.8 889.0L508.9 906.9L510.4 921.2L513.9 927.3L528.2 939.9L530.3 946.3L526.9 953.1L522.7 957.4L518.5 959.4L514.4 956.9L516.6 970.3L506.7 986.0L505.6 995.0L503.2 997.6L495.9 997.9L493.5 1000.0L468.4 981.5L461.2 973.4L443.1 947.6L431.4 936.7L428.6 929.7L412.8 911.2L410.6 905.9L402.8 898.9L391.6 881.2L372.8 865.3L369.6 860.4L370.5 857.8L372.9 857.6L376.0 862.2L386.4 857.6L377.8 858.8L375.8 856.2L376.2 853.7L382.6 846.9L394.4 848.4L395.2 847.7L389.3 843.9L396.8 841.0L396.8 839.3L391.5 839.2L386.4 843.8L378.1 840.8L372.8 851.6L371.2 848.4L374.3 842.2L368.5 847.1L368.3 854.5L366.1 852.8L363.0 840.5L351.3 815.4L351.8 810.2L353.2 815.0L354.9 815.0L356.2 802.7L353.2 807.3L351.8 807.3L344.3 786.4L341.3 786.0L348.3 805.5L348.8 808.7L347.4 808.7L330.0 768.6L318.8 731.3L314.3 700.1L315.6 694.5L311.3 660.9L304.6 642.1L302.3 629.0L305.6 626.7L309.6 629.4L312.9 634.4L314.3 638.8L313.1 639.8L306.8 638.8L309.0 646.1L311.3 647.2L312.8 642.7L313.7 649.4L312.0 653.4L316.2 652.3L317.3 650.5L315.6 647.2L318.1 645.3L324.7 685.4L326.3 685.4L324.4 665.4L326.3 659.4L321.5 652.7L320.6 649.3L323.4 647.2L329.2 659.4L329.2 670.0L331.1 681.8L333.1 686.2L336.8 689.9L336.4 693.5L332.2 702.1L327.9 721.9L328.8 725.1L345.8 728.0L351.0 730.3L355.0 728.9L360.7 721.9L348.7 715.6L344.3 717.4L339.6 714.4L342.4 708.8L341.3 689.1L338.7 682.9L336.8 683.8L336.8 674.7L333.8 666.3L337.3 657.9L336.8 653.4L329.2 637.3L318.8 625.8L315.0 629.3L311.5 623.4L309.5 614.9L310.5 610.5L306.4 607.9L304.2 595.7L300.4 594.1L297.7 587.7L296.0 592.4L300.7 603.8L301.1 612.7L303.7 621.3L297.6 613.0L290.5 595.0L291.0 586.2L289.4 580.5L299.6 574.7L303.5 568.7L303.2 565.3L299.4 566.3L295.7 560.0L293.2 558.7L296.1 566.3L296.4 570.4L294.7 574.1L290.9 576.4L287.9 575.4L284.1 569.5L273.8 532.9L265.9 522.2L262.1 504.1L252.4 492.3L250.5 483.8L233.6 448.2L234.0 444.8L237.8 441.3L231.2 438.4L227.5 429.4L224.4 411.0L214.0 374.2L191.7 322.2L191.4 319.5L194.3 316.2L192.8 313.3L189.8 314.2L177.3 293.1L166.7 290.6L165.1 288.1L163.3 279.6L159.2 273.7L159.9 270.7L148.0 241.7L142.6 234.2L114.9 203.6L109.7 205.2L99.2 188.6L103.3 187.8L119.4 191.3L115.6 185.6L117.9 179.1L110.9 184.4L104.4 184.8L98.0 181.1L92.9 172.8L93.4 171.2L104.0 170.7L98.4 163.9L97.9 158.0L99.6 152.7L102.7 149.7L105.8 151.6L115.5 144.8L118.7 144.9L118.7 141.7L115.3 140.7L109.4 143.4L102.4 141.6L92.3 151.1L84.5 149.2L80.6 151.2L80.5 168.6Z',
-  cities: [{"name": "Kasaragod", "x": 29.7, "y": 62.3, "anchor": "start"}, {"name": "Kannur", "x": 112.9, "y": 202.5, "anchor": "start"}, {"name": "Kozhikode", "x": 202.6, "y": 340.4, "anchor": "start"}, {"name": "Malappuram", "x": 266.0, "y": 385.0, "anchor": "start"}, {"name": "Thrissur", "x": 296.6, "y": 502.8, "anchor": "start"}, {"name": "Kochi", "x": 309.7, "y": 634.0, "anchor": "start"}, {"name": "Kottayam", "x": 364.4, "y": 709.7, "anchor": "start"}, {"name": "Kollam", "x": 384.0, "y": 865.4, "anchor": "start"}, {"name": "Thiruvananthapuram", "x": 456.3, "y": 947.8, "anchor": "end"}] as { name: string; x: number; y: number; anchor: 'start' | 'end' }[],
 };
 
-/** Map units for verified WGS84 coordinates (same projection as the outline). */
+/** Outline units for WGS84 coordinates (the outline's projection). */
 export function projectToMap(lat: number, lng: number) {
   return { x: (lng - 74.854259) * 0.9831511913336588 * 222.48079434542808, y: (12.779944 - lat) * 222.48079434542808 };
+}
+
+/** The terrain drawing: pixel size, the vertical fit of the outline to it (drawing y = ty + sy × outline y), and the
+ * west and east edges of its land every 1% of its height, in % of its width (null above and below the land). */
+export const terrain = {
+  width: 1086,
+  height: 1448,
+  sy: 1.36823,
+  ty: 67.6,
+  rows: [null,null,null,null,null,[11.42,16.02],[11.88,16.02],[12.34,18.42],[12.8,20.72],[13.17,24.13],[13.54,23.39],[13.81,26.06],[14.18,25.14],[14.73,25.51],[15.19,25.97],[15.65,26.8],[16.39,27.44],[16.85,29.37],[17.31,31.12],[17.86,34.07],[18.42,34.35],[19.89,35.27],[20.72,36.65],[21.55,46.32],[22.01,46.59],[22.47,47.05],[22.93,49.72],[23.3,52.39],[23.66,54.7],[24.68,55.25],[26.34,53.78],[27.62,52.76],[28.18,49.72],[28.91,48.99],[29.56,50.09],[30.2,54.24],[30.57,55.52],[31.03,57.83],[31.95,57.64],[32.23,56.91],[32.69,63.63],[33.06,63.63],[33.52,64.18],[33.79,62.43],[34.16,64.92],[34.35,62.71],[34.71,62.15],[34.99,65.84],[35.54,66.67],[35.82,67.22],[36.37,68.23],[36.92,67.4],[37.48,67.4],[38.12,67.31],[38.95,65.75],[39.5,64.92],[40.06,63.44],[40.52,65.29],[40.88,65.29],[41.62,78.18],[41.62,77.81],[42.08,76.89],[42.45,79.65],[42.91,79.01],[43.37,78.64],[44.48,76.15],[44.01,78.08],[44.29,78.08],[44.66,77.62],[45.03,75.78],[45.3,76.43],[45.49,76.43],[45.76,75.97],[46.04,75.69],[46.41,74.59],[46.96,73.85],[47.51,79.19],[48.16,79.56],[48.71,78.91],[49.45,78.64],[50.18,75.6],[50.92,76.7],[51.47,75.6],[52.03,75.32],[54.05,74.86],[53.59,73.94],[54.6,72.38],[56.35,72.28],[57.27,72.47],[58.47,73.48],[59.39,73.39],[60.5,72.47],[61.6,70.07],[62.71,72.47],[63.9,72.56],[65.01,71.18],[66.48,69.8],null,null,null,null] as ([number, number] | null)[],
+};
+
+const outlinePoints = [...keralaMap.d.matchAll(/([\d.]+)[ ,]([\d.]+)/g)].map((m) => [Number(m[1]), Number(m[2])] as const);
+
+/** West and east edges of the outline's land at outline height y. */
+function outlineRow(y: number): [number, number] | null {
+  const xs: number[] = [];
+  for (let i = 0; i < outlinePoints.length; i++) {
+    const [x1, y1] = outlinePoints[i];
+    const [x2, y2] = outlinePoints[(i + 1) % outlinePoints.length];
+    if ((y1 <= y && y < y2) || (y2 <= y && y < y1)) xs.push(x1 + ((y - y1) / (y2 - y1)) * (x2 - x1));
+  }
+  return xs.length ? [Math.min(...xs), Math.max(...xs)] : null;
+}
+
+/** West and east edges of the drawing's land at a height given in % (interpolated between the 1% rows). */
+function terrainRow(yPct: number): [number, number] | null {
+  const i = Math.floor(yPct);
+  const a = terrain.rows[i];
+  const b = terrain.rows[i + 1] ?? a;
+  if (!a || !b) return a ?? b ?? null;
+  const t = yPct - i;
+  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+}
+
+/** Where a WGS84 coordinate sits on the terrain drawing, in % of its width and height (null outside Kerala). */
+export function terrainPosition(lat: number, lng: number): { x: number; y: number } | null {
+  const o = projectToMap(lat, lng);
+  const yPct = ((terrain.ty + terrain.sy * o.y) / terrain.height) * 100;
+  const ol = outlineRow(o.y);
+  const tl = terrainRow(yPct);
+  if (!ol || !tl) return null;
+  // Share of the land's width east of the coast; coastal towns are kept just inland so the pin's tip lands on land.
+  const share = Math.min(0.94, Math.max(0.07, (o.x - ol[0]) / (ol[1] - ol[0])));
+  return { x: tl[0] + share * (tl[1] - tl[0]), y: yPct };
 }

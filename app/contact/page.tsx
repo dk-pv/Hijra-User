@@ -1,16 +1,17 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { branchPath, routes } from '@/data/navigation';
-import { branches } from '@/data/branches';
-import { site, type SocialNetwork } from '@/data/site';
+import { branchArea, branches } from '@/data/branches';
+import type { SocialNetwork } from '@/data/site';
 import { dictionary } from '@/lib/dictionary';
 import { pageMetadata } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { SocialAction } from '@/components/ui/contact-action';
 import { Icon } from '@/components/ui/icons';
-import { Note, Pending, SampleTag } from '@/components/ui/pending';
+import { Note, SampleTag } from '@/components/ui/pending';
 import { EnquiryForm } from '@/components/forms/enquiry-form';
 import { ledgerLabel, RouteList } from '@/components/booking/route-list';
+import { ContactValue } from '@/components/ui/contact-value';
 
 // Contact: "talk to HIJRA". The central phone, WhatsApp and email, office hours and social profiles first, then the
 // branches, then a general message form. Trip enquiries are pointed to Book A Trip, which asks the right questions.
@@ -32,7 +33,6 @@ const networks: { key: SocialNetwork; name: string }[] = [
 
 export default function ContactPage() {
   const t = dictionary;
-  const c = site.contact;
 
   return (
     <>
@@ -45,7 +45,7 @@ export default function ContactPage() {
               <p className="eyebrow rise">Contact</p>
               <h1 className="rise rise-2 mt-3 text-h1">Talk to HIJRA.</h1>
               <p className="rise rise-3 mt-4 max-w-[32rem] text-lead">
-                Call, message or visit a branch. Our advisors speak Malayalam and English.
+                Call, message or visit a branch.
               </p>
               <Link
                 href={routes.bookATrip}
@@ -66,16 +66,16 @@ export default function ContactPage() {
               <RouteList
                 large
                 routes={[
-                  { kind: 'call', icon: 'phone', label: 'Phone', action: 'Call', text: c.phone ?? <Pending>{t.pending.phone}</Pending> },
-                  { kind: 'whatsapp', icon: 'whatsapp', label: 'WhatsApp', action: 'Message', text: c.whatsapp ?? <Pending>{t.pending.whatsapp}</Pending> },
-                  { kind: 'email', icon: 'mail', label: 'Email', action: 'Write', text: c.email ?? <Pending>{t.pending.email}</Pending> },
+                  { kind: 'call', icon: 'phone', label: 'Phone', action: 'Call', text: <ContactValue kind="phone" /> },
+                  { kind: 'whatsapp', icon: 'whatsapp', label: 'WhatsApp', action: 'Message', text: <ContactValue kind="whatsapp" /> },
+                  { kind: 'email', icon: 'mail', label: 'Email', action: 'Write', text: <ContactValue kind="email" /> },
                 ]}
               />
               <div className="border-b border-warm-border py-5">
                 <p className={ledgerLabel}>Office hours</p>
                 <p className="flex items-center gap-3.5 font-serif text-h4 font-semibold text-navy">
                   <Icon name="clock" size={22} className="shrink-0" />
-                  <span>{c.hours ?? <Pending>{t.pending.hours}</Pending>}</span>
+                  <span><ContactValue kind="hours" /></span>
                 </p>
                 <p className="mt-1.5 pl-9 text-small text-muted">Branch hours can differ: each branch page lists its own.</p>
               </div>
@@ -116,7 +116,7 @@ export default function ContactPage() {
               All branches
             </Link>
           </div>
-          <SampleTag className="mt-10">Sample branch records</SampleTag>
+          <SampleTag className="mt-10">Branch details to be confirmed</SampleTag>
           <ul className="mt-4 grid md:grid-cols-2 md:gap-x-10 lg:grid-cols-3 lg:gap-x-14">
             {branches.map((b) => (
               <li key={b.id} className="group relative flex items-start gap-4 border-t border-warm-border py-5 md:py-6">
@@ -127,9 +127,7 @@ export default function ContactPage() {
                     </Link>
                     {b.isHeadOffice ? <span className="tagline ml-3 align-middle">Head office</span> : null}
                   </h3>
-                  <p className="mt-1 text-small text-muted">
-                    {b.address.locality}, {b.address.district}
-                  </p>
+                  <p className="mt-1 text-small text-muted">{branchArea(b)}</p>
                 </div>
                 <Icon name="arrowRight" size={18} className="mt-1.5 shrink-0 text-navy transition-transform duration-200 group-hover:translate-x-1" />
               </li>

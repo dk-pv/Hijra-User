@@ -1,10 +1,10 @@
 import type { ServiceKey } from './navigation';
 
-// Branch records (report 8.5, decision C12). One record feeds the Branches page, branch pages, the homepage,
-// the footer and the enquiry form. THESE SIX RECORDS ARE SAMPLES for layout testing: no real address, phone,
-// hours, coordinates or Google profile is invented. Replace each record with HIJRA's verified data (I3).
-// Rules: no map pin without verified coordinates; no Directions link without a verified Google Maps link;
-// sample and draft records are never indexed or listed in the sitemap.
+// Branch records (report 8.5, decision C12): the one source for the map pins, the Branches page, each branch page,
+// the homepage, Contact, the footer and the enquiry forms.
+// The six branches and the head office in Manjeri are confirmed by HIJRA (21 Nov 2026). Every business detail
+// (address, phone, WhatsApp, hours, Google links, directions, photographs) is null until HIJRA verifies it, and pages
+// show it as pending; nothing is invented. Draft records render for review but are never indexed or in the sitemap.
 
 export type Day = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
 export type WeekHours = Record<Day, 'closed' | [open: string, close: string][]>;
@@ -12,9 +12,16 @@ export type WeekHours = Record<Day, 'closed' | [open: string, close: string][]>;
 export type Branch = {
   id: string;
   slug: string;
+  /** The branch as HIJRA names it: its town (for Wayanad, the district). */
   name: string;
   isHeadOffice: boolean;
-  address: { lines: string[]; locality: string; district: string; state: string; postalCode: string };
+  /** The Kerala district the branch is in. */
+  district: string;
+  /** Map pin at the town centre (public coordinates, not the premises). `lean` tilts the pin about its tip, in
+   *  degrees, so pins of nearby towns fan out instead of stacking; the tip stays on the town. */
+  pin: { lat: number; lng: number; lean?: number };
+  /** The verified postal address; null until HIJRA supplies it. */
+  address: { lines: string[]; locality: string; postalCode: string } | null;
   /** E.164, e.g. '+9198XXXXXXXX'; null until verified. */
   phone: string | null;
   whatsapp: string | null;
@@ -23,72 +30,57 @@ export type Branch = {
   /** The branch's own Google Maps place link; drives the Directions buttons. */
   mapsUrl: string | null;
   gbpUrl: string | null;
-  /** Verified WGS84 coordinates from the Business Profile pin; never geocoded or guessed. */
+  /** Verified WGS84 coordinates of the premises from the Business Profile pin (local SEO); never geocoded or guessed. */
   geo: { lat: number; lng: number } | null;
   /** Directions from nearby landmarks, written by HIJRA. */
   directions: string | null;
   /** Verified photographs of the branch (P17 asks for at least two before a branch page is published). */
   photos: { src: string; width: number; height: number; alt: string }[];
   services: ServiceKey[];
-  status: 'sample' | 'draft' | 'verified';
-  /** Development builds only: a marker position in map units, to test the map's marker layout. Never a real location. */
-  samplePin?: { x: number; y: number };
+  status: 'draft' | 'verified';
 };
 
-const sampleHours: WeekHours = {
-  mon: [['09:30', '13:00'], ['14:00', '18:00']],
-  tue: [['09:30', '13:00'], ['14:00', '18:00']],
-  wed: [['09:30', '13:00'], ['14:00', '18:00']],
-  thu: [['09:30', '13:00'], ['14:00', '18:00']],
-  fri: [['09:30', '12:30'], ['14:30', '18:00']],
-  sat: [['09:30', '13:00'], ['14:00', '17:00']],
-  sun: 'closed',
-};
-
-const sample = (
-  n: number,
-  slug: string,
-  name: string,
-  street: string,
-  extra: Partial<Branch> & { samplePin: { x: number; y: number } },
-): Branch => ({
-  id: `sample-0${n}`,
+const branch = (slug: string, name: string, district: string, pin: Branch['pin'], extra: Partial<Branch> = {}): Branch => ({
+  id: slug,
   slug,
   name,
   isHeadOffice: false,
-  address: {
-    lines: [`Sample Building ${n}, Ground Floor`, street],
-    locality: `Sample Town ${String.fromCharCode(64 + n)}`,
-    district: 'Sample District',
-    state: 'Kerala',
-    postalCode: '6XX XXX',
-  },
+  district,
+  pin,
+  address: null,
   phone: null,
   whatsapp: null,
-  hours: sampleHours,
+  hours: null,
   mapsUrl: null,
   gbpUrl: null,
   geo: null,
   directions: null,
   photos: [],
+  // HIJRA's services; which ones each branch handles is still to be confirmed.
   services: ['umrah', 'hajj', 'tour', 'flight', 'visa'],
-  status: 'sample',
+  status: 'draft',
   ...extra,
 });
 
+// Pins: town centres from Wikipedia (checked against Mapcarta and latlong.net, 23 Nov 2026). Manjeri, Malappuram and
+// Kozhikode lie within 40 km of each other, so their pins lean apart.
 export const branches: Branch[] = [
-  sample(1, 'head-office', 'Head Office', 'Main Road', { isHeadOffice: true, samplePin: { x: 205, y: 335 } }),
-  sample(2, 'city-centre', 'City Centre', 'Town Hall Road', { samplePin: { x: 118, y: 205 } }),
-  sample(3, 'beach-road', 'Beach Road', 'Beach Road', { samplePin: { x: 40, y: 70 } }),
-  sample(4, 'market-square', 'Market Square', 'Market Square', { services: ['umrah', 'hajj', 'visa'], samplePin: { x: 262, y: 392 } }),
-  sample(5, 'hill-view', 'Hill View', 'Ghat Road', { services: ['umrah', 'tour', 'flight'], samplePin: { x: 292, y: 300 } }),
-  sample(6, 'riverside', 'Riverside', 'River Road', { services: ['umrah', 'hajj', 'tour', 'flight'], samplePin: { x: 298, y: 505 } }),
+  branch('manjeri', 'Manjeri', 'Malappuram', { lat: 11.1202, lng: 76.1198, lean: 28 }, { isHeadOffice: true }),
+  branch('kozhikode', 'Kozhikode', 'Kozhikode', { lat: 11.2588, lng: 75.7804, lean: -24 }),
+  branch('malappuram', 'Malappuram', 'Malappuram', { lat: 11.051, lng: 76.0711, lean: -40 }),
+  // Kalpetta, the district headquarters, until HIJRA confirms the branch's town.
+  branch('wayanad', 'Wayanad', 'Wayanad', { lat: 11.6226, lng: 76.0813 }),
+  branch('palakkad', 'Palakkad', 'Palakkad', { lat: 10.775, lng: 76.651 }),
+  branch('kannur', 'Kannur', 'Kannur', { lat: 11.8745, lng: 75.3704 }),
 ];
 
 export const getBranch = (slug: string) => branches.find((b) => b.slug === slug);
 
 /** A branch may be indexed (sitemap, local SEO) only when its record is verified. */
 export const isPublishable = (b: Branch) => b.status === 'verified';
+
+/** 'Malappuram district, Kerala' */
+export const branchArea = (b: Branch) => `${b.district} district, Kerala`;
 
 export const dayNames: Record<Day, string> = {
   mon: 'Monday',
@@ -108,7 +100,8 @@ export function formatTime(t: string) {
   return `${hour}:${String(m).padStart(2, '0')} ${suffix}`;
 }
 
+/** The verified address on one line, or null while it is pending. */
 export function formatAddress(b: Branch) {
   const a = b.address;
-  return [...a.lines, a.locality, `${a.state} ${a.postalCode}`].join(', ');
+  return a ? [...a.lines, a.locality, b.district, `Kerala ${a.postalCode}`].join(', ') : null;
 }

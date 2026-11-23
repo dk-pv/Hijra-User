@@ -54,7 +54,7 @@ const route = [
 ];
 
 const support = [
-  { title: 'Classes before departure', text: 'In Malayalam, walking through each day of Hajj, what to carry and how the group moves.' },
+  { title: 'Classes before departure', text: 'Walking through each day of Hajj, what to carry and how the group moves.' },
   { title: 'A group leader', text: 'With the group through the days of Hajj, keeping the practical side moving so that you can pray.' },
   { title: 'Care for older pilgrims', text: 'Assistance requested where it is available, and a pace planned around who is travelling.' },
   { title: 'Health and documents', text: 'Vaccinations, medicines and paperwork checked with you before you leave.' },
@@ -72,13 +72,13 @@ export default function HajjPage() {
           <div className="mx-auto mt-12 max-w-[52rem] text-center md:mt-16">
             <span className="rule-double rise mx-auto mb-6" aria-hidden="true" />
             <p className="eyebrow rise">Hajj with HIJRA</p>
-            <h1 className="rise rise-2 mt-5 font-serif text-[clamp(4.5rem,2.5rem+9vw,10rem)] font-semibold leading-[0.9] tracking-[-0.025em]">Hajj</h1>
+            <h1 className="rise rise-2 mt-5 font-serif text-[clamp(3.75rem,2.2rem+7.6vw,8.5rem)] font-semibold leading-[0.9] tracking-[-0.025em]">Hajj</h1>
             <p className="rise rise-2 mt-5 font-serif text-[clamp(1.5rem,1.2rem+1.1vw,2.25rem)] font-semibold leading-tight text-warm-white">
               Once in a lifetime. Prepared day by day.
             </p>
             <p className="rise rise-3 mx-auto mt-6 max-w-[38rem] text-lead">
-              Each year, in the days of Dhul Hijjah, pilgrims from every nation stand together at Arafat. HIJRA prepares pilgrims from Kerala for each of those days,
-              in Malayalam and English.
+              Each year, in the days of Dhul Hijjah, pilgrims from every nation stand together at Arafat. HIJRA prepares pilgrims from Kerala for each of those
+              days.
             </p>
             <div className="rise rise-4 mt-9 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href={enquiryPath('hajj')} className="btn btn-light">
@@ -128,7 +128,7 @@ export default function HajjPage() {
             </h2>
           </div>
           <div className="col-span-full lg:col-span-7 lg:col-start-6">
-            <p className="font-serif text-[clamp(1.375rem,1.1rem+0.8vw,1.875rem)] font-semibold leading-[1.35] text-navy">
+            <p className="font-serif text-[clamp(1.3125rem,1.1rem+0.6vw,1.75rem)] font-semibold leading-[1.35] text-navy">
               Hajj is the pilgrimage to Makkah that Muslims who are physically and financially able make at least once in their lives.
             </p>
             <div className="mt-6 grid gap-5 md:grid-cols-2 md:gap-8">
@@ -191,7 +191,7 @@ export default function HajjPage() {
             {days.map((d) => (
               <li key={d.id} id={d.id} className="site-grid gap-y-5 border-t border-white/15 py-10 md:py-14">
                 <div className="col-span-full flex items-end gap-4 md:col-span-2 md:block lg:col-span-3">
-                  <span aria-hidden="true" className="block shrink-0 whitespace-nowrap font-serif text-[clamp(4rem,3rem+4vw,7rem)] font-semibold leading-[0.85] tracking-[-0.03em] text-warm-white/25">
+                  <span aria-hidden="true" className="block shrink-0 whitespace-nowrap font-serif text-[clamp(3.25rem,2.6rem+3vw,5.5rem)] font-semibold leading-[0.85] tracking-[-0.03em] text-warm-white/25">
                     {d.date}
                   </span>
                   <span className="block pb-1 text-caption font-semibold uppercase tracking-[0.12em] text-sand md:mt-4 md:pb-0">{d.day}</span>
@@ -451,7 +451,7 @@ export default function HajjPage() {
             </div>
             <div className="col-span-full lg:col-span-6 lg:col-start-7">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <SampleTag>Sample branch records</SampleTag>
+                <SampleTag>Branch details to be confirmed</SampleTag>
                 <Link href={routes.branches} className="link-arrow text-small">
                   All branches
                 </Link>

@@ -57,7 +57,7 @@ export function TestimonialWall() {
 
       <figure className="mx-auto mt-10 max-w-[56rem] border-t border-warm-border pt-10 md:mt-14 md:pt-14 md:text-center">
         <blockquote>
-          <p className="font-serif text-[clamp(1.75rem,1.2rem+1.6vw,2.75rem)] font-semibold leading-[1.2] text-navy">
+          <p className="font-serif text-[clamp(1.5rem,1.15rem+1.2vw,2.375rem)] font-semibold leading-[1.2] text-navy">
             {mark('“')}
             {lead.quote}
             {mark('”')}

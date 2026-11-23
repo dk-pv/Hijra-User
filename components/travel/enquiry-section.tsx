@@ -1,13 +1,12 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { routes } from '@/data/navigation';
-import { site } from '@/data/site';
 import { dictionary } from '@/lib/dictionary';
 import { cn } from '@/lib/cn';
 import { EnquiryForm, type EnquiryFormProps } from '@/components/forms/enquiry-form';
 import { ContactAction } from '@/components/ui/contact-action';
 import { Icon, type IconName } from '@/components/ui/icons';
-import { Pending } from '@/components/ui/pending';
+import { ContactValue } from '@/components/ui/contact-value';
 
 function Row({ icon, title, note, iconClass }: { icon: IconName; title: string; note: ReactNode; iconClass?: string }) {
   return (
@@ -25,13 +24,12 @@ function Row({ icon, title, note, iconClass }: { icon: IconName; title: string; 
 /** Call, WhatsApp, email and the branch finder as one hairline list. `message` pre-fills WhatsApp once connected. */
 export function ContactPanel({ message, className }: { message?: string; className?: string }) {
   const t = dictionary;
-  const c = site.contact;
   const row = 'group flex w-full min-h-[4.5rem] cursor-pointer items-center gap-4 py-3 text-left';
   return (
     <ul className={cn('border-b border-warm-border', className)}>
       <li className="border-t border-warm-border">
         <ContactAction kind="call" className={row}>
-          <Row icon="phone" title="Call an advisor" note={c.phone ?? <Pending>{t.pending.phone}</Pending>} />
+          <Row icon="phone" title="Call an advisor" note={<ContactValue kind="phone" />} />
         </ContactAction>
       </li>
       <li className="border-t border-warm-border">
@@ -41,7 +39,7 @@ export function ContactPanel({ message, className }: { message?: string; classNa
       </li>
       <li className="border-t border-warm-border">
         <ContactAction kind="email" className={row}>
-          <Row icon="mail" title="Email" note={c.email ?? <Pending>{t.pending.email}</Pending>} />
+          <Row icon="mail" title="Email" note={<ContactValue kind="email" />} />
         </ContactAction>
       </li>
       <li className="border-t border-warm-border">

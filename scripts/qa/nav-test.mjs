@@ -122,6 +122,10 @@ try {
     if ((await fab())?.show === 'true') shownAt = y;
   }
   check(`WhatsApp button appears after scrolling (at ${shownAt} px)`, shownAt !== null);
+  // The pill hides while scrolling down; a visitor scrolls up a little to bring it back.
+  await page.eval('scrollBy(0, -60)');
+  await sleep(600);
+  check('header returns when scrolling up', await page.eval(`!document.querySelector('.nav-pill').hasAttribute('data-hidden')`));
   await click('.nav-burger');
   await sleep(500);
   check('WhatsApp button hidden while the menu is open', (await fab())?.visibility === 'hidden', await fab());

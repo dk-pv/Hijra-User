@@ -123,7 +123,7 @@ export default function BlogsPage() {
       <CtaBand
         eyebrow="Ask an advisor"
         title="A question these articles don’t answer?"
-        body="Ask an advisor in Malayalam or English, by phone, on WhatsApp or at a branch near you."
+        body="Ask an advisor by phone, on WhatsApp or at a branch near you."
         cta="Ask a question"
       />
     </>

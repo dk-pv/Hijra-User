@@ -113,7 +113,7 @@ export function BlogLibrary({ posts, topics, askHref }: { posts: LibraryPost[]; 
                 {label ? ` in ${label}` : ''}.
               </h3>
               <p className="mt-3 text-muted">
-                Try a shorter word or another topic. Or ask us directly: an advisor will answer in Malayalam or English.
+                Try a shorter word or another topic. Or ask us directly: an advisor will answer.
               </p>
               <div className="mt-6 flex flex-wrap justify-center gap-2" role="group" aria-label="Try searching for">
                 {SUGGESTIONS.map((s) => (

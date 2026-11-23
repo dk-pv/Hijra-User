@@ -1,13 +1,11 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { enquiryPath, routes } from '@/data/navigation';
-import { branches } from '@/data/branches';
 import type { ImageKey } from '@/data/images';
 import { site } from '@/data/site';
 import { demo } from '@/data/demo';
 import { dictionary } from '@/lib/dictionary';
 import { pageMetadata } from '@/lib/seo';
-import { orderBranches } from '@/components/branches/branch-data';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { CtaBand } from '@/components/ui/cta-band';
 import { KeralaMap } from '@/components/ui/kerala-map';
@@ -43,7 +41,7 @@ const milestones = [
         { year: null, title: 'The first pilgrim groups', text: <Pending>The first Umrah and Hajj groups HIJRA guided</Pending> },
         { year: null, title: 'Branches across Kerala', text: <Pending>When and where the branches opened</Pending> },
       ]),
-  { year: 'Today', title: `${site.facts.branchCount ? `${site.facts.branchCount} branches` : 'Branches'} across Kerala`, text: 'Hajj and Umrah for families from across Kerala, in Malayalam and English.' },
+  { year: 'Today', title: `${site.facts.branchCount ? `${site.facts.branchCount} branches` : 'Branches'} across Kerala`, text: 'Hajj and Umrah for families from across Kerala.' },
 ];
 
 const specialisation = [
@@ -51,13 +49,13 @@ const specialisation = [
     title: 'Preparation before you leave',
     text: 'Guidance on the rites, the documents and what to pack, with preparation classes for Hajj groups, so nothing on the journey comes as a surprise.',
   },
-  { title: 'Guidance in your language', text: 'Advisors explain each step in Malayalam or English, before you travel and while you are away.' },
+  { title: 'Guidance at every step', text: 'Advisors explain each step before you travel, and stay in touch while you are away.' },
   { title: 'Planned around every age', text: 'Unhurried itineraries for older pilgrims and families with children, with dates, rooms and fares confirmed with you first.' },
   { title: 'Faithful to the rites', text: 'We describe what happens, when and where. For religious rulings, follow the scholars you trust.' },
 ];
 
 const care = [
-  { title: 'Before you decide', text: 'Honest answers in your language, and time to think it over. Nothing is booked or paid online.' },
+  { title: 'Before you decide', text: 'Honest, plain answers, and time to think it over. Nothing is booked or paid online.' },
   { title: 'Before you travel', text: 'Your documents checked, your visa applied for, and a clear picture of every day of the journey.' },
   { title: 'While you are away', text: 'Help that continues while you travel. On Hajj, a group leader stays with the group throughout.' },
   { title: 'When you are home', text: 'We ask how it went, and we listen: the next family’s journey is shaped by yours.' },
@@ -96,7 +94,6 @@ export default function AboutPage() {
         </>
       ),
     },
-    { term: 'Languages', value: 'Malayalam and English' },
     {
       term: 'Hajj registration',
       value: 'Indian pilgrims travel either through the Haj Committee of India or through a registered Haj Group Organiser (HGO).',
@@ -127,8 +124,7 @@ export default function AboutPage() {
             <p className="eyebrow rise mt-8 md:mt-10">About HIJRA</p>
             <h1 className="rise rise-2 mt-4 text-h1">From the Malabar coast to Makkah and Madinah.</h1>
             <p className="rise rise-3 mt-6 max-w-[31rem] text-lead">
-              HIJRA Travels guides families from Kerala on Hajj and Umrah, and arranges the tours, flight tickets and visas around them, in Malayalam and
-              English.
+              HIJRA Travels guides families from Kerala on Hajj and Umrah, and arranges the tours, flight tickets and visas around them.
             </p>
             <div className="rise rise-4 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link href={enquiryPath()} className="btn btn-primary">
@@ -161,13 +157,13 @@ export default function AboutPage() {
             Who we are
           </h2>
           <div className="col-span-full lg:col-span-9 lg:col-start-4">
-            <p className="font-serif text-[clamp(1.625rem,1.2rem+1.4vw,2.625rem)] font-semibold leading-[1.22] tracking-[-0.01em] text-navy">
+            <p className="font-serif text-[clamp(1.5rem,1.15rem+1vw,2.125rem)] font-semibold leading-[1.22] tracking-[-0.01em] text-navy">
               A pilgrimage is not a holiday. It is the journey a family prepares for over years, and it deserves a team that treats it that way.
             </p>
             <div className="mt-8 grid gap-x-12 gap-y-5 md:mt-10 md:grid-cols-2 xl:gap-x-16">
               <p>
                 HIJRA is a Hajj and Umrah specialist from the Malabar coast of Kerala, where the journey to Makkah and Madinah is part of family life. Our
-                advisors explain every step in Malayalam or English, and the same care continues while you are away.
+                advisors explain every step, and the same care continues while you are away.
               </p>
               <p>
                 Pilgrimage comes first, and the same attention goes into everything else we arrange: holidays in Kerala, across India and abroad, flight
@@ -199,7 +195,7 @@ export default function AboutPage() {
                 A letter from our leadership.
               </h2>
               <blockquote className="mt-6">
-                <p className="font-serif text-[clamp(1.375rem,1.1rem+0.8vw,1.875rem)] font-semibold leading-[1.3] text-navy">
+                <p className="font-serif text-[clamp(1.3125rem,1.1rem+0.6vw,1.75rem)] font-semibold leading-[1.3] text-navy">
                   <span className="text-red" aria-hidden="true">
                     “
                   </span>
@@ -382,8 +378,8 @@ export default function AboutPage() {
       {/* 07 The branch network and the people you will meet */}
       <section aria-labelledby="network-h" className="bg-warm-grey py-section">
         <div className="wrap site-grid items-start gap-y-10">
-          <div className="col-span-full hidden rounded-lg border border-warm-border bg-white px-6 pb-5 pt-7 md:col-span-3 md:block lg:col-span-4">
-            <KeralaMap branches={orderBranches(branches)} />
+          <div className="col-span-full mx-auto w-full max-w-[340px] rounded-lg border border-warm-border bg-[#fdf9f7] px-5 pb-5 pt-6 md:col-span-3 md:max-w-none md:px-6 md:pt-7 lg:col-span-4">
+            <KeralaMap />
           </div>
           <div className="col-span-full md:col-span-5 lg:col-span-7 lg:col-start-6">
             <p className="eyebrow">Our branches</p>

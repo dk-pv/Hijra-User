@@ -27,6 +27,17 @@ export function generateMetadata(): Metadata {
 }
 
 const onVideo = stories.filter((s) => s.hasVideo);
+// Poster photographs for the video slots: matched to the journey, and never one a story card already shows here.
+const unused = <T extends string>(keys: readonly T[]) => keys.filter((k) => !stories.some((s) => s.image === k));
+const posterPools = {
+  umrah: unused(['makkah-tawaf-night', 'madinah-nabawi-golden-hour', 'madinah-green-dome', 'makkah-kaaba-tawaf'] as const),
+  hajj: unused(['hajj-arafat-jabal-rahmah', 'hajj-pilgrims-jamarat'] as const),
+};
+const posters = onVideo.map((s) => {
+  const pool = posterPools[s.journey];
+  const n = onVideo.filter((o, i) => o.journey === s.journey && i < onVideo.indexOf(s)).length;
+  return pool[n % pool.length];
+});
 
 export default function PilgrimStoriesPage() {
   const f = featuredStory;
@@ -69,7 +80,7 @@ export default function PilgrimStoriesPage() {
               {f.title}
             </h2>
             <p className="mt-2 text-small text-muted">{f.who}</p>
-            <blockquote className="mt-7 font-serif text-[clamp(1.375rem,1.1rem+0.8vw,1.875rem)] font-semibold leading-[1.3] text-navy">
+            <blockquote className="mt-7 font-serif text-[clamp(1.3125rem,1.1rem+0.6vw,1.75rem)] font-semibold leading-[1.3] text-navy">
               <span className="text-red" aria-hidden="true">
                 “
               </span>
@@ -95,13 +106,13 @@ export default function PilgrimStoriesPage() {
               Three stories, told on camera.
             </h2>
             <p className="mt-4 max-w-[30rem] text-muted">
-              Short videos recorded by the pilgrims themselves, with their consent, in Malayalam with English captions. They appear here once HIJRA supplies them.
+              Short videos recorded by the pilgrims themselves, with their consent. They appear here once HIJRA supplies them.
             </p>
           </div>
           <ul className="col-span-full -mx-[var(--m)] flex snap-x snap-mandatory scroll-px-[var(--m)] gap-3 overflow-x-auto px-[var(--m)] pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-gutter md:overflow-visible md:px-0 lg:col-span-7 lg:col-start-6">
-            {onVideo.map((s) => (
+            {onVideo.map((s, i) => (
               <li key={s.slug} className="w-[62vw] max-w-[16rem] shrink-0 snap-start md:w-auto md:max-w-none">
-                <ClientPhoto subject={s.title} title="Video with consent" icon="video" image={s.image} sizes="(min-width: 810px) 22vw, 62vw" className="aspect-[9/16] rounded-md" />
+                <ClientPhoto subject={s.title} title="Video with consent" icon="video" image={posters[i]} sizes="(min-width: 810px) 22vw, 62vw" className="aspect-[9/16] rounded-md" />
                 <p className="mt-3 text-caption font-semibold uppercase tracking-[0.12em] text-red">{s.journey === 'hajj' ? 'Hajj' : 'Umrah'}</p>
                 <OpenStory slug={s.slug} label={`Read “${s.title}”`} className="link-arrow mt-0.5 min-h-11 text-left text-small">
                   {s.title}

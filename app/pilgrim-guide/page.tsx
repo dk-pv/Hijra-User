@@ -392,7 +392,7 @@ export default function PilgrimGuidePage() {
             <h2 id="plan-h" className="mt-3 text-h2">
               Plan your journey with an advisor.
             </h2>
-            <p className="mt-4 max-w-[36rem] text-lead">Every question answered, in Malayalam or English. Nothing is booked or paid online.</p>
+            <p className="mt-4 max-w-[36rem] text-lead">Every question answered. Nothing is booked or paid online.</p>
           </div>
           <div className="col-span-full flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:col-span-5 lg:justify-end">
             <Link href={enquiryPath('umrah')} className="btn btn-light">

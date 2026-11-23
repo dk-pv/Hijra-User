@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { branchPath, enquiryPath, routes } from '@/data/navigation';
-import { branches, formatAddress } from '@/data/branches';
+import { branchArea, branches, formatAddress } from '@/data/branches';
 import { faqs } from '@/data/faqs';
 import { site } from '@/data/site';
 import { demo } from '@/data/demo';
@@ -22,6 +22,7 @@ import { Photo } from '@/components/ui/photo';
 import { SectionIntro } from '@/components/ui/section';
 import { EnquiryForm } from '@/components/forms/enquiry-form';
 import { umrahPackages, hajjPackages } from '@/data/packages';
+import { ContactValue } from '@/components/ui/contact-value';
 
 // Homepage (report 7.3, mock-up 2): the split pilgrimage hero, the trust ledger, Umrah departures, the Hajj night
 // chapter, HIJRA's story, pilgrim voices, branches, tours, flight and visa, guides, questions and the enquiry.
@@ -38,7 +39,7 @@ export function generateMetadata(): Metadata {
     path: routes.home,
     title: 'HIJRA Travels | Hajj & Umrah specialists from Kerala',
     description:
-      'HIJRA Travels guides families from Kerala on Umrah and Hajj, with advisors who speak Malayalam and English, plus tours, flight tickets and visa help. Enquire today.',
+      'HIJRA Travels guides families from Kerala on Umrah and Hajj, with an advisor beside you from enquiry to return, plus tours, flight tickets and visa help. Enquire today.',
     image: IMG.umrahHero,
   });
 }
@@ -52,7 +53,7 @@ const hajjDays = [
 ];
 
 const reasons = [
-  { icon: 'chat', title: 'Guidance in your language', text: 'Advisors explain every step in Malayalam or English, before you travel and while you are away.' },
+  { icon: 'chat', title: 'Guidance at every step', text: 'Advisors explain every step before you travel, and stay in touch while you are away.' },
   { icon: 'pin', title: 'Branches you can visit', text: 'Sit down with an advisor near home. Families often come together to plan.' },
   { icon: 'shield', title: 'Enquiry first', text: 'Nothing is booked or paid online. We confirm dates, rooms and fares with you first.' },
   { icon: 'heart', title: 'Care for every age', text: 'Unhurried itineraries for older pilgrims and families with children, on request.' },
@@ -75,7 +76,7 @@ export default function HomePage() {
             <p className="eyebrow rise">Hajj and Umrah specialists · Kerala</p>
             <h1 className="rise rise-2 mt-5 text-display">Umrah and Hajj, guided with care.</h1>
             <p className="rise rise-3 mt-6 max-w-[34rem] text-lead">
-              From the first question to the journey home, HIJRA guides families from Kerala to Makkah and Madinah, in Malayalam and English.
+              From the first question to the journey home, HIJRA guides families from Kerala to Makkah and Madinah.
             </p>
             <div className="rise rise-4 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link href={enquiryPath('umrah')} className="btn btn-primary">
@@ -103,11 +104,11 @@ export default function HomePage() {
               {
                 fig: years ?? <Pending className="text-[0.62em]">25+ or 30+</Pending>,
                 label: 'Years serving pilgrims',
-                note: site.facts.yearsIsDemo ? 'Guiding pilgrims from Kerala' : years ? 'Confirmed by HIJRA' : 'Exact figure to be confirmed by HIJRA',
+                note: site.facts.yearsIsDemo ? 'Sample figure, to be confirmed by HIJRA' : years ? 'Confirmed by HIJRA' : 'Exact figure to be confirmed by HIJRA',
               },
               { fig: site.facts.branchCount ?? <Pending>Count</Pending>, label: 'Branches across Kerala', note: 'From HIJRA’s brief; matched to the verified list at launch' },
               { fig: <span className="text-[0.72em] leading-[1.15]">Hajj &amp; Umrah</span>, label: 'Our specialisation', note: 'Guidance from enquiry to return' },
-              { fig: <span className="text-[0.72em] leading-[1.15]">Malayalam</span>, label: 'and English', note: 'Advisors who speak your language' },
+              { fig: <span className="text-[0.72em] leading-[1.15]">Enquiry first</span>, label: 'Nothing booked online', note: 'An advisor confirms every detail with you' },
             ].map((c, i) => (
               <li
                 key={c.label}
@@ -118,7 +119,7 @@ export default function HomePage() {
                   i === 2 ? 'lg:border-l lg:pl-7' : '',
                 ].join(' ')}
               >
-                <p className="flex min-h-[clamp(2.75rem,2rem+1.6vw,4.25rem)] items-end font-serif text-[clamp(1.75rem,1.2rem+1.8vw,3.5rem)] font-semibold leading-none tracking-[-0.01em] text-navy">
+                <p className="flex min-h-[clamp(2.5rem,1.9rem+1.4vw,3.75rem)] items-end font-serif text-[clamp(1.625rem,1.15rem+1.5vw,3rem)] font-semibold leading-none tracking-[-0.01em] text-navy">
                   {c.fig}
                 </p>
                 <p className="mt-3 font-semibold text-navy">{c.label}</p>
@@ -157,7 +158,7 @@ export default function HomePage() {
                 Hajj, prepared with reverence.
               </h2>
               <p className="mt-4 max-w-[36rem] text-lead">
-                The days of Hajj, explained in your language, with classes before you leave and a group leader beside you throughout.
+                The days of Hajj, explained step by step, with classes before you leave and a group leader beside you throughout.
               </p>
               <p className="mt-6 flex flex-wrap items-center gap-3 text-small">
                 <SampleTag>{hajjPackages.length} sample package outlines</SampleTag>
@@ -209,12 +210,15 @@ export default function HomePage() {
             <figcaption className="mt-3 text-caption text-muted">Mishkal Mosque, Kozhikode, on the Malabar coast.</figcaption>
           </figure>
           <div className="col-span-full md:col-span-8 lg:col-span-6 lg:col-start-7">
-            <p className="eyebrow">Our story</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="eyebrow">Our story</p>
+              {letterLead ? <SampleTag>Sample text</SampleTag> : null}
+            </div>
             <h2 id="story-h" className="mt-3 text-h2">
               Rooted on the Malabar coast.
             </h2>
             <blockquote className="mt-5">
-              <p className="font-serif text-[clamp(1.375rem,1.1rem+0.8vw,1.875rem)] font-semibold leading-[1.3] text-navy">
+              <p className="font-serif text-[clamp(1.3125rem,1.1rem+0.6vw,1.75rem)] font-semibold leading-[1.3] text-navy">
                 {letterLead ? (
                   <>
                     <span className="text-red" aria-hidden="true">“</span>
@@ -256,10 +260,10 @@ export default function HomePage() {
               <p className="eyebrow" id="voices-h">
                 Pilgrim voices
               </p>
-              <SampleTag>Sample testimonial</SampleTag>
+              <SampleTag>Sample testimonials</SampleTag>
             </div>
             <blockquote className="mt-5">
-              <p className="font-serif text-[clamp(1.75rem,1.3rem+1.2vw,2.5rem)] font-semibold leading-[1.22] text-navy">
+              <p className="font-serif text-[clamp(1.5rem,1.2rem+0.9vw,2.125rem)] font-semibold leading-[1.22] text-navy">
                 <span className="text-red" aria-hidden="true">“</span>
                 {quote.quote}
                 <span className="text-red" aria-hidden="true">”</span>
@@ -301,12 +305,12 @@ export default function HomePage() {
             className="mb-10 md:mb-14"
           />
           <div className="site-grid items-start gap-y-10">
-            <div className="col-span-full hidden rounded-lg border border-warm-border bg-white px-7 pb-5 pt-7 md:col-span-3 md:block lg:col-span-4">
-              <KeralaMap branches={branches} />
+            <div className="col-span-full mx-auto w-full max-w-[340px] rounded-lg border border-warm-border bg-[#fdf9f7] px-5 pb-5 pt-6 md:col-span-3 md:max-w-none md:px-7 md:pt-7 lg:col-span-4">
+              <KeralaMap />
             </div>
             <div className="col-span-full md:col-span-5 lg:col-span-7 lg:col-start-6">
               <div className="mb-2 flex items-center justify-between gap-3">
-                <SampleTag>Sample branch records</SampleTag>
+                <SampleTag>Branch details to be confirmed</SampleTag>
               </div>
               <ul>
                 {branches.slice(0, 3).map((b) => (
@@ -318,7 +322,13 @@ export default function HomePage() {
                         </Link>
                         {b.isHeadOffice ? <span className="tagline ml-3 align-middle">Head office</span> : null}
                       </h3>
-                      <p className="mt-1 text-small text-muted">{formatAddress(b)}</p>
+                      <p className="mt-1 text-small text-muted">
+                        {formatAddress(b) ?? (
+                          <>
+                            {branchArea(b)} · <Pending>Street address to be confirmed</Pending>
+                          </>
+                        )}
+                      </p>
                     </div>
                     <div className="flex gap-2.5">
                       <ContactAction kind="call" value={b.phone} className="btn btn-secondary btn-sm flex-1 lg:flex-none">
@@ -419,7 +429,7 @@ export default function HomePage() {
             <div className="mt-7 flex flex-col">
               <ContactAction kind="call" className="flex min-h-11 items-center gap-3 font-semibold text-navy">
                 <Icon name="phone" />
-                {site.contact.phone ?? <Pending>{t.pending.phone}</Pending>}
+                <ContactValue kind="phone" />
               </ContactAction>
               <ContactAction kind="whatsapp" className="flex min-h-11 items-center gap-3 font-semibold text-navy">
                 <Icon name="whatsapp" className="text-wa" />

@@ -46,6 +46,7 @@ export function SiteNav({ t, logo, portrait, social, contact }: NavProps) {
   const [state, setState] = useState<State>('closed');
   const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -64,6 +65,30 @@ export function SiteNav({ t, logo, portrait, social, contact }: NavProps) {
     }
     const id = window.setTimeout(() => setMounted(true), 1500);
     return () => window.clearTimeout(id);
+  }, []);
+
+  // The pill steps out of the way while the visitor reads down the page (it would cover headings and images) and
+  // returns on any scroll up, near the top of the page, or when it receives keyboard focus (CSS :focus-within).
+  // A data attribute, not state: scrolling never re-renders the navigation.
+  useEffect(() => {
+    let last = window.scrollY;
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const header = headerRef.current;
+        if (!header || document.documentElement.dataset.menu) return;
+        if (y <= 160 || y < last - 4) header.removeAttribute('data-hidden');
+        else if (y > last + 4) header.setAttribute('data-hidden', '');
+        last = y;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   const setPage = (openMenu: boolean) => {
@@ -240,7 +265,7 @@ export function SiteNav({ t, logo, portrait, social, contact }: NavProps) {
                   <a href={`tel:${contact.phone}`}>{contact.phone}</a>
                 ) : (
                   <button type="button" popoverTarget={DEMO_CONTACT_ID}>
-                    {t.menu.call}: {contact.shownPhone ?? `[${t.pending.phone}]`}
+                    {t.menu.call}: {contact.shownPhone ? `${contact.shownPhone} (sample)` : `[${t.pending.phone}]`}
                   </button>
                 )}
                 {contact.whatsapp ? (
@@ -286,7 +311,7 @@ export function SiteNav({ t, logo, portrait, social, contact }: NavProps) {
 
   return (
     <>
-      <header className="nav-pill">
+      <header ref={headerRef} className="nav-pill">
         <Link href="/" className="nav-logo" aria-label={`${logo.alt}, home`}>
           <Img img={logo} alt="" loading="eager" />
         </Link>

@@ -223,7 +223,7 @@ const drafts: Draft[] = [
       { type: 'h2', id: 'how-hijra-helps', text: 'How HIJRA helps' },
       {
         type: 'p',
-        text: 'Advisors check every document before an application goes in, explain anything that is unclear, and keep you informed until a decision is made. If the rules change, they tell you what it means for your journey, in Malayalam or English.',
+        text: 'Advisors check every document before an application goes in, explain anything that is unclear, and keep you informed until a decision is made. If the rules change, they tell you what it means for your journey.',
       },
     ],
   },

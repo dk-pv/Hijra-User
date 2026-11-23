@@ -31,7 +31,7 @@ export const stories: Story[] = [
     quote: 'Nobody hurried me, not once. I prayed in Madinah for five days before I ever saw the Kaaba.',
     body: [
       'She had wanted to make Umrah since she retired, but every year there was a reason to wait: her knees, the heat, the stories she had heard about the crowds. In the end her son sat down with an advisor at a branch near home and asked one question: could it be done slowly?',
-      'The answer was an itinerary that began in Madinah, with five quiet days to settle before Makkah, a room near the lift, and wheelchair assistance requested for the airports and for Tawaf. The advisor went through each day with her in Malayalam, twice, until she was sure of it.',
+      'The answer was an itinerary that began in Madinah, with five quiet days to settle before Makkah, a room near the lift, and wheelchair assistance requested for the airports and for Tawaf. The advisor went through each day with her, twice, until she was sure of it.',
       'In Makkah they made their Umrah late at night, when the mosque was calmer. Her son pushed the wheelchair for Tawaf; she walked parts of the Sa’i herself, resting between the hills.',
       'She says the journey she had feared for so long turned out to be the calmest month of her year. She is already asking when her sister can go.',
     ],
@@ -104,7 +104,7 @@ export const stories: Story[] = [
     quote: 'At Arafat I stopped worrying about where to go next. Someone else was carrying that, so I could pray.',
     body: [
       'They had set money aside from every harvest for longer than their children can remember. When the time came, their first question at the branch was about registration: which routes were open to pilgrims from India, and what each one would ask of them.',
-      'The classes before departure, in Malayalam, walked through each day of Hajj: Mina, Arafat, Muzdalifah, the Jamarat. His wife kept notes in a small book she carried throughout.',
+      'The classes before departure walked through each day of Hajj: Mina, Arafat, Muzdalifah, the Jamarat. His wife kept notes in a small book she carried throughout.',
       'On the day of Arafat the group leader kept the practical side moving: water, shade, the time to leave. The two of them spent the afternoon in prayer.',
       'He says the journey was harder on the body than he had expected, and easier on the heart.',
     ],

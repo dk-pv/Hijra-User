@@ -8,12 +8,11 @@ import { fixedImg } from '@/lib/image';
 import { ContactAction, SocialAction } from '@/components/ui/contact-action';
 import { Icon } from '@/components/ui/icons';
 import { Img } from '@/components/ui/img';
-import { Pending } from '@/components/ui/pending';
+import { ContactValue } from '@/components/ui/contact-value';
 
 // Footer (15.10): a Pure White logo band (the full-colour logo stays on a light surface), then the Deep Navy band.
 
 export function Footer() {
-  const c = site.contact;
   const column = (title: string, links: { label: string; href: string }[]) => (
     <div>
       <h2 className="footer-h">{title}</h2>
@@ -39,7 +38,7 @@ export function Footer() {
           <div className="flex flex-wrap items-center gap-x-7 gap-y-1">
             <ContactAction kind="call" className="footer-contact">
               <Icon name="phone" />
-              {c.phone ?? <Pending>{t.pending.phone}</Pending>}
+              <ContactValue kind="phone" />
             </ContactAction>
             <ContactAction kind="whatsapp" className="footer-contact">
               <Icon name="whatsapp" className="text-wa" />
@@ -47,7 +46,7 @@ export function Footer() {
             </ContactAction>
             <ContactAction kind="email" className="footer-contact">
               <Icon name="mail" />
-              {c.email ?? <Pending>{t.pending.email}</Pending>}
+              <ContactValue kind="email" />
             </ContactAction>
             <Link href={routes.branches} className="btn btn-outline btn-sm">
               <Icon name="pin" />

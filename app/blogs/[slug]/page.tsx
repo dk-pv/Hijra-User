@@ -25,7 +25,7 @@ const closing: Record<BlogCategory, { service: ServiceKey; title: string; body: 
   umrah: {
     service: 'umrah',
     title: 'Planning your Umrah?',
-    body: 'An advisor can answer the questions this article leaves open, in Malayalam or English.',
+    body: 'An advisor can answer the questions this article leaves open.',
     cta: 'Ask about Umrah',
   },
   hajj: {
@@ -37,7 +37,7 @@ const closing: Record<BlogCategory, { service: ServiceKey; title: string; body: 
   preparation: {
     service: 'umrah',
     title: 'Questions before you travel?',
-    body: 'Ask an advisor about ihram, packing or anything else on your list, in Malayalam or English.',
+    body: 'Ask an advisor about ihram, packing or anything else on your list.',
     cta: 'Ask an advisor',
   },
   documents: {

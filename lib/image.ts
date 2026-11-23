@@ -20,3 +20,9 @@ export function photoAsset(key: ImageKey): PhotoAsset {
   const { props } = getImageProps({ src: img.src, alt: img.alt, width: img.width, height: img.height, sizes: '1vw' });
   return { src: props.src, srcSet: props.srcSet, width: img.width, height: img.height, alt: img.alt, tone: img.tone, focus: img.focus };
 }
+
+/** A static import shown at varying widths (the Kerala map): every optimiser width, chosen by `sizes` where it renders. */
+export function responsiveImg(src: StaticImageData, alt: string): ImgData {
+  const { props } = getImageProps({ src, alt, sizes: '1vw' });
+  return { src: props.src, srcSet: props.srcSet, width: src.width, height: src.height, alt };
+}

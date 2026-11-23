@@ -65,15 +65,14 @@ export default function BranchesPage() {
             note={
               <Note className="mt-5">
                 <p>
-                  <strong className="font-semibold text-navy">Sample branch records.</strong> Names, addresses and hours are placeholders for
-                  this preview, and HIJRA’s verified branches replace them before launch. Map pins and Directions links appear once each
-                  branch’s location is verified.
+                  <strong className="font-semibold text-navy">Branch details are being confirmed.</strong> Addresses, phone numbers, hours
+                  and Directions links appear once HIJRA verifies each branch.
                 </p>
               </Note>
             }
             map={
-              <div className="rounded-lg border border-warm-border bg-white px-5 pb-5 pt-6 md:px-6 lg:px-8 lg:pt-8 [&_svg]:max-h-[min(540px,calc(100svh-14rem))]">
-                <KeralaMap branches={list} />
+              <div className="rounded-lg border border-warm-border bg-[#fdf9f7] px-5 pb-5 pt-6 md:px-6 lg:px-8 lg:pt-8 [&_.kerala-map]:max-w-[min(420px,calc((100svh-14rem)*0.75))]">
+                <KeralaMap />
               </div>
             }
           />

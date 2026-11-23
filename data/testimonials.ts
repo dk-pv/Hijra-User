@@ -21,7 +21,7 @@ export type Testimonial = {
 export const testimonials: Testimonial[] = [
   {
     id: 't1',
-    quote: 'Our advisor explained every step in Malayalam before we left. My parents knew what to expect each day, and that made all the difference.',
+    quote: 'Our advisor explained every step before we left. My parents knew what to expect each day, and that made all the difference.',
     context: 'Umrah with elderly parents',
     service: 'umrah',
     sample: true,

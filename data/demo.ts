@@ -27,7 +27,7 @@ export const demo = {
     lead: 'Every family that trusts us with its journey becomes part of ours.',
     paragraphs: [
       'HIJRA began on the Malabar coast with one promise: that no family would set out for Makkah unsure of what lay ahead.',
-      'We keep it still. An advisor explains each rite in Malayalam or English, plans around your parents’ pace, and stays in touch until you are home.',
+      'We keep it still. An advisor explains each rite, plans around your parents’ pace, and stays in touch until you are home.',
     ],
     signature: 'The HIJRA leadership team',
   },
@@ -64,7 +64,4 @@ export const demo = {
     jurisdiction: 'Kerala',
     adopted: 'Not yet adopted: draft of November 2026',
   },
-  /** Branch pages: directions from landmarks, written around the sample address. */
-  directions: (street: string, town: string) =>
-    `The branch is on ${street} in ${town}, a short walk from the town bus stand. Look for the HIJRA sign above the ground-floor entrance; there is parking on the side road, and the office is step-free from the street.`,
 };

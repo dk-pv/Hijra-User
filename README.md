@@ -36,7 +36,6 @@ They are read at **build time**, so changing one needs a rebuild.
 | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Canonical URLs, sitemap and Open Graph links. **Set it for every deployed build**; without it the HTML points to localhost. |
 | `NEXT_PUBLIC_ALLOW_INDEXING` | unset (off) | Search engines are blocked (`robots.txt` and `noindex`) until this is `true`. Keep it off while sample content is on the site. Sample records stay `noindex` even when it is on. |
-| `NEXT_PUBLIC_SAMPLE_PINS` | unset | Development only: `1` draws dashed sample markers on the branch map to test its layout. Never shown in production. |
 
 ## Where things live
 
@@ -46,7 +45,7 @@ app/layout.tsx         root layout: fonts, navigation, footer, floating WhatsApp
 app/globals.css        design tokens (Tailwind @theme) and the navigation, form and component styles
 components/site/       navigation (site-nav), footer, floating WhatsApp, the preview notice
 components/ui/         shared building blocks (Photo, Img, PhotoFrame and PriorityImg, SectionIntro, Breadcrumbs, FaqList, CtaBand,
-                       ContactAction, Pending/SampleTag/Note, KeralaMap, Icon)
+                       ContactAction, ContactValue, Pending/SampleTag/Note, KeralaMap, Icon)
 components/forms/      the enquiry form and its validation rules
 data/                  all content: site facts and contact details, routes and navigation, branches, packages,
                        tours, blogs, stories, testimonials, FAQs, photo library and credits
@@ -60,8 +59,8 @@ docs/                  reference audit, delivery report (Milestones 1 and 1.1) a
 Everything HIJRA has not confirmed is either `null` or a record flagged `sample: true` or `status: 'sample'`, shown with a "Sample" tag. In preview builds the `null` gaps are filled from **`data/demo.ts`** (demonstration contacts, figures and copy), so the client preview reads as finished. A real value always wins; a launch build (`NEXT_PUBLIC_ALLOW_INDEXING=true`) never shows demonstration values, and contact buttons never dial or message them. Replace values; never invent them:
 
 - **`data/site.ts`:** years of experience, branch count, central phone, WhatsApp, email, office hours and reply time (`contactLive`), and social profiles.
-- **`data/demo.ts`:** the leadership letter, the company's history, the story of the name, team roles, branch directions and the legal-draft defaults, until HIJRA's own text replaces them.
-- **`data/branches.ts`:** the six sample branch records become HIJRA's verified branches.
+- **`data/demo.ts`:** the leadership letter, the company's history, the story of the name, team roles and the legal-draft defaults, until HIJRA's own text replaces them.
+- **`data/branches.ts`:** the six confirmed branches (Manjeri head office, Kozhikode, Malappuram, Wayanad, Palakkad, Kannur). Fill each one's address, phone, WhatsApp, hours, Google links, directions and photos, then set `status: 'verified'`. The map pins come from each record's `pin`.
   - Set `status: 'verified'` only after checking the Business Profile.
   - Take coordinates from the profile pin; never geocode them.
 - **`data/packages.ts`, `data/tours.ts`:** package and tour data. Fares stay "on enquiry" unless HIJRA publishes them.

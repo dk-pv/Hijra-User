@@ -7,6 +7,7 @@ import { pageMetadata } from '@/lib/seo';
 import { dictionary } from '@/lib/dictionary';
 import { Pending } from '@/components/ui/pending';
 import { LegalPage, type LegalSection } from '@/components/booking/legal-page';
+import { ContactValue } from '@/components/ui/contact-value';
 
 // DRAFT privacy notice for an enquiry-only travel website operated in India, written with the Digital Personal Data
 // Protection Act, 2023 (DPDP Act) in mind. Every fact HIJRA has not supplied is a <Pending> placeholder. It must be
@@ -271,11 +272,11 @@ const sections: LegalSection[] = [
           </dd>
           <dt className="text-muted">Email</dt>
           <dd className="font-semibold text-navy">
-            {site.demo ? site.contact.email : <Pending>Grievance email address</Pending>}
+            {site.demo ? <ContactValue kind="email" /> : <Pending>Grievance email address</Pending>}
           </dd>
           <dt className="text-muted">Phone</dt>
           <dd className="font-semibold text-navy">
-            {site.demo ? site.contact.phone : <Pending>Grievance phone number</Pending>}
+            {site.demo ? <ContactValue kind="phone" /> : <Pending>Grievance phone number</Pending>}
           </dd>
           <dt className="text-muted">Post</dt>
           <dd className="font-semibold text-navy">

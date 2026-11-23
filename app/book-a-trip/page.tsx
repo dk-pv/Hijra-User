@@ -16,6 +16,7 @@ import { Icon } from '@/components/ui/icons';
 import { Pending, SampleTag } from '@/components/ui/pending';
 import { EnquiryForm } from '@/components/forms/enquiry-form';
 import { RouteList } from '@/components/booking/route-list';
+import { ContactValue } from '@/components/ui/contact-value';
 
 // Book A Trip (report 8.7, mock-up 6): a calm, form-first enquiry page. Phones get the head, then the form, then
 // reassurance, other routes and what happens next; desktop puts the form in the right column beside them.
@@ -74,7 +75,7 @@ export default function BookATripPage() {
                 <h2 id="enquiry-h" className="text-h3">
                   Your enquiry
                 </h2>
-                <SampleTag>Sample packages, tours and branches</SampleTag>
+                <SampleTag>Sample packages and tours</SampleTag>
               </div>
               <EnquiryForm
                 t={t.form}
@@ -106,7 +107,7 @@ export default function BookATripPage() {
               <ul className="flex flex-col gap-3.5">
                 {[
                   site.demo ? demo.bookATrip.whoReplies : <Pending key="who">Who replies: to be confirmed</Pending>,
-                  'Replies in Malayalam or English',
+                  'Replies by WhatsApp, phone or email, as you prefer',
                   site.demo ? demo.bookATrip.free : <Pending key="free">An enquiry costs nothing: to be confirmed</Pending>,
                   <>
                     Your details are used only to answer your enquiry.{' '}
@@ -126,9 +127,9 @@ export default function BookATripPage() {
               <RouteList
                 className="mt-3"
                 routes={[
-                  { kind: 'call', icon: 'phone', srPrefix: 'Call ', text: c.phone ?? <Pending>{t.pending.phone}</Pending> },
+                  { kind: 'call', icon: 'phone', srPrefix: 'Call ', text: <ContactValue kind="phone" /> },
                   { kind: 'whatsapp', icon: 'whatsapp', text: t.common.whatsappUs },
-                  { kind: 'email', icon: 'mail', srPrefix: 'Email ', text: c.email ?? <Pending>{t.pending.email}</Pending> },
+                  { kind: 'email', icon: 'mail', srPrefix: 'Email ', text: <ContactValue kind="email" /> },
                   { href: routes.branches, icon: 'pin', text: 'Find your nearest branch' },
                 ]}
               />

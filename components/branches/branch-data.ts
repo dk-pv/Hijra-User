@@ -5,17 +5,15 @@ import type { IconName } from '@/components/ui/icons';
 // Shared by the Branches page, each branch page and the About page. Plain module (no 'use client'),
 // so both Server and Client Components can call these helpers.
 
-/** Head office first, then A–Z by town (report 8.3). The map numbers its pins in this order, so pass it everywhere. */
+/** Head office first, then A–Z by name, which is the town (report 8.3). The directory numbers its cards in this order. */
 export function orderBranches(list: Branch[]) {
-  return [...list].sort(
-    (a, b) => Number(b.isHeadOffice) - Number(a.isHeadOffice) || a.address.locality.localeCompare(b.address.locality, 'en'),
-  );
+  return [...list].sort((a, b) => Number(b.isHeadOffice) - Number(a.isHeadOffice) || a.name.localeCompare(b.name, 'en'));
 }
 
 /** The services a branch can offer, with the page each one links to. */
 export const serviceInfo: Record<ServiceKey, { label: string; phrase: string; href: string; icon: IconName; text: string }> = {
   umrah: { label: 'Umrah', phrase: 'Umrah', href: routes.umrah, icon: 'compass', text: 'Departures from Kerala, the visa and preparation before you travel.' },
-  hajj: { label: 'Hajj', phrase: 'Hajj', href: routes.hajj, icon: 'users', text: 'Registration routes and the days of Hajj, explained in your language.' },
+  hajj: { label: 'Hajj', phrase: 'Hajj', href: routes.hajj, icon: 'users', text: 'Registration routes and the days of Hajj, explained step by step.' },
   tour: { label: 'Tours', phrase: 'tours', href: routes.tours, icon: 'globe', text: 'Holidays in Kerala, across India and abroad, for families and groups.' },
   flight: { label: 'Flight tickets', phrase: 'flight tickets', href: routes.flights, icon: 'plane', text: 'Domestic and international fares, group bookings and date changes.' },
   visa: { label: 'Visa assistance', phrase: 'visas', href: routes.visa, icon: 'passport', text: 'Umrah, visit and tourist visas, with your documents checked first.' },
@@ -60,4 +58,4 @@ export function weekSummary(hours: WeekHours) {
 
 /** Lower-case text the directory search matches: name, town, district and PIN code. */
 export const searchText = (b: Branch) =>
-  [b.name, b.address.locality, b.address.district, b.address.postalCode].filter(Boolean).join(' ').toLowerCase();
+  [b.name, b.district, b.address?.locality, b.address?.postalCode].filter(Boolean).join(' ').toLowerCase();

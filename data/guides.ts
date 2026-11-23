@@ -110,7 +110,7 @@ export const hajjPreparation: Stage[] = [
     items: [
       'Check that your passport stays valid well beyond the travel dates, with blank pages to spare.',
       'See your doctor for a check-up, and start walking every day to build stamina.',
-      'Begin learning the rites, in Malayalam or English, with the family members who will travel.',
+      'Begin learning the rites with the family members who will travel.',
     ],
   },
   {
@@ -210,7 +210,7 @@ export type Step = { title: string; text: string; confirm?: boolean };
 /** How HIJRA guides a pilgrim from the first enquiry to the journey home (hub, mock-up 5). Steps 4 and 5 await HIJRA's confirmation. */
 export const guidanceSteps: Step[] = [
   { title: 'Your enquiry', text: 'The journey, the month and who is travelling, by form, WhatsApp or at a branch.' },
-  { title: 'A consultation', text: 'Packages, dates and costs explained, in Malayalam or English.' },
+  { title: 'A consultation', text: 'Packages, dates and costs explained, step by step.' },
   { title: 'Documents and visa', text: 'What to prepare, checked by us before anything is submitted.' },
   { title: 'Briefing', text: 'A session before departure on the rites, the journey and what to pack.', confirm: true },
   { title: 'Group leader', text: 'Someone from HIJRA with the group through the rites.', confirm: true },

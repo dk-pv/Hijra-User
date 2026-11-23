@@ -81,7 +81,8 @@ Every route is prerendered at build time (static HTML), except unknown slugs, wh
 - **Shared UI:** `components/ui/` holds:
   - `Breadcrumbs` (with BreadcrumbList JSON-LD), `SectionIntro`, `CtaBand`, `FaqList` and `FaqGroups`;
   - `ContactAction`, `SocialAction` and `DirectionsAction` (real links once data exists, otherwise the preview notice);
-  - `Pending`, `SampleTag`, `Note`, `KeralaMap` and `Icon`.
+  - `Pending`, `SampleTag`, `Note`, `KeralaMap` and `Icon`;
+  - `ContactValue`, which shows a central contact detail: HIJRA's real value, a preview stand-in marked "(sample)", or a `Pending` placeholder in launch builds.
 - **Interface strings:** `lib/dictionary.ts`, English. Page copy lives in the pages and in `data/`.
 - **Styles:** Tailwind 4 tokens and component classes in `app/globals.css`. Use brand colours only; there is no default palette.
 
@@ -92,8 +93,8 @@ Every business fact and record lives in a typed module under `data/`. The interf
 | Module | Exports | Records |
 | --- | --- | --- |
 | `data/site.ts` | `site` | Brand names, positioning, `url`, `indexable`, `facts` (years, branch count), `contactLive` (HIJRA's real contacts: the only values links use), `contact` (what pages show: real value, or the preview stand-in), `social` |
-| `data/demo.ts` | `demo` | Demonstration stand-ins for the client preview (contacts, years, leadership letter, history, branch directions, legal-draft defaults). Used only while the site is closed to search engines |
-| `data/branches.ts` | `branches`, `getBranch`, `isPublishable`, `formatAddress`, `formatTime` | 6 sample branches (section 4) |
+| `data/demo.ts` | `demo` | Demonstration stand-ins for the client preview (contacts, years, leadership letter, history, legal-draft defaults). Used only while the site is closed to search engines |
+| `data/branches.ts` | `branches`, `getBranch`, `isPublishable`, `branchArea`, `formatAddress`, `formatTime` | HIJRA's 6 confirmed branches as drafts: names, head office, district and map pin confirmed; every business detail pending (section 4). The one source for the map, listings, branch pages, footer and forms |
 | `data/tours.ts` | `tours`, `getTour` | 13 sample tours (section 5) |
 | `data/blogs.ts` | `blogs`, `getBlog`, `categories`, `formatDate` | 10 sample articles (section 6) |
 | `data/packages.ts` | `packages` | 4 Umrah and 2 Hajj sample packages (`fare: null`) |
@@ -104,7 +105,7 @@ Every business fact and record lives in a typed module under `data/`. The interf
 | `data/guides.ts` | `umrahRites`, `hajjDays`, `hajjPreparation`, `checklist`, `guidanceSteps`, `hubFaqs` | Pilgrim Guide and hub content |
 | `data/images.ts` | `images`, `imageList` | 38 licensed temporary photos: `src`, `width`, `height`, `alt`, `tone`, `focus`, `credit` |
 | `data/gallery.ts` | `collections`, `galleryPhotos` | Gallery collections derived from image tags |
-| `data/kerala-map.ts` | `keralaMap`, `projectToMap` | Kerala outline (Natural Earth) and the projection for verified coordinates |
+| `data/kerala-map.ts` | `terrainPosition`, `terrain`, `keralaMap`, `projectToMap` | `terrainPosition` places each branch's `pin` a latitude and longitude on the Kerala terrain map image (`public/images/Kerala’s Lush Terrain Map.png`), using the Natural Earth outline and a measured land-extent table of the image. Returns `null` for points off the mainland |
 | `data/navigation.ts` | `routes`, `mainNav`, `footerNav`, path helpers | Routes (section 1) |
 
 **Conventions:**
@@ -119,26 +120,29 @@ type WeekHours = Record<Day, 'closed' | [open: string, close: string][]>; // 'HH
 
 type Branch = {
   id: string;
-  slug: string;                       // URL: /branches/<slug>
-  name: string;                       // e.g. 'Head Office'
-  isHeadOffice: boolean;
-  address: { lines: string[]; locality: string; district: string; state: string; postalCode: string };
+  slug: string;                       // URL: /branches/<slug>, e.g. 'manjeri'
+  name: string;                       // the town, e.g. 'Manjeri' ('Wayanad' is the district)
+  isHeadOffice: boolean;              // true for Manjeri only
+  district: string;                   // e.g. 'Malappuram'
+  pin: { lat: number; lng: number; lean?: number }; // map pin at the town centre; lean (degrees) fans out close pins
+  address: { lines: string[]; locality: string; postalCode: string } | null; // null until verified
   phone: string | null;               // E.164, e.g. '+9198XXXXXXXX'
   whatsapp: string | null;            // E.164
   hours: WeekHours | null;
   mapsUrl: string | null;             // the branch's own Google Maps link (drives Directions)
   gbpUrl: string | null;              // Google Business Profile
-  geo: { lat: number; lng: number } | null; // verified pin only; never geocoded or guessed
+  geo: { lat: number; lng: number } | null; // the premises, from the verified Business Profile (local SEO); never guessed
   directions: string | null;          // HIJRA's own landmark directions (60–150 words)
   photos: { src: string; width: number; height: number; alt: string }[]; // at least 2 before publishing
   services: ServiceKey[];             // 'umrah' | 'hajj' | 'tour' | 'flight' | 'visa'
-  status: 'sample' | 'draft' | 'verified';
-  samplePin?: { x: number; y: number }; // development-only marker test; remove for real records
+  status: 'draft' | 'verified';      // all six are 'draft' until HIJRA verifies their details
 };
 ```
 
+- **Pending fields:** pages show `null` fields as marked placeholders ("to be confirmed"). A branch's Call, WhatsApp and Directions buttons open the preview notice until its own value is set; they never fall back to the central number.
+- **Map:** `components/ui/kerala-map.tsx` draws one pin per record from `pin`, linked to the branch page (`components/ui/map-pin-link.tsx`: on touch, the first tap shows the name and the second opens the page).
 - **Publishing:** only `status: 'verified'` branches are indexable (`isPublishable`). Then add them to the sitemap (`app/sitemap.ts`) and, if wanted, LocalBusiness or TravelAgency JSON-LD built from verified fields only.
-- **Order:** the directory and map order is head office first, then A–Z by town (`orderBranches` in `components/branches/branch-data.ts`).
+- **Order:** the directory lists the head office first, then A–Z by name (`orderBranches` in `components/branches/branch-data.ts`).
 - **Forms:** the branch `slug` is the value the enquiry forms send as `branch`.
 
 ## 5. Tour data structure (`data/tours.ts`)
@@ -340,7 +344,7 @@ export async function submitEnquiry(payload: EnquiryPayload): Promise<EnquiryRes
   - Filling them turns every Call, WhatsApp and Email action and the floating WhatsApp button into real `tel:`, `wa.me` and `mailto:` links (`components/ui/contact-action.tsx`).
 - **Social:** `site.social` holds the Facebook, Instagram and YouTube URLs.
 - **Facts:** `site.facts.yearsOfExperience` (25+ or 30+, still unconfirmed, shown as Pending) and `branchCount`.
-- **Branches:** fill each record (section 4) and set `status: 'verified'`. Verified `mapsUrl` and `geo` enable Directions and map pins.
+- **Branches:** fill each record (section 4) and set `status: 'verified'`. A verified `mapsUrl` enables Directions. Map pins come from each record's `pin`.
 - **Brand spelling:** `site.fullName` is "HIJRA Travels | Haj Group", as written on the logo. HIJRA should confirm whether the name is "Haj" or "Hajj".
 
 ## 13. Authentication needs
@@ -405,7 +409,6 @@ export async function submitEnquiry(payload: EnquiryPayload): Promise<EnquiryRes
 | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | **Required for every deployed build.** It sets the canonical URLs, Open Graph URLs, sitemap and robots `Sitemap:` line. Without it, the production HTML points to localhost. |
 | `NEXT_PUBLIC_ALLOW_INDEXING` | unset (off) | Set to `true` only for the launch build, after the sample content is replaced and approved |
-| `NEXT_PUBLIC_SAMPLE_PINS` | unset | Development only (`=1` shows sample map pins); ignored in production builds |
 | Milestone 2 server secrets | — | Database, mail and WhatsApp provider keys: server-only, no `NEXT_PUBLIC_` prefix |
 
 **How the indexing gate works:**

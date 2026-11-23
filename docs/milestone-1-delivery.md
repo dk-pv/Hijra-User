@@ -175,8 +175,8 @@ English at the root; every route also works under `/ml` (`noindex` until transla
 - **Names:** Head Office, City Centre, Beach Road, Market Square, Hill View and Riverside. They use "Sample Building", "Sample Town" and PIN "6XX XXX", and carry `status: 'sample'`.
 - **Missing on purpose:** phone, WhatsApp, Google Maps link, Business Profile, coordinates and photos are all `null` or empty, and the UI shows marked placeholders.
 - **Hours** are sample hours, labelled as such.
-- **Actions without data:** Call, WhatsApp and Directions open the preview notice, and the map draws no pins.
-- **Testing pins:** to test marker layout in development, run with `NEXT_PUBLIC_SAMPLE_PINS=1`. Dashed "sample position" markers then appear; they never appear in production.
+- **Actions without data:** Call, WhatsApp and Directions open the preview notice.
+- **Map pins:** superseded in the visual refinement pass (V.4). Preview builds now pin each sample branch at a sample town, labelled "Sample position"; `NEXT_PUBLIC_SAMPLE_PINS` no longer exists.
 - **No local SEO:** branch pages are `noindex` and left out of the sitemap until a record is `verified`, and no LocalBusiness markup is emitted.
 
 ## 7. Data files
@@ -939,3 +939,196 @@ The brief asks for realistic demonstration content wherever HIJRA's information 
 | Milestone 1 regressions | 9/9 |
 
 **Not done in this pass:** the brief as received stops partway through Part 4 (design direction). The existing design already follows that direction, so this pass completed and verified the content rather than redesigning pages.
+
+
+---
+
+# Visual refinement pass (21 November 2026)
+
+The brief asked for polish, not a redesign: calmer type, a cleaner header that never covers content, the Kerala terrain map with branch pins, and honest labelling of every demonstration value. The design direction, colours, fonts and page structure are unchanged.
+
+**Screenshots:** the brief refers to attached screenshots, but none arrived with it. This pass worked from the written brief and from captures of the site itself.
+
+## V.1 Typography
+
+**Type scale** (`app/globals.css`, `@theme`). The large sizes come down about 11–13% at their maximum; body, small and caption text are unchanged.
+
+| Token | Use | Before | Now | Line height |
+| --- | --- | --- | --- | --- |
+| `--text-display` | Homepage hero | `clamp(2.75rem, 1.6rem + 4.2vw, 6rem)` | `clamp(2.5rem, 1.45rem + 3.6vw, 5.25rem)` | 1.04 |
+| `--text-h1` | Page titles | `clamp(2.5rem, 1.7rem + 3vw, 4.5rem)` | `clamp(2.25rem, 1.55rem + 2.5vw, 4rem)` | 1.08 |
+| `--text-h2` | Section titles | `clamp(2rem, 1.5rem + 2vw, 3.25rem)` | `clamp(1.875rem, 1.45rem + 1.5vw, 2.875rem)` | 1.12 |
+| `--text-h3` | Card and editorial titles | `clamp(1.5rem, 1.25rem + 1vw, 2rem)` | `clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem)` | 1.2 |
+| `--text-h4` | Small titles | `clamp(1.125rem, 1rem + 0.4vw, 1.375rem)` | `clamp(1.125rem, 1.03rem + 0.3vw, 1.3125rem)` | 1.3 |
+| `--text-lead` | Introductions | `clamp(1.1875rem, 1.1rem + 0.35vw, 1.375rem)` | `clamp(1.125rem, 1.07rem + 0.25vw, 1.3125rem)` | 1.55 |
+| `--text-body` | Body | unchanged | `clamp(1.0625rem, 1.03rem + 0.15vw, 1.125rem)` | 1.6 |
+| `--text-small` / `--text-caption` | Supporting text, captions | unchanged | `0.9375rem` / `0.875rem` | 1.5 |
+
+**Display sizes set inside pages now follow the same scale:**
+- the "Hajj" title (`clamp(3.75rem, 2.2rem + 7.6vw, 8.5rem)`) and the Hajj day numbers;
+- the homepage figures and pilgrim-voices quote;
+- the testimonial wall, the About letter, the Umrah figures and five pull quotes.
+
+**Spacing:** the section rhythm `--sec` goes from `clamp(64px, 6vw + 40px, 160px)` to `clamp(56px, 4.5vw + 36px, 128px)`, so smaller headings keep the same proportion of space around them.
+
+## V.2 Header
+
+**The pill** (`.nav-pill`, `.menu-pill`):
+
+| | Before | Now |
+| --- | --- | --- |
+| Width (desktop) | 330 px | 352 px |
+| Width (phones) | — | `min(332px, 100vw − 24px)` |
+| Left padding | 20 px | 24 px (18 px under 430 px) |
+| Logo to menu button | 4 px | 16 px |
+| Logo height | 48 px | 44 px (40 px under 430 px), in proportion |
+| Background | 88% opaque | 92% opaque with an 8 px blur, so text behind it never shows through |
+
+The menu button keeps its 44 px target, and the open menu's pill uses the same measurements.
+
+**The header no longer covers content:**
+- **On scroll:** after the first 160 px, scrolling down slides the pill out of view (clear of its shadow too). Any scroll up brings it back (`components/site/site-nav.tsx`).
+- **When it stays:** it never hides while the menu is open, or while keyboard focus is inside it.
+- **Anchor links:** targets land below the pill (`scroll-padding-top: 96px`).
+- **Tested:** `nav-test.mjs` checks that the header returns on scroll up, and that the pill fits from 320 to 2560 px.
+
+## V.3 Content accuracy
+
+- **Malayalam-speaking advisors:**
+  - **Removed.** Every claim that advisors speak Malayalam, or "your language", came out of the pages and data files: homepage, About, Hajj, Umrah, blogs, articles, Book A Trip, branch pages, Contact, Pilgrim Guide, Pilgrim Stories, testimonials, the footer and packages.
+  - **Reworded where it mattered.** Homepage figure 4 now reads "Enquiry first: nothing booked online; an advisor confirms every detail with you". The About "Languages" row is removed.
+  - **Two mentions remain on purpose,** neither a claim about advisors: the Privacy draft says a Malayalam notice is available on request (a DPDP Rules default for HIJRA's legal adviser to confirm), and the testimonials rule says a review given in Malayalam is published in an approved English translation.
+- **Demonstration contacts are marked.** Every place a central phone, WhatsApp, email or office hours appears shows the stand-in with "(sample)" beside it: footer, Contact, Book A Trip, enquiry sections, homepage, Umrah, branch pages, Privacy and the menu.
+  - The new `components/ui/contact-value.tsx` handles this: HIJRA's real value appears as is, and launch builds show the marked placeholder.
+  - The buttons still never dial or message a stand-in.
+- **Experience figure:** "25+" carries "Sample figure, to be confirmed by HIJRA".
+- **Testimonials:** the homepage voices carry a "Sample testimonials" tag, as the testimonials page already did.
+- **Other labels:** the homepage "Our story" lead carries "Sample text". Packages and departures keep their "Sample package" and "Sample" tags.
+
+## V.4 Kerala map and branch pins
+
+**Source image:**
+- **VRS map: missing.** The first brief asked for "the Kerala map PNG asset used in my VRS project". `D:\SDEC\VRS-Project` holds only `user/public/logo.png`, `VRS-BG.jpg` and `whatsapp.png`, so no Kerala map exists there. Nothing was substituted for it.
+- **Map used:** the second brief supplied `public/images/Kerala’s Lush Terrain Map.png` (1086 × 1448 px), and the site uses that image unchanged.
+- **To confirm before launch:** its source and licence. It is not on the Image Credits page yet.
+
+**Display** (`components/ui/kerala-map.tsx`):
+- The image keeps its own aspect ratio (never stretched or cropped) and is served responsively (`srcset`).
+- The card behind it uses the image's background colour (#fdf9f7), so no box edge shows.
+- It now also shows on phones on the homepage and About. On Branches, phones keep the List / Map switch.
+
+**Pin placement** (`terrainPosition(lat, lng)` in `data/kerala-map.ts`):
+- **Why not a plain projection:** the image is a stylised 3D render. Fitting the true coastline to it directly matches only 64% of the land area, so plain latitude and longitude would put pins off the land.
+- **Vertical position:** projected and calibrated to the image.
+- **Horizontal position:** the point keeps the same share of the land's width in its row as on the true outline (Natural Earth). The image's land edges are a measured table, one row per 1% of the image's height.
+- **Checked:** by plotting eight town centres on the image (Kasaragod, Kannur, Kozhikode, Malappuram, Kalpetta, Thrissur, Kochi, Thiruvananthapuram).
+
+**The six pins are sample positions, not branch locations:**
+- **Where they come from:** each sample branch record has a preview-only `sampleGeo`, the centre of a Malabar town: Head Office in Kozhikode, City Centre in Kannur, Beach Road in Kasaragod, Market Square in Malappuram, Hill View in Kalpetta and Riverside in Thrissur.
+- **How they are labelled:**
+  - every tooltip and accessible name says "Sample position";
+  - the caption reads "Pins mark sample positions for this preview, not verified branch locations".
+- **Launch builds:** they ignore `sampleGeo` and pin only verified branches with verified coordinates. `NEXT_PUBLIC_SAMPLE_PINS` is removed.
+
+**Pin design** (`app/globals.css`, built in HTML and CSS; the image is untouched):
+- **The pin:** a white teardrop with a HIJRA-red rim and the HIJRA emblem (`public/brand/hijra-emblem.png`, the site icon), a soft gold halo and glow at the point.
+- **Motion:** a slow gold ripple (3.6 s, staggered 0.5 s per pin, off when reduced motion is set). Hover or keyboard focus lifts the pin and shows a small navy tooltip with the branch name.
+- **Size:** pins scale with the map, 32 px on the full 420 px map and down to 22 px. QA found the fixed-size pins crowding the 217 px map on Branches at 810 px; scaling them fixed it.
+- **Links:** each pin links to its branch page.
+
+## V.5 Branches, homepage and other pages
+
+- **Branches:**
+  - the map card matches the image background;
+  - the sticky map is capped by the screen height, so the whole of Kerala stays visible beside the list on short laptop screens;
+  - the six sample branches stay in `data/branches.ts`, with sample addresses and hours labelled.
+- **Homepage:**
+  - the smaller scale applies to the hero, the figures and the voices quote;
+  - the map shows on phones;
+  - the sample tags are as in V.3.
+- **Hajj and Umrah:** keep their own identities: Hajj on navy with the day-by-day timeline, Umrah on light with the rites and departures. Both now use the new scale, and the timelines and departure cards were checked at 390 and 1440 px.
+
+## V.6 Images
+
+- **No soft photographs:** at 1440 and 1920 px, no photograph displays larger than its source file on the homepage, Gallery or Pilgrim Stories (sources are 1920–2000 px wide).
+- **Larger screens:** full-bleed photographs on 2560 px high-density screens would need larger originals than the library holds.
+- **Repeats removed:**
+  - **Gallery:** the "HIJRA's own photographs" slots reused photographs already in the grid. They are now one designed navy panel listing what HIJRA's photographs will show, added at launch with everyone's consent.
+  - **Pilgrim Stories:** the video posters match each story's journey (Umrah: Makkah or Madinah; Hajj: Arafat) and never repeat a photograph shown on a story card.
+  - **Story dialogs:** the video poster never repeats the story's own photograph.
+- **Credits:** unchanged.
+
+## V.7 Checks on the final build
+
+| Check | Result |
+| --- | --- |
+| `npm run lint` / `typecheck` / `check:forms` | Pass |
+| `npm run build` | Passes, 58 outputs |
+| `site-qa.mjs` | 48 pages × 16 widths (320–2560 px) = 768 renders, all clean: no overflow, broken images, dead links or console errors, one `h1` per page, no excluded wording. 48/48 pages return 200; 7/7 must-be-404 URLs return 404 |
+| `seo-check.mjs` | Pass: unique titles and descriptions, every page `noindex`, `robots.txt` closed |
+| `nav-test.mjs` / `form-test.mjs` | 34/34 (new: the header returns on scroll up) / 13/13 |
+| Milestone 1 regressions | 9/9. The photo-repeat check now ignores the map-pin emblems, which are a brand mark, not photographs |
+| Map pins | Homepage, About and Branches at 320, 390, 810, 1440 and 2560 px: every pin shows its tooltip on hover, inside the screen, with text of at least 14 px, and no pin covers another |
+| JavaScript | Homepage 148.1 KB gzip (framework 132.3 KB plus the app) |
+
+**Found and fixed during these checks:**
+- **Crowded pins:** on Branches at 810 px the fixed-size pins crowded the narrow map. Pins now scale with the map.
+- **Overflow:** "(sample)" after the email overflowed a narrow column on Book A Trip at 820 px. It now wraps.
+- **Header shadow:** the hidden header's shadow showed at the top edge. It now clears the screen.
+
+**Visual review** (390 and 1440 px, plus 810 and 1024 px for the map): homepage, Hajj, Umrah, Branches, Pilgrim Stories and Gallery.
+
+**Not done:**
+- **Commits:** nothing was committed.
+- **Real-device testing:** no real phones or tablets were tested; the checks ran in Chrome at each width.
+- **Map image:** the terrain map's source and licence are still to be confirmed.
+
+# Branch towns on the Kerala map (21 November 2026)
+
+HIJRA gave its six branch towns; the map now pins them in place of the sample positions in V.4.
+
+- **Data:** `branchTowns` in `data/kerala-map.ts`: Manjeri (head office), Kozhikode, Malappuram, Wayanad, Palakkad and Kannur, each at its town centre (Wayanad at Kalpetta, the district headquarters). Pins mark towns, not street addresses. No other location is pinned.
+- **Placement:** unchanged (`terrainPosition`). Manjeri and Malappuram are about 12 km apart, under one pin width on the map, so `lean` tilts those pins (and Kozhikode) about their tips: the tip stays on the town and the heads fan out.
+- **Pin design:** a HIJRA-red teardrop with a white rim, the emblem on a gold-edged white disc, a soft gold glow and the slow gold ripple. The head office pin is larger, with a gold rim and a second ripple, and its tooltip adds "Head Office". Hover, tap or keyboard focus shows the compact navy tooltip, level even on tilted pins, on the side the pin leans to.
+- **Behaviour change:** pins are buttons that show the town name; they no longer link to the sample branch pages, whose names do not match the towns. The caption reads "6 branches across Kerala, with the head office in Manjeri." The preview-only `sampleGeo` field is removed from the branch records.
+- **Still to confirm:** the exact town of the Wayanad branch (Kalpetta assumed).
+
+# Branch-map integration (23 November 2026)
+
+This supersedes the `branchTowns` array and the "pins are buttons" note in the section above.
+
+**One data source.** `data/branches.ts` now holds HIJRA's six confirmed branches. The map pins, the Branches directory, each branch page, the homepage and Contact lists, the Hajj page, the footer and the enquiry forms all read these records.
+- **Records:** Manjeri (head office), Kozhikode, Malappuram, Wayanad, Palakkad and Kannur, at `/branches/<town>`. The six sample slugs (`head-office`, `city-centre` and so on) now return 404.
+- **Confirmed fields:** name, head office, district and map `pin` (town centre plus `lean`).
+- **Pending fields:** address, phone, WhatsApp, hours, Google links, directions and photos are all `null` and shown as marked placeholders. `status` is `'draft'`, so the pages stay `noindex` and out of the sitemap.
+- **Removed:**
+  - the invented sample data (addresses, PIN codes, opening hours, the demo branch directions);
+  - the central "(sample)" phone and WhatsApp that branch pages used to show under the branch's own contact lines;
+  - "Sample branch records" labels.
+
+**Markers.**
+- **Linked:** each pin links to its branch page.
+- **Touch:** the first tap shows the name and the second tap opens the page (`components/ui/map-pin-link.tsx`, about 0.1 KB).
+- **Mouse and keyboard:** hover or focus shows the name, and a click or Enter opens the page. Hover styles apply only on devices that can hover.
+- **Fix:** with reduced motion on, the tooltip no longer fades in (its show rule used to override the reduced-motion rule).
+
+**Positions rechecked** against Wikipedia, Mapcarta and latlong.net:
+- **Unchanged:** Manjeri, Kozhikode, Malappuram and Kannur already matched.
+- **Wayanad:** moved from the district reference point to Kalpetta town (about 1.5 km).
+- **Palakkad:** moved to Wikipedia's city centre (about 1.3 km).
+- **Manjeri, Malappuram, Kozhikode:** their tips stay on the true town positions, and only the heads are tilted apart.
+
+**Checks** (production build):
+
+| Check | Result |
+| --- | --- |
+| Map QA: Home, About, Branches × 320, 390, 430, 768, 810, 1024, 1280, 1440, 1920, 2560 px | 30/30 pass: 6 pins in order with correct links. Each pin's anchor is within 0.02 px of its computed position, and each tip lands on its point (probed above and below the point along the tilt). No tooltip is clipped or off screen, and there is no horizontal overflow. Keyboard: Tab, focus ring, name, Enter. Touch: the first tap shows the name, the second opens the page. Mouse: hover, one click (810 px and up). Motion: ripples on and stopped with reduced motion. No console errors |
+| Branch content | 6/6 branch pages: correct `h1`, `noindex`, district line, every unverified field marked pending, no sample leftovers. Old slugs 404. Home, About, Branches, Contact, Hajj, Book A Trip and Umrah all link to the six branches. The Book A Trip select lists exactly the six |
+| `lint`, `typecheck`, `check:forms`, `build` | Pass |
+| `site-qa.mjs` | 48/48 pages clean at 16 widths; 7/7 must-be-404 URLs |
+| `seo-check.mjs` / `nav-test.mjs` / `form-test.mjs` | Pass / 34/34 / 13/13 |
+| JavaScript | Homepage 148.2 KB gzip (was 148.1 KB) |
+
+**Remaining:**
+- **Pin overlap on the smallest map:** where the map is about 210 px wide (810 px tablets), the Kozhikode and Malappuram pin heads overlap slightly, by about a tenth of a pin. Everywhere else the heads touch at most.
+- **Visual check:** screenshots were reviewed only at 390 and 1440 px.

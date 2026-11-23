@@ -1,76 +1,55 @@
-import { keralaMap, projectToMap } from '@/data/kerala-map';
-import type { Branch } from '@/data/branches';
+import type { CSSProperties } from 'react';
+import terrainImage from '@/public/images/Kerala’s Lush Terrain Map.png';
+import emblem from '@/public/brand/hijra-emblem.png';
+import { branches } from '@/data/branches';
+import { terrain, terrainPosition } from '@/data/kerala-map';
+import { branchPath } from '@/data/navigation';
+import { fixedImg, responsiveImg } from '@/lib/image';
 import { cn } from '@/lib/cn';
+import { Img } from './img';
+import { MapPinLink } from './map-pin-link';
 
-// Static map of Kerala (C9: no embedded Google Maps scripts). City names are geography for orientation only.
-// Pins: drawn from verified coordinates only (the approved design shows none until branches are verified).
-// To test the marker layout with the sample records, run the dev server with NEXT_PUBLIC_SAMPLE_PINS=1:
-// dashed 'sample position' markers then appear. Production builds never show them.
+// The branch map: HIJRA's Kerala terrain drawing, shown unchanged, with pins built in HTML and CSS (C9: no embedded
+// map service). One pin per branch record (data/branches.ts), at its town; each pin links to its branch page.
 
-const SHOW_SAMPLE_PINS = process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_SAMPLE_PINS === '1';
+const pins = branches.flatMap((b) => {
+  const at = terrainPosition(b.pin.lat, b.pin.lng);
+  return at ? [{ b, lean: b.pin.lean ?? 0, ...at }] : [];
+});
+const headOffice = pins.find((p) => p.b.isHeadOffice);
 
-export function KeralaMap({
-  branches,
-  className,
-  title = 'Map of Kerala',
-  activeSlug,
-}: {
-  branches: Branch[];
-  className?: string;
-  title?: string;
-  activeSlug?: string;
-}) {
-  const pins = branches
-    .map((b, i) => {
-      if (b.status === 'verified' && b.geo) return { ...projectToMap(b.geo.lat, b.geo.lng), n: i + 1, b, sample: false };
-      if (SHOW_SAMPLE_PINS && b.samplePin) return { ...b.samplePin, n: i + 1, b, sample: true };
-      return null;
-    })
-    .filter((p): p is NonNullable<typeof p> => p !== null);
-  const hasSample = pins.some((p) => p.sample);
-  const verified = pins.filter((p) => !p.sample).length;
+export function KeralaMap({ className }: { className?: string }) {
+  const mark = fixedImg(emblem, '', 26, 26);
 
   return (
     <figure className={cn('m-0', className)}>
-      <svg viewBox={keralaMap.viewBox} className="mx-auto block h-auto w-full max-h-[540px]" role="img" aria-label={`${title}${verified ? `, with ${verified} branch locations` : ''}`}>
-        <path d={keralaMap.d} fill="#F3F1EC" stroke="#012052" strokeWidth={2.4} strokeLinejoin="round" />
-        {keralaMap.cities.map((c) => (
-          <g key={c.name}>
-            <circle cx={c.x} cy={c.y} r={5} fill="#7D8492" />
-            <text
-              x={c.anchor === 'end' ? c.x - 12 : c.x + 12}
-              y={c.y + 9}
-              textAnchor={c.anchor}
-              fontFamily="var(--font-hanken), Arial, sans-serif"
-              fontSize={27}
-              fontWeight={600}
-              fill="#5A6577"
-              paintOrder="stroke"
-              stroke="#fff"
-              strokeWidth={7}
-              strokeLinejoin="round"
-            >
-              {c.name}
-            </text>
-          </g>
+      <div className="kerala-map" style={{ aspectRatio: `${terrain.width} / ${terrain.height}` }}>
+        <Img
+          img={responsiveImg(terrainImage, `Map of Kerala with ${pins.length} HIJRA branches`)}
+          sizes="(min-width: 1200px) 420px, (min-width: 810px) 40vw, 88vw"
+          className="absolute inset-0 size-full object-contain"
+        />
+        {pins.map(({ b, lean, x, y }, i) => (
+          <div
+            key={b.id}
+            className={cn('map-pin', b.isHeadOffice && 'is-hq', lean < 0 && 'tip-left')}
+            style={{ left: `${x}%`, top: `${y}%`, '--lean': `${lean}deg`, '--pin-delay': `${i * 0.6}s` } as CSSProperties}
+          >
+            <span className="map-pin-ring" aria-hidden="true" />
+            <span className="map-pin-body">
+              <MapPinLink href={branchPath(b.slug)} className="map-pin-marker" aria-label={`${b.name} branch${b.isHeadOffice ? ', head office' : ''}`}>
+                <Img img={mark} alt="" className="map-pin-emblem" />
+              </MapPinLink>
+              <span className="map-pin-tip" aria-hidden="true">
+                {b.name}
+                {b.isHeadOffice ? <small>Head Office</small> : null}
+              </span>
+            </span>
+          </div>
         ))}
-        {pins.map((p) => (
-          <g key={p.b.id} aria-hidden="true">
-            {p.sample ? (
-              <circle cx={p.x} cy={p.y} r={19} fill="#FAF9F6" stroke="#C10304" strokeWidth={3} strokeDasharray="6 5" />
-            ) : (
-              <circle cx={p.x} cy={p.y} r={19} fill={p.b.slug === activeSlug ? '#C10304' : '#012052'} stroke="#fff" strokeWidth={4} />
-            )}
-            <text x={p.x} y={p.y + 8} textAnchor="middle" fontFamily="var(--font-hanken), Arial, sans-serif" fontSize={22} fontWeight={600} fill={p.sample ? '#C10304' : '#fff'}>
-              {p.n}
-            </text>
-          </g>
-        ))}
-      </svg>
+      </div>
       <figcaption className="mt-3 text-center text-caption text-muted">
-        {hasSample
-          ? 'Development preview: dashed markers are sample positions, not real locations. Production shows verified branches only.'
-          : 'Pins appear only for verified branches.'}
+        {pins.length} branches across Kerala{headOffice ? `, with the head office in ${headOffice.b.name}` : ''}.
       </figcaption>
     </figure>
   );

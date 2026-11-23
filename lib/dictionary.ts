@@ -25,7 +25,7 @@ export const dictionary = {
     email: 'Email',
   },
   footer: {
-    about: 'Hajj and Umrah specialists from the Malabar coast of Kerala, also arranging tours, flight tickets and visas, with guidance in Malayalam and English.',
+    about: 'Hajj and Umrah specialists from the Malabar coast of Kerala, also arranging tours, flight tickets and visas.',
     pilgrimage: 'Pilgrimage',
     travel: 'Travel',
     company: 'Company',
@@ -61,7 +61,7 @@ export const dictionary = {
   },
   demo: {
     title: 'Contact details are not connected yet',
-    body: 'This is a preview for review. The phone number, WhatsApp, email and branch details shown are demonstration values; HIJRA’s own contacts, social profiles and directions are connected before launch. Nothing is called, sent or opened from this preview.',
+    body: 'This is a preview for review. The central phone number, WhatsApp and email shown are demonstration values, and each branch’s own contacts and directions are still to be confirmed; HIJRA’s own contacts, social profiles and directions are connected before launch. Nothing is called, sent or opened from this preview.',
     enquiry: 'Try the enquiry form',
     close: 'Close',
   },

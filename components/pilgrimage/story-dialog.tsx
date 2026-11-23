@@ -55,7 +55,7 @@ export function StoryDialog({ story }: { story: Story }) {
                 subject={`${story.title}: the pilgrim’s own video`}
                 title="Video with consent"
                 icon="video"
-                image={story.journey === 'hajj' ? 'hajj-jamarat-bridge-aerial' : 'makkah-masa-safa-marwa'}
+                image={story.journey === 'hajj' ? (story.image === 'hajj-arafat-jabal-rahmah' ? 'hajj-jamarat-bridge-aerial' : 'hajj-arafat-jabal-rahmah') : story.image === 'makkah-masa-safa-marwa' ? 'madinah-mosque-interior-arches' : 'makkah-masa-safa-marwa'}
                 sizes="(min-width: 810px) 40rem, 100vw"
                 className="aspect-video rounded-md"
               />

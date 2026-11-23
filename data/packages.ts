@@ -36,7 +36,7 @@ const umrahIncludes = [
   'Hotels in Makkah and Madinah, as listed for the package',
   'Airport and intercity transfers by coach',
   'Ziyarat visits in Makkah and Madinah',
-  'Group guidance in Malayalam, with a pre-departure session',
+  'Group guidance, with a pre-departure session',
 ];
 const umrahExcludes = [
   'Meals not listed in the package',
@@ -119,7 +119,7 @@ export const packages: Package[] = [
     departure: 'Hajj season 2027',
     airports: ['COK', 'CCJ'],
     pace: 'Structured, with rest days before the days of Hajj',
-    highlights: ['Pre-departure classes in Malayalam', 'A group leader through the days of Hajj', 'Madinah after Hajj'],
+    highlights: ['Pre-departure classes', 'A group leader through the days of Hajj', 'Madinah after Hajj'],
     inclusions: [
       'Return economy flights',
       'Hajj visa processing, subject to quota and approval',

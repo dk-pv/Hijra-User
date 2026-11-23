@@ -1,3 +1,4 @@
+import { Icon } from '@/components/ui/icons';
 import type { Metadata } from 'next';
 import { routes } from '@/data/navigation';
 import { pageMetadata } from '@/lib/seo';
@@ -8,7 +9,6 @@ import { PhotoGallery } from '@/components/content/photo-gallery';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { CtaBand } from '@/components/ui/cta-band';
 import { Note } from '@/components/ui/pending';
-import { ClientPhoto } from '@/components/ui/photo';
 
 // Gallery: a compact title so the photographs start on the first screen, the collections with their lightbox, then
 // the slots for HIJRA's own trip photography (consented), and the closing enquiry.
@@ -24,9 +24,9 @@ export function generateMetadata(): Metadata {
 }
 
 const ownPhotos = [
-  { subject: 'A HIJRA group in Madinah, photographed with everyone’s consent', className: 'col-span-2 aspect-[16/9] rounded-lg', image: 'madinah-quba-mosque' as const },
-  { subject: 'A pre-departure session at a branch', className: 'aspect-[4/5] rounded-md', image: 'madinah-mosque-interior-arches' as const },
-  { subject: 'A family tour in Kerala', className: 'aspect-[4/5] rounded-md', image: 'kerala-alappuzha-houseboat' as const },
+  { subject: 'HIJRA groups in Makkah and Madinah' },
+  { subject: 'Pre-departure sessions at the branches' },
+  { subject: 'Family tours in Kerala, across India and abroad' },
 ];
 
 export default function GalleryPage() {
@@ -71,10 +71,19 @@ export default function GalleryPage() {
               everyone pictured.
             </p>
           </div>
-          <div className="col-span-full grid grid-cols-2 gap-3 md:gap-gutter lg:col-span-6 lg:col-start-7">
-            {ownPhotos.map((p) => (
-              <ClientPhoto key={p.subject} subject={p.subject} title="At launch" image={p.image} sizes="(min-width: 1200px) 25vw, 50vw" className={p.className} />
-            ))}
+          <div className="on-dark col-span-full rounded-lg bg-deep p-7 md:p-10 lg:col-span-6 lg:col-start-7">
+            <span className="grid size-12 place-items-center rounded-full border border-white/25 text-sand">
+              <Icon name="camera" />
+            </span>
+            <p className="mt-6 font-serif text-h3 text-warm-white">What this gallery will show</p>
+            <ul className="mt-5 divide-y divide-white/15 border-y border-white/15">
+              {ownPhotos.map((p) => (
+                <li key={p.subject} className="py-3.5 text-small text-mist">
+                  {p.subject}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 text-caption text-mist">Added by HIJRA at launch, with the written consent of everyone pictured.</p>
           </div>
         </div>
       </section>

@@ -14,13 +14,14 @@ import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { ContactAction } from '@/components/ui/contact-action';
 import { FaqGroups } from '@/components/ui/faq';
 import { Icon } from '@/components/ui/icons';
-import { Note, Pending, SampleTag } from '@/components/ui/pending';
+import { Note, SampleTag } from '@/components/ui/pending';
 import { Photo } from '@/components/ui/photo';
 import { EnquiryForm } from '@/components/forms/enquiry-form';
 import { articleLinks, LinkIndex } from '@/components/pilgrimage/link-index';
 import { PackageFolio } from '@/components/pilgrimage/package-folio';
 import { StoryCard } from '@/components/pilgrimage/story-card';
 import { allAirports, byDeparture, dayRange, numberWord, orList } from '@/components/pilgrimage/trip';
+import { ContactValue } from '@/components/ui/contact-value';
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -38,7 +39,7 @@ export function generateMetadata(): Metadata {
     path: routes.umrah,
     title: 'Umrah packages from Kerala',
     description:
-      'Umrah from Kerala with HIJRA Travels: the rites explained in Malayalam or English, sample packages, flights, hotels, transfers and visa help. Enquire today.',
+      'Umrah from Kerala with HIJRA Travels: the rites explained step by step, sample packages, flights, hotels, transfers and visa help. Enquire today.',
     image: IMG.hero,
   });
 }
@@ -52,7 +53,7 @@ const shownStories = ['at-her-own-pace', 'the-questions-we-were-shy-to-ask', 'ni
   .filter((s) => s !== undefined);
 
 const reasons = [
-  { title: 'Every step explained', text: 'In Malayalam or English, before you fly and while you are there. No question is too small.' },
+  { title: 'Every step explained', text: 'Before you fly and while you are there. No question is too small.' },
   { title: 'A pace that suits your family', text: 'Madinah first or Makkah first, free afternoons, and time to rest before the rites.' },
   { title: 'One advisor who knows your plans', text: 'From the first question to the journey home, you deal with someone who knows who is travelling.' },
   { title: 'Enquiry first', text: 'Nothing is booked or paid online. Dates, rooms and fares are confirmed with you before anything is booked.' },
@@ -103,7 +104,7 @@ const care = [
   },
   {
     title: 'As a group',
-    items: ['One itinerary for a family, friends or a community group', 'One advisor for everyone, from enquiry to return', 'Rooms close together, where the hotel allows', 'Group guidance in Malayalam'],
+    items: ['One itinerary for a family, friends or a community group', 'One advisor for everyone, from enquiry to return', 'Rooms close together, where the hotel allows', 'Group guidance before departure'],
   },
 ];
 
@@ -123,8 +124,8 @@ export default function UmrahPage() {
             </div>
             <div className="col-span-full md:col-span-6 lg:col-span-5 lg:col-start-8 lg:pb-2">
               <p className="rise rise-3 text-lead">
-                HIJRA arranges your Umrah from Kerala: the visa, the flights, rooms in Makkah and Madinah, and an advisor who explains each rite in Malayalam or
-                English.
+                HIJRA arranges your Umrah from Kerala: the visa, the flights, rooms in Makkah and Madinah, and an advisor who explains each
+                rite.
               </p>
               <div className="rise rise-4 mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <a href="#enquiry" className="btn btn-primary">
@@ -216,7 +217,7 @@ export default function UmrahPage() {
                   className="relative pb-11 last:pb-0 before:absolute before:-left-12 before:top-2 before:size-[17px] before:rounded-full before:border-2 before:border-sand before:bg-deep md:pb-14 md:before:-left-[60px]"
                 >
                   <p className="flex items-baseline gap-4">
-                    <span className="font-serif text-[clamp(2.5rem,2rem+1.6vw,3.5rem)] font-semibold leading-none text-warm-white/30">{i + 1}</span>
+                    <span className="font-serif text-[clamp(2.25rem,1.9rem+1.2vw,3rem)] font-semibold leading-none text-warm-white/30">{i + 1}</span>
                     <span className="text-caption font-semibold uppercase tracking-[0.12em] text-sand">{r.where}</span>
                   </p>
                   <h3 className="mt-3 text-h3">{r.name}</h3>
@@ -353,7 +354,7 @@ export default function UmrahPage() {
               </div>
               {familyStory ? (
                 <figure className="col-span-full lg:col-span-6 lg:col-start-7">
-                  <blockquote className="font-serif text-[clamp(1.375rem,1.1rem+0.8vw,1.875rem)] font-semibold leading-[1.3] text-navy">
+                  <blockquote className="font-serif text-[clamp(1.3125rem,1.1rem+0.6vw,1.75rem)] font-semibold leading-[1.3] text-navy">
                     <span className="text-red" aria-hidden="true">
                       “
                     </span>
@@ -483,7 +484,7 @@ export default function UmrahPage() {
             <div className="mt-8 flex flex-col border-t border-warm-border pt-6">
               <ContactAction kind="call" className="flex min-h-11 items-center gap-3 font-semibold text-navy">
                 <Icon name="phone" />
-                {site.contact.phone ?? <Pending>{t.pending.phone}</Pending>}
+                <ContactValue kind="phone" />
               </ContactAction>
               <ContactAction kind="whatsapp" className="flex min-h-11 items-center gap-3 font-semibold text-navy">
                 <Icon name="whatsapp" className="text-wa" />

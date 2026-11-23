@@ -38,7 +38,7 @@ const principles = [
 ];
 
 const films = [
-  { subject: 'A first Umrah, told in Malayalam with English captions', service: 'Umrah', image: 'makkah-tawaf-night' as const },
+  { subject: 'A first Umrah, in the pilgrim’s own words', service: 'Umrah', image: 'makkah-tawaf-night' as const },
   { subject: 'A family’s Hajj, a few weeks after returning home', service: 'Hajj', image: 'hajj-arafat-plain' as const },
   { subject: 'Taking elderly parents for Umrah', service: 'Umrah', image: 'madinah-piazza-umbrellas' as const },
   { subject: 'A family tour within India', service: 'Tours', image: 'india-agra-taj-mahal' as const },
@@ -152,7 +152,7 @@ export default function TestimonialsPage() {
       <CtaBand
         eyebrow="Your journey"
         title="Ready to plan a journey of your own?"
-        body="Tell us what you have in mind. An advisor replies with dates and fares, in Malayalam or English; nothing is booked or paid online."
+        body="Tell us what you have in mind. An advisor replies with dates and fares; nothing is booked or paid online."
       />
     </>
   );
