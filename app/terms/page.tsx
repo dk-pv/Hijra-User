@@ -225,7 +225,7 @@ const sections: LegalSection[] = [
     title: 'Contact',
     body: (
       <p>
-        For questions about these terms, write to {site.demo ? site.contact.email : <Pending>Contact for legal questions</Pending>}, or use the{' '}
+        For questions about these terms, write to {site.contact.email ?? <Pending>Contact for legal questions</Pending>}, or use the{' '}
         <Link href={routes.contact}>Contact page</Link>.
       </p>
     ),

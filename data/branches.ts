@@ -17,9 +17,11 @@ export type Branch = {
   isHeadOffice: boolean;
   /** The Kerala district the branch is in. */
   district: string;
-  /** Map pin at the town centre (public coordinates, not the premises). `lean` tilts the pin about its tip, in
-   *  degrees, so pins of nearby towns fan out instead of stacking; the tip stays on the town. */
-  pin: { lat: number; lng: number; lean?: number };
+  /** Town centre (public coordinates, not the premises): where the map pins the branch until `geo` is verified, and
+   *  the pin is then labelled "town location". `lean` tilts the pin about its tip, in degrees, so pins of nearby towns
+   *  fan out instead of stacking; the tip stays on the point. `tip: 'left'` opens the name tooltip on the left of the
+   *  head (default right), chosen so it stays on screen on the narrowest map and clear of the neighbouring pins. */
+  pin: { lat: number; lng: number; lean?: number; tip?: 'left' };
   /** The verified postal address; null until HIJRA supplies it. */
   address: { lines: string[]; locality: string; postalCode: string } | null;
   /** E.164, e.g. '+9198XXXXXXXX'; null until verified. */
@@ -30,13 +32,15 @@ export type Branch = {
   /** The branch's own Google Maps place link; drives the Directions buttons. */
   mapsUrl: string | null;
   gbpUrl: string | null;
-  /** Verified WGS84 coordinates of the premises from the Business Profile pin (local SEO); never geocoded or guessed. */
+  /** Verified WGS84 coordinates of the premises from the Business Profile pin; never geocoded or guessed. When set,
+   *  the map pins the office here instead of the town. */
   geo: { lat: number; lng: number } | null;
   /** Directions from nearby landmarks, written by HIJRA. */
   directions: string | null;
   /** Verified photographs of the branch (P17 asks for at least two before a branch page is published). */
   photos: { src: string; width: number; height: number; alt: string }[];
-  services: ServiceKey[];
+  /** The services this branch handles, once HIJRA confirms them; null shows "to be confirmed". */
+  services: ServiceKey[] | null;
   status: 'draft' | 'verified';
 };
 
@@ -56,21 +60,21 @@ const branch = (slug: string, name: string, district: string, pin: Branch['pin']
   geo: null,
   directions: null,
   photos: [],
-  // HIJRA's services; which ones each branch handles is still to be confirmed.
-  services: ['umrah', 'hajj', 'tour', 'flight', 'visa'],
+  services: null,
   status: 'draft',
   ...extra,
 });
 
 // Pins: town centres from Wikipedia (checked against Mapcarta and latlong.net, 23 Nov 2026). Manjeri, Malappuram and
-// Kozhikode lie within 40 km of each other, so their pins lean apart.
+// Kozhikode lie within 40 km of each other, so their pins lean apart; these angles keep the three heads clear of each
+// other on every map size, down to the 210 px map on 810 px tablets.
 export const branches: Branch[] = [
-  branch('manjeri', 'Manjeri', 'Malappuram', { lat: 11.1202, lng: 76.1198, lean: 28 }, { isHeadOffice: true }),
-  branch('kozhikode', 'Kozhikode', 'Kozhikode', { lat: 11.2588, lng: 75.7804, lean: -24 }),
-  branch('malappuram', 'Malappuram', 'Malappuram', { lat: 11.051, lng: 76.0711, lean: -40 }),
+  branch('manjeri', 'Manjeri', 'Malappuram', { lat: 11.1202, lng: 76.1198, lean: 34 }, { isHeadOffice: true }),
+  branch('kozhikode', 'Kozhikode', 'Kozhikode', { lat: 11.2588, lng: 75.7804, lean: -40 }),
+  branch('malappuram', 'Malappuram', 'Malappuram', { lat: 11.051, lng: 76.0711, lean: -40, tip: 'left' }),
   // Kalpetta, the district headquarters, until HIJRA confirms the branch's town.
   branch('wayanad', 'Wayanad', 'Wayanad', { lat: 11.6226, lng: 76.0813 }),
-  branch('palakkad', 'Palakkad', 'Palakkad', { lat: 10.775, lng: 76.651 }),
+  branch('palakkad', 'Palakkad', 'Palakkad', { lat: 10.775, lng: 76.651, tip: 'left' }),
   branch('kannur', 'Kannur', 'Kannur', { lat: 11.8745, lng: 75.3704 }),
 ];
 

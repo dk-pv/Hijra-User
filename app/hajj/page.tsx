@@ -451,8 +451,8 @@ export default function HajjPage() {
             </div>
             <div className="col-span-full lg:col-span-6 lg:col-start-7">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <SampleTag>Branch details to be confirmed</SampleTag>
-                <Link href={routes.branches} className="link-arrow text-small">
+                <SampleTag>Details to be confirmed</SampleTag>
+                <Link href={routes.branches} className="link-arrow shrink-0 text-small">
                   All branches
                 </Link>
               </div>

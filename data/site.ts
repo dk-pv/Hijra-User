@@ -1,19 +1,20 @@
 // Brand facts and contact details: one source for the whole site.
-// `null` in the *Live objects means HIJRA has not supplied the value yet. Preview builds then show the
-// demonstration stand-in from data/demo.ts; launch builds show a clearly marked placeholder instead.
-// Contact buttons link only to real values: until then they open the preview notice, never an invented number.
+// Contact details are HIJRA's real values only; `null` means not supplied yet, and pages show a marked placeholder.
+// There are no demonstration contacts: scripts/check-contacts.mjs (run before every build) rejects placeholder
+// values, and a launch build without the central phone, WhatsApp and email.
+// Contact buttons link only to real values: until then they open the "not connected yet" notice.
 import { demo } from './demo';
 
 export type SocialNetwork = 'facebook' | 'instagram' | 'youtube';
 
 /** Search engines are kept out until NEXT_PUBLIC_ALLOW_INDEXING=true (sample content must not be indexed). */
 const indexable = process.env.NEXT_PUBLIC_ALLOW_INDEXING === 'true';
-/** Demonstration stand-ins appear only in preview builds, never in a build that search engines may index. */
+/** Demonstration stand-ins (text, never contact details) appear only in preview builds, never in an indexable build. */
 const useDemo = !indexable;
 const orDemo = <T,>(real: T | null, stand: T): T | null => real ?? (useDemo ? stand : null);
 
-/** I16: HIJRA's real contact details, E.164 numbers (e.g. '+9198XXXXXXXX'). Only these become tel:, wa.me and mailto: links. */
-const contactLive = {
+/** I16: HIJRA's real contact details; phone and WhatsApp in E.164 (+91 and 10 digits). They become tel:, wa.me and mailto: links. */
+const contact = {
   phone: null as string | null,
   whatsapp: null as string | null,
   email: null as string | null,
@@ -44,20 +45,11 @@ export const site = {
     yearsOfExperience: orDemo(yearsLive, demo.facts.yearsOfExperience),
     /** True when the years figure is a demonstration stand-in. */
     yearsIsDemo: !yearsLive && useDemo,
-    /** From HIJRA's business brief ("6+ branches"); must match the verified branch list before launch. */
-    branchCount: '6+' as string | null,
+    /** The total number of branches, only once HIJRA confirms it (e.g. '6'). Until then pages say "branches across Kerala". */
+    branchCount: null as string | null,
   },
 
-  /** Real values only: what links may use. */
-  contactLive,
-  /** What pages show: HIJRA's value, or the demonstration stand-in in preview builds. */
-  contact: {
-    phone: orDemo(contactLive.phone, demo.contact.phone),
-    whatsapp: orDemo(contactLive.whatsapp, demo.contact.whatsapp),
-    email: orDemo(contactLive.email, demo.contact.email),
-    hours: orDemo(contactLive.hours, demo.contact.hours),
-    replyTime: orDemo(contactLive.replyTime, demo.contact.replyTime),
-  },
+  contact,
 
   /** I10: HIJRA's own profiles only. */
   social: {

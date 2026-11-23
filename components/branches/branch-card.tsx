@@ -91,7 +91,7 @@ export function BranchCard({ branch: b, n }: { branch: Branch; n: number }) {
         </div>
         <div className="lg:col-span-2">
           <dt className={label}>Services</dt>
-          <dd className="mt-1.5">{b.services.map((s) => serviceInfo[s].label).join(' · ')}</dd>
+          <dd className="mt-1.5">{b.services ? b.services.map((s) => serviceInfo[s].label).join(' · ') : <Pending>Services at this branch — to be confirmed</Pending>}</dd>
         </div>
       </dl>
 

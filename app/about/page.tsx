@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { enquiryPath, routes } from '@/data/navigation';
 import type { ImageKey } from '@/data/images';
 import { site } from '@/data/site';
+import { branches } from '@/data/branches';
 import { demo } from '@/data/demo';
 import { dictionary } from '@/lib/dictionary';
 import { pageMetadata } from '@/lib/seo';
@@ -41,7 +42,12 @@ const milestones = [
         { year: null, title: 'The first pilgrim groups', text: <Pending>The first Umrah and Hajj groups HIJRA guided</Pending> },
         { year: null, title: 'Branches across Kerala', text: <Pending>When and where the branches opened</Pending> },
       ]),
-  { year: 'Today', title: `${site.facts.branchCount ? `${site.facts.branchCount} branches` : 'Branches'} across Kerala`, text: 'Hajj and Umrah for families from across Kerala.' },
+  {
+    year: 'Today',
+    // The branch total only once HIJRA confirms it; until then the confirmed head office (the step above already says "Branches across Kerala").
+    title: site.facts.branchCount ? `${site.facts.branchCount} branches across Kerala` : `Head office in ${branches.find((b) => b.isHeadOffice)?.name}`,
+    text: 'Hajj and Umrah for families from across Kerala.',
+  },
 ];
 
 const specialisation = [
@@ -72,6 +78,7 @@ export default function AboutPage() {
   const t = dictionary;
   const years = site.facts.yearsOfExperience;
   const branchCount = site.facts.branchCount;
+  const headOffice = branches.find((b) => b.isHeadOffice);
 
   const facts = [
     { term: 'Company', value: site.fullName, note: 'As written on HIJRA’s logo.' },
@@ -83,15 +90,13 @@ export default function AboutPage() {
       note: site.facts.yearsIsDemo ? 'Sample figure for this preview.' : years ? undefined : 'The exact figure is being confirmed by HIJRA.',
     },
     {
+      // No number until HIJRA confirms the total (site.facts.branchCount).
       term: 'Branches',
-      value: branchCount ? `${branchCount} across Kerala` : <Pending>Number of branches</Pending>,
+      value: `${branchCount ? `${branchCount} branches` : 'Branches'} across Kerala${headOffice ? `, with the head office in ${headOffice.name}` : ''}`,
       note: (
-        <>
-          From HIJRA’s brief, matched to the verified list at launch.{' '}
-          <Link href={routes.branches} className="link-inline">
-            See every branch
-          </Link>
-        </>
+        <Link href={routes.branches} className="link-inline">
+          See every branch
+        </Link>
       ),
     },
     {
@@ -387,7 +392,7 @@ export default function AboutPage() {
               Close to home, across Kerala.
             </h2>
             <p className="mt-4 max-w-[36rem] text-lead">
-              Many families prefer to plan face to face, and often come together. HIJRA has {branchCount ?? <Pending>a number of</Pending>} branches across
+              Many families prefer to plan face to face, and often come together. HIJRA has {branchCount ? `${branchCount} branches` : 'branches'} across
               Kerala where you can sit down with an advisor.
             </p>
             <div className="mt-8 grid gap-3 sm:grid-cols-2 md:gap-gutter">

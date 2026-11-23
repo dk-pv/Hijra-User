@@ -2,8 +2,9 @@ import type { ReactNode } from 'react';
 import { site, type SocialNetwork } from '@/data/site';
 
 // Contact links that work the moment HIJRA's details are added to data/site.ts or data/branches.ts.
-// Until then they open the preview notice (#demo-contact), so no button is dead and nothing dials an invented or
-// demonstration number (site.contactLive holds real values only).
+// Until then they open the "not connected yet" notice (#demo-contact): no button is dead, and nothing dials, messages
+// or emails a value HIJRA has not supplied. A launch build cannot ship with these notices for the central contacts
+// (scripts/check-contacts.mjs).
 
 export const DEMO_CONTACT_ID = 'demo-contact';
 
@@ -32,7 +33,7 @@ export function ContactAction({
   label,
 }: Common & { kind: 'call' | 'whatsapp' | 'email'; value?: string | null; message?: string }) {
   const v =
-    value !== undefined ? value : kind === 'call' ? site.contactLive.phone : kind === 'whatsapp' ? site.contactLive.whatsapp : site.contactLive.email;
+    value !== undefined ? value : kind === 'call' ? site.contact.phone : kind === 'whatsapp' ? site.contact.whatsapp : site.contact.email;
   if (!v) return <DemoButton className={className} label={label} wa={kind === 'whatsapp'}>{children}</DemoButton>;
   if (kind === 'whatsapp')
     return (

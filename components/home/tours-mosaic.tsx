@@ -10,7 +10,7 @@ export function ToursMosaic() {
   const picks = (featured.length >= 3 ? featured : [...featured, ...tours.filter((t) => !t.featured)]).slice(0, 3);
   return (
     <ul
-      className="-mx-[var(--m)] flex snap-x snap-mandatory gap-3 overflow-x-auto px-[var(--m)] pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-12 md:gap-gutter md:overflow-visible md:px-0 md:pb-0"
+      className="-mx-[var(--m)] flex snap-x snap-mandatory scroll-px-[var(--m)] gap-3 overflow-x-auto px-[var(--m)] pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-12 md:gap-gutter md:overflow-visible md:px-0 md:pb-0"
       aria-label="Featured tours (sample itineraries)"
     >
       {picks.map((t, i) => (

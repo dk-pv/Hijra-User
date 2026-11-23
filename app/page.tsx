@@ -64,6 +64,7 @@ export default function HomePage() {
   const quote = testimonials.find((x) => x.featured) ?? testimonials[0];
   const moreQuotes = testimonials.filter((x) => x !== quote).slice(0, 2);
   const years = site.facts.yearsOfExperience;
+  const headOffice = branches.find((b) => b.isHeadOffice);
   // The leadership's opening line: HIJRA's own words when supplied; a demonstration line in preview builds.
   const letterLead = site.demo ? demo.letter.lead : null;
 
@@ -106,7 +107,14 @@ export default function HomePage() {
                 label: 'Years serving pilgrims',
                 note: site.facts.yearsIsDemo ? 'Sample figure, to be confirmed by HIJRA' : years ? 'Confirmed by HIJRA' : 'Exact figure to be confirmed by HIJRA',
               },
-              { fig: site.facts.branchCount ?? <Pending>Count</Pending>, label: 'Branches across Kerala', note: 'From HIJRA’s brief; matched to the verified list at launch' },
+              // No number until HIJRA confirms the total (site.facts.branchCount).
+              site.facts.branchCount
+                ? { fig: site.facts.branchCount, label: 'Branches across Kerala', note: headOffice ? `Head office in ${headOffice.name}` : '' }
+                : {
+                    fig: <span className="text-[0.72em] leading-[1.15]">Across Kerala</span>,
+                    label: 'Our branches',
+                    note: headOffice ? `Head office in ${headOffice.name}` : '',
+                  },
               { fig: <span className="text-[0.72em] leading-[1.15]">Hajj &amp; Umrah</span>, label: 'Our specialisation', note: 'Guidance from enquiry to return' },
               { fig: <span className="text-[0.72em] leading-[1.15]">Enquiry first</span>, label: 'Nothing booked online', note: 'An advisor confirms every detail with you' },
             ].map((c, i) => (

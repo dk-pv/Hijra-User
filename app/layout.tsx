@@ -63,7 +63,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
             // The menu portrait (B5): a temporary licensed photograph until HIJRA supplies its own.
             portrait={photoAsset('madinah-minaret-arcade')}
             social={site.social}
-            contact={{ phone: site.contactLive.phone, whatsapp: site.contactLive.whatsapp, email: site.contactLive.email, shownPhone: site.contact.phone }}
+            contact={{ phone: site.contact.phone, whatsapp: site.contact.whatsapp, email: site.contact.email }}
           />
           <main id="main" tabIndex={-1} className="flex-1 outline-none">
             {children}
@@ -71,7 +71,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           <Footer />
         </div>
         <div id="scroll-sentinel" aria-hidden="true" className="pointer-events-none absolute left-0 top-[320px] h-px w-px" />
-        <WhatsAppFab number={site.contactLive.whatsapp} label={t.common.whatsappUs} />
+        <WhatsAppFab number={site.contact.whatsapp} label={t.common.whatsappUs} />
         <DemoContactPopover />
       </body>
     </html>

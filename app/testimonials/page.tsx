@@ -136,7 +136,7 @@ export default function TestimonialsPage() {
               Short films recorded with pilgrims’ consent will appear here, with captions. None plays until you tap it.
             </p>
           </div>
-          <ul className="-mx-[var(--m)] mt-10 flex snap-x snap-mandatory gap-3 overflow-x-auto px-[var(--m)] pb-2 [scrollbar-width:none] md:mx-0 md:mt-14 md:grid md:grid-cols-4 md:gap-gutter md:overflow-visible md:px-0 md:pb-0">
+          <ul className="-mx-[var(--m)] mt-10 flex snap-x snap-mandatory scroll-px-[var(--m)] gap-3 overflow-x-auto px-[var(--m)] pb-2 [scrollbar-width:none] md:mx-0 md:mt-14 md:grid md:grid-cols-4 md:gap-gutter md:overflow-visible md:px-0 md:pb-0">
             {films.map((f) => (
               <li key={f.subject} className="w-[64%] max-w-[17rem] shrink-0 snap-start md:w-auto md:max-w-none">
                 <figure>

@@ -1132,3 +1132,58 @@ This supersedes the `branchTowns` array and the "pins are buttons" note in the s
 **Remaining:**
 - **Pin overlap on the smallest map:** where the map is about 210 px wide (810 px tablets), the Kozhikode and Malappuram pin heads overlap slightly, by about a tenth of a pin. Everywhere else the heads touch at most.
 - **Visual check:** screenshots were reviewed only at 390 and 1440 px.
+
+# Business data and map presentation (23 November 2026)
+
+**Map pin overlap (810 px).** The minimum pin size is now 20 px (head office 24 px), down from 22 and 26. Only maps under about 260 px wide reach that minimum: 320 px phones and 810 px tablets. Every pin also keeps an invisible tap area of at least 24 px.
+- **New tilts:** Manjeri 34°, Kozhikode −40°, Malappuram −40°. A geometry model over every measured map width picked them.
+- **Tooltips:** each tooltip now sits level beside its own pin head, placed with CSS `sin()`/`cos()` rather than rotated with the pin. Its side is set per pin (`pin.tip`), so it stays on screen on the narrowest map.
+- **Positions:** the tips stay exactly on their points.
+
+**Town-level locations.** Pins sit at town centres and are labelled as such:
+- each tooltip has a "Town location" line;
+- each accessible name ends "(town location)";
+- the caption says "Pins marked “town location” show the town, not the exact office".
+
+When a branch's verified premises `geo` is set, its pin moves there and the label drops.
+
+**Branch count.** The "6+" claim is gone. `site.facts.branchCount` is `null` until HIJRA confirms the total, so:
+- the homepage figure reads "Across Kerala · Our branches · Head office in Manjeri";
+- About reads "Branches across Kerala, with the head office in Manjeri" and "HIJRA has branches across Kerala";
+- the map caption has no number;
+- the directory counts "listed branches".
+
+**Demonstration contacts removed.**
+- **Data removed:** `demo.contact` (phone `+91 483 000 0000`, a `.example` email, sample hours, reply time) and the `contactLive`/`contact` split. `site.contact` now holds HIJRA's real values only.
+- **What pages show instead:** the header menu, footer, Contact, Book A Trip, Umrah, home, Privacy and Terms show marked placeholders. Contact buttons open a "not connected yet" notice, with reworded text.
+- **Guard:** `scripts/check-contacts.mjs` runs before every `npm run build`. It stops the build on placeholder or demonstration contact details anywhere in the source, on a non-real value in the data files, and on a launch build without the central phone, WhatsApp and email. It was tested against a copy with the old demo data injected, and all 9 planted problems were caught.
+
+**Branch services.** `services` is `null` (to be confirmed) for all six branches:
+- the cards and branch pages show a pending mark instead of the five-service list;
+- branch page titles drop the service phrase;
+- the directory's service filter appears only once every branch's services are set.
+
+**Also fixed during the final QA:**
+- **Hajj page:** the "All branches" link wrapped beside the longer tag at 390 px. The tag now reads "Details to be confirmed" and the link no longer shrinks.
+- **About, "Our journey":** "Growth" and "Today" both read "Branches across Kerala". "Today" now reads "Head office in Manjeri".
+- **Tours form:** the Destination placeholder was cut off at 810 px and wider. It now reads "e.g. Munnar or Istanbul".
+- **Carousels:** the home tours carousel and the Testimonials carousel scrolled their first card flush to the screen edge on phones. They now have `scroll-px`, like the other carousels.
+- **Umrah hero photo:** `makkah-tawaf-night.jpg` had a flat dark band, 127 px tall, at the top of the file. It is cropped off (1920 × 1198); the photo is CC BY 2.0, and the credits page already says photos are cropped.
+
+**Checks** (final production build):
+
+| Check | Result |
+| --- | --- |
+| `lint`, `typecheck`, `check:forms`, `check:contacts`, `build` | Pass (the build runs `check:contacts` first) |
+| Contact guard self-test | 9/9 planted problems caught, with the build exiting 1. A launch build without central contacts is refused |
+| Content check: 22 pages, including all six branch pages | Pass: no demo phone, email, hours or "(sample)" contacts, no `tel:`/`mailto:`/`wa.me` links, no branch total. Every branch field and branch services marked pending, branch titles neutral, old slugs 404 |
+| Map QA: Home, About, Branches × 320, 360, 390, 430, 768, 810, 900, 1024, 1280, 1440, 1920, 2560 px | 36/36 pass. Anchors within 0.02 px, tips on their points, town-location labels, no clipped or off-screen tooltip, keyboard, touch (two taps), mouse, reduced motion, 24 px tap areas |
+| Map sweep: every 10 px from 320 to 2560 on all three pages | No overlap; the closest heads are 1.024× apart at 810 px. No overflow, every tooltip on screen |
+| `site-qa.mjs` | 48/48 pages clean at 16 widths; 7/7 must-be-404 URLs |
+| `seo-check.mjs` / `nav-test.mjs` / `form-test.mjs` | Pass / 34/34 / 13/13 |
+| Screenshots: 17 pages × 390, 768, 810, 1024, 1440, 1920 (102) | Reviewed; the defects above are fixed and rechecked |
+| JavaScript | Homepage 148.0 KB gzip; no failed requests or console errors |
+
+**Seen and left as they are:**
+- On Umrah at 810–1199 px, the "Arranged for you" photo column ends well before its text column; the column is sticky only from 1200 px.
+- On Hajj at 810 px, the "11–13" numeral sits close to its heading.

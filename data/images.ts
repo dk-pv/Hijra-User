@@ -22,10 +22,10 @@ export const images = {
     credit: { title: 'Kaaba, Never still', author: 'omar_chatriwala', licence: 'CC BY 2.0', licenceUrl: 'https://creativecommons.org/licenses/by/2.0', sourceUrl: 'https://commons.wikimedia.org/wiki/File:Kaaba,_Never_still.jpg' },
   },
   'makkah-tawaf-night': {
-    src: '/images/makkah-tawaf-night.jpg', width: 1920, height: 1325,
+    src: '/images/makkah-tawaf-night.jpg', width: 1920, height: 1198,
     alt: 'The Kaaba at night seen from an upper floor of Masjid al-Haram, with a large crowd of pilgrims in the floodlit courtyard',
     tone: '#82694f', focus: '56% 35%',
-    subject: 'Kaaba and tawaf at night from an upper level; crowd far away; bottom ledge cropped off',
+    subject: 'Kaaba and tawaf at night from an upper level; crowd far away; bottom ledge and the flat dark band at the top cropped off',
     tags: ['makkah', 'umrah', 'hajj'],
     credit: { title: 'Masjid al-Haram, Tawaf 20092012 1130PM (8008466944)', author: 'Basheer Olakara', licence: 'CC BY 2.0', licenceUrl: 'https://creativecommons.org/licenses/by/2.0', sourceUrl: 'https://commons.wikimedia.org/wiki/File:Masjid_al-Haram,_Tawaf_20092012_1130PM_(8008466944).jpg' },
   },

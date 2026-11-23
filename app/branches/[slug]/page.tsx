@@ -35,11 +35,14 @@ async function branchFrom(params: Props['params']) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const b = await branchFrom(params);
-  const what = b.services.includes('hajj') ? 'Hajj, Umrah and travel' : 'Umrah and travel';
+  const kind = b.isHeadOffice ? 'head office' : 'branch';
+  const what = b.services ? (b.services.includes('hajj') ? ': Hajj, Umrah and travel' : ': Umrah and travel') : '';
   return pageMetadata({
     path: branchPath(b.slug),
-    title: `${b.name} branch: ${what}`,
-    description: `Visit HIJRA Travels at the ${b.name} ${b.isHeadOffice ? 'head office' : 'branch'} in ${branchArea(b)}: the address, opening hours in India time, phone, WhatsApp and directions.`,
+    title: `${b.name} ${kind}${what}`,
+    description: isPublishable(b)
+      ? `Visit HIJRA Travels at the ${b.name} ${kind} in ${branchArea(b)}: the address, opening hours in India time, phone, WhatsApp and directions.`
+      : `The HIJRA Travels ${kind} in ${b.name}, ${branchArea(b)}. Its address, contact numbers and opening hours are being confirmed.`,
     noindex: !isPublishable(b),
   });
 }
@@ -89,7 +92,7 @@ async function BranchDetail({ params }: Props) {
           <h1 className="rise rise-2 mt-4 text-h1">{name}</h1>
           <span className="rule-double rise rise-2 mt-5" aria-hidden="true" />
           <p className="rise rise-3 mt-5 max-w-[38rem] text-lead">
-            Plan {listPhrase(b.services.map((s) => serviceInfo[s].phrase))} face to face with an advisor.
+            Plan {b.services ? listPhrase(b.services.map((s) => serviceInfo[s].phrase)) : 'your journey'} face to face with an advisor.
           </p>
           {draft ? (
             <Note className="mt-8 max-w-[46rem] md:mt-10">
@@ -223,6 +226,7 @@ async function BranchDetail({ params }: Props) {
             </h2>
             <p className="mt-3 max-w-[30rem] text-small text-muted">Each service starts with a conversation. Nothing is booked or paid online.</p>
           </div>
+          {b.services ? (
           <ul className="col-span-full border-t border-warm-border md:grid md:grid-cols-2 md:gap-x-12 lg:col-span-7 lg:col-start-6">
             {b.services.map((s) => {
               const sv = serviceInfo[s];
@@ -240,6 +244,17 @@ async function BranchDetail({ params }: Props) {
               );
             })}
           </ul>
+          ) : (
+            <div className="col-span-full border-t border-warm-border pt-6 lg:col-span-7 lg:col-start-6">
+              <p>
+                <Pending>Services at this branch — to be confirmed</Pending>
+              </p>
+              <p className="mt-3 max-w-[36rem] text-small text-muted">
+                HIJRA arranges Hajj and Umrah, tours, flight tickets and visa assistance. Which of these this branch handles is being
+                confirmed.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

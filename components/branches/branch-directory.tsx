@@ -6,12 +6,13 @@ import { cn } from '@/lib/cn';
 import { ContactAction } from '@/components/ui/contact-action';
 import { Icon } from '@/components/ui/icons';
 
-export type DirectoryItem = { slug: string; text: string; services: ServiceKey[]; card: ReactNode };
+export type DirectoryItem = { slug: string; text: string; services: ServiceKey[] | null; card: ReactNode };
 
 /**
  * The branch finder (report 8.3, 9.8): search by branch or town, a service filter with a live result count and an
  * empty state, the cards beside a sticky map from 810 px, and a List · Map switch on phones. The cards and the map
  * are rendered on the server and passed in, so without JavaScript every card, address, hour and link still works.
+ * The service filter appears only once every branch's services are confirmed, so it never hides a branch for want of data.
  */
 export function BranchDirectory({
   items,
@@ -30,11 +31,12 @@ export function BranchDirectory({
   const [view, setView] = useState<'list' | 'map'>('list');
 
   const q = query.trim().toLowerCase().replace(/\s+/g, ' ');
-  const shown = new Set(items.filter((i) => (!q || i.text.includes(q)) && (!service || i.services.includes(service))).map((i) => i.slug));
+  const byService = items.every((i) => i.services);
+  const shown = new Set(items.filter((i) => (!q || i.text.includes(q)) && (!service || i.services?.includes(service))).map((i) => i.slug));
   const total = items.length;
-  const noun = (n: number) => (n === 1 ? 'branch' : 'branches');
-  const status =
-    shown.size === total ? `Showing all ${total} ${noun(total)}` : `Showing ${shown.size} of ${total} ${noun(total)}`;
+  // Counts what is listed, never a claim about HIJRA's total.
+  const noun = (n: number) => (n === 1 ? 'listed branch' : 'listed branches');
+  const status = shown.size === total ? `Showing ${total} ${noun(total)}` : `Showing ${shown.size} of ${total} ${noun(total)}`;
   const serviceLabel = services.find((s) => s.key === service)?.label;
   const clear = () => {
     setQuery('');
@@ -82,19 +84,21 @@ export function BranchDirectory({
               />
             </div>
           </div>
-          <div className="field flex-[1_1_12rem]">
-            <label className="field-label" htmlFor={`${id}-s`}>
-              Service
-            </label>
-            <select id={`${id}-s`} className="field-input" value={service} onChange={(e) => setService(e.target.value as ServiceKey | '')}>
-              <option value="">All services</option>
-              {services.map((s) => (
-                <option key={s.key} value={s.key}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          {byService ? (
+            <div className="field flex-[1_1_12rem]">
+              <label className="field-label" htmlFor={`${id}-s`}>
+                Service
+              </label>
+              <select id={`${id}-s`} className="field-input" value={service} onChange={(e) => setService(e.target.value as ServiceKey | '')}>
+                <option value="">All services</option>
+                {services.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
         </div>
         <div className="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-warm-border pb-4">
           <p role="status" className="text-small font-semibold text-navy">

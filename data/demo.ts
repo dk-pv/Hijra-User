@@ -5,19 +5,12 @@
 // Safeguards:
 // - Shown only while the site is closed to search engines. A launch build (NEXT_PUBLIC_ALLOW_INDEXING=true) shows
 //   HIJRA's real values, or a marked placeholder, and never these (see `useDemo` in data/site.ts).
-// - Contact buttons never dial, message or email a demonstration value: they open the preview notice instead.
+// - NO CONTACT DETAILS: phone numbers, WhatsApp, email, opening hours, reply times and directions come only from
+//   HIJRA, in data/site.ts and data/branches.ts. scripts/check-contacts.mjs fails the build if one appears here.
 // - Nothing here states a registration, licence, award, rating, date or a named person. The copy is written in
 //   HIJRA's voice for HIJRA to review and replace.
 
 export const demo = {
-  contact: {
-    // Malappuram's area code with an unassigned subscriber number, and a reserved .example address: neither can reach anyone.
-    phone: '+91 483 000 0000',
-    whatsapp: '+91 483 000 0000',
-    email: 'hello@hijratravels.example',
-    hours: 'Monday to Saturday, 9:30 am – 6:00 pm',
-    replyTime: 'within one working day',
-  },
   facts: {
     /** The figure in HIJRA's own brief (I17: HIJRA has also said 30+). */
     yearsOfExperience: '25+',

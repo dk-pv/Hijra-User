@@ -27,8 +27,8 @@ export type NavProps = {
   logo: ImgData;
   portrait: PhotoAsset;
   social: Record<SocialNetwork, string | null>;
-  /** Real values only (links); `shownPhone` is the number to display, which may be a preview stand-in. */
-  contact: { phone: string | null; whatsapp: string | null; email: string | null; shownPhone: string | null };
+  /** HIJRA's real values only; null until supplied. */
+  contact: { phone: string | null; whatsapp: string | null; email: string | null };
 };
 
 const socialIcons: Record<SocialNetwork, 'facebook' | 'instagram' | 'youtube'> = {
@@ -265,7 +265,7 @@ export function SiteNav({ t, logo, portrait, social, contact }: NavProps) {
                   <a href={`tel:${contact.phone}`}>{contact.phone}</a>
                 ) : (
                   <button type="button" popoverTarget={DEMO_CONTACT_ID}>
-                    {t.menu.call}: {contact.shownPhone ? `${contact.shownPhone} (sample)` : `[${t.pending.phone}]`}
+                    {t.menu.call}: [{t.pending.phone}]
                   </button>
                 )}
                 {contact.whatsapp ? (

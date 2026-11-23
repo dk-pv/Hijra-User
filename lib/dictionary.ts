@@ -61,7 +61,7 @@ export const dictionary = {
   },
   demo: {
     title: 'Contact details are not connected yet',
-    body: 'This is a preview for review. The central phone number, WhatsApp and email shown are demonstration values, and each branch’s own contacts and directions are still to be confirmed; HIJRA’s own contacts, social profiles and directions are connected before launch. Nothing is called, sent or opened from this preview.',
+    body: 'This is a preview for review. HIJRA’s phone numbers, WhatsApp, email, social profiles and branch directions are added before launch, so nothing is called, sent or opened from here yet. You can still send an enquiry.',
     enquiry: 'Try the enquiry form',
     close: 'Close',
   },
@@ -100,7 +100,7 @@ export const dictionary = {
     tourType: 'Tour type',
     tourTypes: { domestic: 'Within India', international: 'International' },
     destination: 'Destination',
-    destinationPh: 'For example: Munnar, Kashmir, Istanbul',
+    destinationPh: 'e.g. Munnar or Istanbul',
     tripType: 'Trip',
     tripTypes: { return: 'Return', oneWay: 'One way' },
     from: 'From',
@@ -135,7 +135,7 @@ export const dictionary = {
       name: 'Please enter your name (at least 2 letters).',
       phone: 'Enter a 10-digit Indian mobile number, without +91 or a leading 0.',
       phoneIntl: 'Enter a valid number for this country code (7 to 12 digits).',
-      email: 'Enter an email address like name@example.com.',
+      email: 'Enter an email address like name@example.com.', // contact-check-ignore: a format hint, not a contact
       emailNeeded: 'Add an email address, or choose WhatsApp or a phone call.',
       required: 'Please fill this in.',
       date: 'Choose a date from today onwards.',

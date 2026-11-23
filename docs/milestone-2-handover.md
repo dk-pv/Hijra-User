@@ -82,7 +82,7 @@ Every route is prerendered at build time (static HTML), except unknown slugs, wh
   - `Breadcrumbs` (with BreadcrumbList JSON-LD), `SectionIntro`, `CtaBand`, `FaqList` and `FaqGroups`;
   - `ContactAction`, `SocialAction` and `DirectionsAction` (real links once data exists, otherwise the preview notice);
   - `Pending`, `SampleTag`, `Note`, `KeralaMap` and `Icon`;
-  - `ContactValue`, which shows a central contact detail: HIJRA's real value, a preview stand-in marked "(sample)", or a `Pending` placeholder in launch builds.
+  - `ContactValue`, which shows a central contact detail: HIJRA's real value, or a `Pending` placeholder until it is supplied.
 - **Interface strings:** `lib/dictionary.ts`, English. Page copy lives in the pages and in `data/`.
 - **Styles:** Tailwind 4 tokens and component classes in `app/globals.css`. Use brand colours only; there is no default palette.
 
@@ -92,8 +92,8 @@ Every business fact and record lives in a typed module under `data/`. The interf
 
 | Module | Exports | Records |
 | --- | --- | --- |
-| `data/site.ts` | `site` | Brand names, positioning, `url`, `indexable`, `facts` (years, branch count), `contactLive` (HIJRA's real contacts: the only values links use), `contact` (what pages show: real value, or the preview stand-in), `social` |
-| `data/demo.ts` | `demo` | Demonstration stand-ins for the client preview (contacts, years, leadership letter, history, legal-draft defaults). Used only while the site is closed to search engines |
+| `data/site.ts` | `site` | Brand names, positioning, `url`, `indexable`, `facts` (years; `branchCount` stays null until HIJRA confirms the total), `contact` (HIJRA's real contacts only, null until supplied), `social` |
+| `data/demo.ts` | `demo` | Demonstration copy for the client preview (years, leadership letter, history, legal-draft defaults); never contact details. Used only while the site is closed to search engines |
 | `data/branches.ts` | `branches`, `getBranch`, `isPublishable`, `branchArea`, `formatAddress`, `formatTime` | HIJRA's 6 confirmed branches as drafts: names, head office, district and map pin confirmed; every business detail pending (section 4). The one source for the map, listings, branch pages, footer and forms |
 | `data/tours.ts` | `tours`, `getTour` | 13 sample tours (section 5) |
 | `data/blogs.ts` | `blogs`, `getBlog`, `categories`, `formatDate` | 10 sample articles (section 6) |
@@ -124,23 +124,23 @@ type Branch = {
   name: string;                       // the town, e.g. 'Manjeri' ('Wayanad' is the district)
   isHeadOffice: boolean;              // true for Manjeri only
   district: string;                   // e.g. 'Malappuram'
-  pin: { lat: number; lng: number; lean?: number }; // map pin at the town centre; lean (degrees) fans out close pins
+  pin: { lat: number; lng: number; lean?: number; tip?: 'left' }; // town centre; lean (degrees) fans out close pins; tip = tooltip side
   address: { lines: string[]; locality: string; postalCode: string } | null; // null until verified
-  phone: string | null;               // E.164, e.g. '+9198XXXXXXXX'
+  phone: string | null;               // E.164: +91 and 10 digits (scripts/check-contacts.mjs rejects placeholders)
   whatsapp: string | null;            // E.164
   hours: WeekHours | null;
   mapsUrl: string | null;             // the branch's own Google Maps link (drives Directions)
   gbpUrl: string | null;              // Google Business Profile
-  geo: { lat: number; lng: number } | null; // the premises, from the verified Business Profile (local SEO); never guessed
+  geo: { lat: number; lng: number } | null; // the premises, from the verified Business Profile; never guessed. When set, the map pins it
   directions: string | null;          // HIJRA's own landmark directions (60–150 words)
   photos: { src: string; width: number; height: number; alt: string }[]; // at least 2 before publishing
-  services: ServiceKey[];             // 'umrah' | 'hajj' | 'tour' | 'flight' | 'visa'
+  services: ServiceKey[] | null;      // 'umrah' | 'hajj' | 'tour' | 'flight' | 'visa'; null = to be confirmed (no service filter until all are set)
   status: 'draft' | 'verified';      // all six are 'draft' until HIJRA verifies their details
 };
 ```
 
 - **Pending fields:** pages show `null` fields as marked placeholders ("to be confirmed"). A branch's Call, WhatsApp and Directions buttons open the preview notice until its own value is set; they never fall back to the central number.
-- **Map:** `components/ui/kerala-map.tsx` draws one pin per record from `pin`, linked to the branch page (`components/ui/map-pin-link.tsx`: on touch, the first tap shows the name and the second opens the page).
+- **Map:** `components/ui/kerala-map.tsx` draws one pin per record, linked to the branch page (`components/ui/map-pin-link.tsx`: on touch, the first tap shows the name and the second opens the page). It pins `geo` (the verified office) when set, otherwise the town (`pin`), and town pins say "Town location" in their tooltip, accessible name and the map caption.
 - **Publishing:** only `status: 'verified'` branches are indexable (`isPublishable`). Then add them to the sitemap (`app/sitemap.ts`) and, if wanted, LocalBusiness or TravelAgency JSON-LD built from verified fields only.
 - **Order:** the directory lists the head office first, then A–Z by name (`orderBranches` in `components/branches/branch-data.ts`).
 - **Forms:** the branch `slug` is the value the enquiry forms send as `branch`.
@@ -337,14 +337,15 @@ export async function submitEnquiry(payload: EnquiryPayload): Promise<EnquiryRes
 
 ## 12. Contact and branch configuration
 
-- **Demonstration content** (`data/demo.ts`): in preview builds it fills every gap so the site reads as finished. A real value always wins, and a build with `NEXT_PUBLIC_ALLOW_INDEXING=true` ignores the file entirely (marked placeholders show instead), so demonstration values can never reach a public launch. Contact buttons never link to a demonstration value.
-- **Central contacts** (`data/site.ts`, `site.contactLive`):
+- **Demonstration content** (`data/demo.ts`): copy only (no contact details), shown in preview builds; a build with `NEXT_PUBLIC_ALLOW_INDEXING=true` ignores the file entirely.
+- **Contact guard** (`scripts/check-contacts.mjs`, run by `prebuild` before every `npm run build`, or alone with `npm run check:contacts`): the build stops if demonstration or placeholder contact details appear anywhere in the source (reserved-domain emails, `000 0000`/`XXXX` numbers, hard-coded `tel:`, `mailto:` or `wa.me` links, contact fields in `data/demo.ts`), if a phone, WhatsApp, email or Google link in `data/site.ts` or `data/branches.ts` is not a real one, or if a launch build lacks the central phone, WhatsApp and email. Deploy with `npm run build` (not `next build` directly) so the guard runs.
+- **Central contacts** (`data/site.ts`, `site.contact`):
   - `phone`, `whatsapp` and `email` (E.164 or address);
   - `hours` (display text) and `replyTime`.
   - Filling them turns every Call, WhatsApp and Email action and the floating WhatsApp button into real `tel:`, `wa.me` and `mailto:` links (`components/ui/contact-action.tsx`).
 - **Social:** `site.social` holds the Facebook, Instagram and YouTube URLs.
-- **Facts:** `site.facts.yearsOfExperience` (25+ or 30+, still unconfirmed, shown as Pending) and `branchCount`.
-- **Branches:** fill each record (section 4) and set `status: 'verified'`. A verified `mapsUrl` enables Directions. Map pins come from each record's `pin`.
+- **Facts:** `site.facts.yearsOfExperience` (25+ or 30+, still unconfirmed) and `branchCount` (null: pages say "branches across Kerala" until HIJRA confirms the total).
+- **Branches:** fill each record (section 4) and set `status: 'verified'`. A verified `mapsUrl` enables Directions. Map pins sit at each record's town (`pin`, labelled "town location") until its verified premises `geo` is set; the pin then moves there and the label drops.
 - **Brand spelling:** `site.fullName` is "HIJRA Travels | Haj Group", as written on the logo. HIJRA should confirm whether the name is "Haj" or "Hajj".
 
 ## 13. Authentication needs
@@ -442,6 +443,6 @@ export async function submitEnquiry(payload: EnquiryPayload): Promise<EnquiryRes
 - **Monitoring:** real-user Core Web Vitals (LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1). Add error logging for the enquiry API, without personal data.
 - **Checks before each release:**
   ```
-  npm run lint && npm run typecheck && npm run check:forms && npm run build
+  npm run lint && npm run typecheck && npm run check:forms && npm run build   # build runs check:contacts first
   ```
   Then run the browser suites in `scripts/qa/` against `next start`.
