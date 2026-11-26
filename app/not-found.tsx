@@ -11,7 +11,7 @@ export default function NotFound() {
     { href: routes.bookATrip, label: t.nav.bookATrip },
   ];
   return (
-    <section className="pt-nav pb-section">
+    <section data-no-fab="" className="pt-nav pb-section">
       <div className="wrap site-grid pt-12 md:pt-20">
         <div className="col-span-full lg:col-span-8">
           <span className="rule-double mb-5" aria-hidden="true" />

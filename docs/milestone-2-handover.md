@@ -20,16 +20,19 @@ Every route is prerendered at build time (static HTML), except unknown slugs, wh
 | `/branches` | `app/branches/page.tsx` | branches | Client search and filter (`BranchDirectory`) |
 | `/branches/[slug]` | `app/branches/[slug]/page.tsx` | branches | 6 sample slugs; `noindex` until the record is `verified` |
 | `/hajj-umrah` | `app/hajj-umrah/page.tsx` | packages, faqs | Links to Book A Trip (no inline form) |
-| `/hajj` | `app/hajj/page.tsx` | packages, guides, faqs, branches | Links to Book A Trip |
-| `/umrah` | `app/umrah/page.tsx` | packages, stories, faqs, branches | Enquiry form (`source: "umrah"`) |
-| `/tours` | `app/tours/page.tsx` | tours | Client filter (`TourBrowser`); enquiry form (`"tours"`) |
-| `/tours/[slug]` | `app/tours/[slug]/page.tsx` | tours | 13 sample slugs, `noindex` while `sample`; enquiry form (`"tour:<slug>"`) |
+| `/hajj` | `app/hajj/page.tsx` | packages, guides, faqs, branches | Package listing (departed packages drop out); links to Book A Trip |
+| `/hajj/packages/[slug]` | `app/hajj/packages/[slug]/page.tsx` | packages | 2 sample slugs, `noindex` while `sample`; enquiry form (`"hajj:<slug>"`) |
+| `/umrah` | `app/umrah/page.tsx` | packages, stories, faqs, branches | Package listing; enquiry form (`source: "umrah"`) |
+| `/umrah/packages/[slug]` | `app/umrah/packages/[slug]/page.tsx` | packages | 4 sample slugs, `noindex` while `sample`; enquiry form (`"umrah:<slug>"`) |
+| `/tours` | `app/tours/page.tsx` | tours | International first, then India; no filters (8 tours); enquiry form (`"tours"`) |
+| `/tours/[slug]` | `app/tours/[slug]/page.tsx` | tours | 8 sample slugs, `noindex` while `sample`; enquiry form (`"tour:<slug>"`) |
 | `/flights` | `app/flights/page.tsx` | faqs | Flight enquiry form (`"flights"`) |
 | `/visa` | `app/visa/page.tsx` | visas, faqs | Visa enquiry form (`"visa"`) |
 | `/blogs` | `app/blogs/page.tsx` | blogs | Client search and topics (`BlogLibrary`) |
-| `/blogs/[slug]` | `app/blogs/[slug]/page.tsx` | blogs | 10 sample slugs, `noindex` while `sample`; Article JSON-LD |
-| `/gallery` | `app/gallery/page.tsx` | images, gallery | Client collections and lightbox (`PhotoGallery`) |
-| `/testimonials` | `app/testimonials/page.tsx` | testimonials | Client filter (`TestimonialWall`) |
+| `/blogs/[slug]` | `app/blogs/[slug]/page.tsx` | blogs | 9 published sample slugs, `noindex` while `sample`; drafts are 404s; Article JSON-LD |
+| `/gallery` | `app/gallery/page.tsx` | gallery | Four categories of collection cards (server only) |
+| `/gallery/[slug]` | `app/gallery/[slug]/page.tsx` | gallery, images | 11 sample collections, `noindex` while `sample`; photo grid and lightbox (`PhotoGallery`) |
+| `/testimonials` | `app/testimonials/page.tsx` | testimonials | Written reviews and videos, one category filter (`TestimonialBrowser`); click-to-play videos (`VideoPlayer`) |
 | `/pilgrim-guide` | `app/pilgrim-guide/page.tsx` | guides, faqs | Printable checklist (client) |
 | `/pilgrim-stories` | `app/pilgrim-stories/page.tsx` | stories | Story dialogs, deep links `#<slug>` |
 | `/book-a-trip` | `app/book-a-trip/page.tsx` | packages, tours, visas, branches | Full form; reads `?service=&interest=&branch=` (`"book-a-trip"`) |
@@ -40,11 +43,11 @@ Every route is prerendered at build time (static HTML), except unknown slugs, wh
 | unknown URL or slug | `app/not-found.tsx` | — | Real 404 status |
 
 - **Route constants:**
-  - `data/navigation.ts` is the only place paths are written (`routes`, `tourPath`, `blogPath`, `branchPath`).
+  - `data/navigation.ts` is the only place paths are written (`routes`, `tourPath`, `packagePath`, `galleryPath`, `blogPath`, `branchPath`).
   - `enquiryPath(service, interest, branch)` builds preselected Book A Trip links.
-  - It also holds the nine menu items (`mainNav`) and the footer groups.
+  - It also holds the nine menu items (`mainNav`), the menu's short second row (`menuMore`: Umrah, Hajj, Gallery, Contact) and the footer groups.
 - **404s:**
-  - `proxy.ts` checks `/tours/:slug`, `/blogs/:slug` and `/branches/:slug` against the known slug sets before the page renders. With Cache Components, a dynamic page would otherwise stream a 200 before `notFound()` runs.
+  - `proxy.ts` checks `/tours/:slug`, `/umrah/packages/:slug`, `/hajj/packages/:slug`, `/gallery/:slug`, `/blogs/:slug` and `/branches/:slug` against the known slug sets before the page renders (a Hajj slug under `/umrah/packages/` is a 404). With Cache Components, a dynamic page would otherwise stream a 200 before `notFound()` runs.
   - Any other unmatched URL goes to `app/not-found.tsx` with status 404.
 - **No language routes.** English only: `/ml/...` and `/en/...` are ordinary unknown URLs (404).
 
@@ -56,12 +59,12 @@ Every route is prerendered at build time (static HTML), except unknown slugs, wh
   | Component | File | Job |
   | --- | --- | --- |
   | `SiteNav` | `components/site/site-nav.tsx` | Pill and full-screen menu (dialog, focus trap, inert page, prefetch on open) |
-  | `WhatsAppFab` | `components/site/whatsapp-fab.tsx` | Floating WhatsApp button (IntersectionObserver rules) |
+  | `FloatingActions` | `components/site/floating-actions.tsx` | Floating Upcoming Tours link and WhatsApp button, always on screen (hidden in the open menu and on the 404 and error screens) |
   | `PopoverLink` | `components/site/popover-link.tsx` | A link that also closes the preview popover |
   | `EnquiryForm` | `components/forms/enquiry-form.tsx` | All enquiry forms (full, compact and contact variants) |
   | `TourBrowser` | `components/travel/tour-browser.tsx` | Tour filters |
   | `BlogLibrary` | `components/content/blog-library.tsx` | Article search, topics and "show more" |
-  | `PhotoGallery` | `components/content/photo-gallery.tsx` | Collections and the lightbox |
+  | `PhotoGallery` | `components/content/photo-gallery.tsx` | One collection's justified photo rows and the lightbox (arrows, swipe, keys, Escape) |
   | `TestimonialWall` | `components/content/testimonial-wall.tsx` | Testimonial filter |
   | `BranchDirectory`, `TodayHours` | `components/branches/branch-directory.tsx`, `components/branches/hours.tsx` | Branch search and filter; today's hours in India time |
   | `StoryBrowser`, `OpenStory`, `StoryHash` | `components/pilgrimage/story-reader.tsx` | Story filter and dialog opening |
@@ -95,22 +98,22 @@ Every business fact and record lives in a typed module under `data/`. The interf
 | `data/site.ts` | `site` | Brand names, positioning, `url`, `indexable`, `facts` (years; `branchCount` stays null until HIJRA confirms the total), `contact` (HIJRA's real contacts only, null until supplied), `social` |
 | `data/demo.ts` | `demo` | Demonstration copy for the client preview (years, leadership letter, history, legal-draft defaults); never contact details. Used only while the site is closed to search engines |
 | `data/branches.ts` | `branches`, `getBranch`, `isPublishable`, `branchArea`, `formatAddress`, `formatTime` | HIJRA's 6 confirmed branches as drafts: names, head office, district and map pin confirmed; every business detail pending (section 4). The one source for the map, listings, branch pages, footer and forms |
-| `data/tours.ts` | `tours`, `getTour` | 13 sample tours (section 5) |
-| `data/blogs.ts` | `blogs`, `getBlog`, `categories`, `formatDate` | 10 sample articles (section 6) |
-| `data/packages.ts` | `packages` | 4 Umrah and 2 Hajj sample packages (`fare: null`) |
+| `data/tours.ts` | `tours`, `getTour` | 8 sample tours: 6 international, 2 within India (section 5). No Kerala local tours |
+| `data/blogs.ts` | `blogs` (published), `allBlogs`, `getBlog`, `categories`, `formatDate` | 10 sample articles: 9 published, 1 draft (section 6) |
+| `data/packages.ts` | `packages`, `getPackage`, `shownStatus`, `isListed`, `statusLabel` | 4 Umrah and 2 Hajj sample packages (`fare: null`, `dates: null`) (section 5a) |
 | `data/visas.ts` | `visas` | 6 sample visa countries |
 | `data/stories.ts` | `stories`, `featuredStory` | 8 sample pilgrim stories |
-| `data/testimonials.ts` | `testimonials` | 6 sample testimonials (no names; optional consented `name`, `town`, `year`) |
+| `data/testimonials.ts` | `testimonials`, `publishedTestimonials`, `testimonialProblem`, `videoSource`, `categoryLabel` | 5 written and 4 video sample testimonials, no names, places, years, photos or videos (section 5c) |
 | `data/faqs.ts` | `faqs` | FAQs by topic |
 | `data/guides.ts` | `umrahRites`, `hajjDays`, `hajjPreparation`, `checklist`, `guidanceSteps`, `hubFaqs` | Pilgrim Guide and hub content |
 | `data/images.ts` | `images`, `imageList` | 38 licensed temporary photos: `src`, `width`, `height`, `alt`, `tone`, `focus`, `credit` |
-| `data/gallery.ts` | `collections`, `galleryPhotos` | Gallery collections derived from image tags |
+| `data/gallery.ts` | `galleryCategories`, `galleryCollections`, `getCollection` | 11 sample collections in four categories (section 5b) |
 | `data/kerala-map.ts` | `terrainPosition`, `terrain`, `keralaMap`, `projectToMap` | `terrainPosition` places each branch's `pin` a latitude and longitude on the Kerala terrain map image (`public/images/Kerala’s Lush Terrain Map.png`), using the Natural Earth outline and a measured land-extent table of the image. Returns `null` for points off the mainland |
 | `data/navigation.ts` | `routes`, `mainNav`, `footerNav`, path helpers | Routes (section 1) |
 
 **Conventions:**
 - `null` means "not supplied by HIJRA yet". The interface then shows a marked placeholder (`Pending`), and contact actions open the preview notice instead of dialling or messaging.
-- `sample: true` (tours, blogs, packages, stories) and `status: 'sample'` (branches) keep a record out of search: `noindex` and no sitemap entry.
+- `sample: true` (tours, packages, gallery collections, blogs, stories) and `status: 'draft'` (branches) keep a record out of search: `noindex` and no sitemap entry.
 
 ## 4. Branch data structure (`data/branches.ts`)
 
@@ -161,17 +164,91 @@ type Tour = {
   bestTime: string;
   idealFor: ('families' | 'groups' | 'couples' | 'seniors')[];
   fare: null;                         // fares are given on enquiry; never invented
+  status: PackageStatus | null;       // see 5a; null (itineraries planned on request) shows nothing
   sample: true;                       // widen to boolean for real tours
-  featured?: boolean;                 // homepage mosaic (first three featured)
+  featured?: boolean;                 // homepage "Explore the world" (international only, up to four)
 };
 ```
 
-`toCard()` (`components/travel/tour-card.ts`, server) reduces a tour to the tile fields and resolves its photo.
+`toCard()` (`components/travel/tour-card.ts`, server) reduces a tour to the tile fields and resolves its photo. HIJRA's holidays are mainly international: the Tours page lists `region: 'international'` first, and India as a smaller section.
+
+## 5a. Umrah and Hajj package data structure (`data/packages.ts`)
+
+```ts
+type PackageStatus = 'upcoming' | 'enquiry-open' | 'available' | 'fully-booked' | 'completed';
+
+type Package = {
+  slug: string;                       // URL: /umrah/packages/<slug> or /hajj/packages/<slug>; unique per service
+  service: 'umrah' | 'hajj';
+  name: string; summary: string;
+  days: number;
+  stays: { city: 'Makkah' | 'Madinah' | 'Mina, Arafat and Muzdalifah' | 'Azizia, Makkah'; nights: number }[]; // travel order
+  departure: string;                  // the window shown, e.g. 'February 2027', 'Hajj season 2027'
+  dates: { depart: string; return: string } | null; // YYYY-MM-DD, only once HIJRA announces them
+  status: PackageStatus | null;       // set by HIJRA; null shows nothing and is never defaulted to 'available'
+  image: ImageKey;                    // cover photograph
+  airports: ('COK' | 'CCJ' | 'CNN' | 'TRV')[];
+  pace: string; highlights: string[]; inclusions: string[]; exclusions: string[];
+  fare: null;                         // on enquiry
+  sample: true;
+};
+```
+
+- **Expiry:** `shownStatus(p, today)` returns `'completed'` once the package has departed (its `dates.depart`, else the end of its `departure` month or year), whatever `status` says, and `isListed` drops it from the Umrah, Hajj, hub and homepage listings. `today` comes from `lib/today.ts` (`'use cache'`, `cacheLife('days')`), so pages stay static and refresh daily without a rebuild. `npm run check:packages` tests these rules.
+- **Detail page:** `components/pilgrimage/package-detail.tsx` (both services): status, facts (dates once confirmed, else the departure window), the route in travel order from `stays`, highlights, inclusions, notes per service, the enquiry form with the package preselected, and other packages of the same service.
+- **Later, with the admin:** hotel names and distances, and transport details per package, can be added as optional fields and rendered on the same page.
+
+## 5b. Gallery data structure (`data/gallery.ts`)
+
+```ts
+type GalleryCategory = 'international' | 'domestic' | 'umrah' | 'hajj';
+
+type GalleryCollection = {
+  slug: string;                       // URL: /gallery/<slug>
+  category: GalleryCategory;          // never mixed: each category is its own section
+  title: string; country: string;
+  date: string | null;                // when the group travelled; null until HIJRA confirms it
+  photos: ImageKey[];                 // first = cover
+  tour?: string;                      // the tour it belongs to
+  sample: true;
+};
+```
+
+- One collection per completed journey (package, group or departure). The 11 sample collections hold licensed photographs of the places, not of travellers, with no date or journey claimed.
+- HIJRA's own photographs need written consent from everyone pictured; until photos move to the admin's storage, add them to `data/images.ts` with their credit fields.
+
+## 5c. Testimonial data structure (`data/testimonials.ts`)
+
+```ts
+type TestimonialCategory = 'hajj' | 'umrah' | 'international' | 'domestic';
+
+type Common = {
+  id: string;                         // unique across written and video
+  category: TestimonialCategory;
+  context: string;                    // the journey, without identifying anyone: 'Umrah with elderly parents'
+  customerName: string | null;        // only with written consent, and only as much as agreed; never on samples
+  customerLocation: string | null;
+  travelYear: number | null;          // verified only
+  packageRef?: { kind: 'umrah' | 'hajj' | 'tour'; slug: string }; // links to that package or tour
+  featured?: boolean;                 // homepage: the first featured video, up to three written reviews
+  displayOrder: number;               // lower first
+  status: 'draft' | 'published';      // 'published' only when written consent covers everything in the record
+  sample: boolean;
+};
+type WrittenTestimonial = Common & { type: 'written'; review: string; customerImage: ImageKey | null };
+type VideoTestimonial = Common & { type: 'video'; title: string; description: string; thumbnail: ImageKey; videoUrl: string | null };
+```
+
+- **Validation** (`testimonialProblem`): a written record needs its review; a video record needs a title, a description and a supported `videoUrl` (samples may leave it null); a sample may not carry a name, place, year or photograph. Pages read `publishedTestimonials`, which drops drafts and invalid records, so an empty record never appears. `npm run check:testimonials` fails on any invalid record, duplicate id or reference to a missing package.
+- **Video sources** (`videoSource`): YouTube (`watch?v=`, `youtu.be`, `shorts`, `embed`), Vimeo (public and unlisted), or an `https` `.mp4`/`.webm` on HIJRA's own storage. Anything else is refused. There is no upload backend or media storage today: HIJRA posts videos on its own YouTube or Vimeo channel (unlisted is fine) and the record holds the link. No credentials are involved.
+- **Player** (`components/content/video-player.tsx`): a poster and a native play button; the embed (YouTube without cookies, Vimeo with do-not-track) loads only on press, with full screen allowed, and focus moves into it. A record without a source, or a file that fails, shows a notice instead of a frame.
+- **Posters and photographs** come from `data/images.ts` (consented, with credit fields), resolved on the server.
+- **Admin later:** the same fields; the admin also stores the consent form for each record.
 
 ## 6. Blog data structure (`data/blogs.ts`)
 
 ```ts
-type BlogCategory = 'umrah' | 'hajj' | 'preparation' | 'documents' | 'travel' | 'kerala';
+type BlogCategory = 'umrah' | 'hajj' | 'preparation' | 'documents' | 'travel'; // 'kerala' retired 26 Nov 2026
 type BlogBlock =
   | { type: 'p'; text: string } | { type: 'h2'; id: string; text: string } | { type: 'h3'; text: string }
   | { type: 'ul' | 'ol'; items: string[] } | { type: 'quote'; text: string; cite?: string }
@@ -187,9 +264,12 @@ type BlogPost = {
   related: string[];                  // slugs
   featured?: boolean;
   religious?: boolean;                // shows the "follow your scholars" note; needs adviser review
+  status: 'published' | 'draft';      // drafts stay on file, unpublished
   sample: true;
 };
 ```
+
+`blogs` is the published list: pages, related links, the slug check in `proxy.ts` and the sitemap read only it, so a draft has no page (404), listing, link or sitemap entry. `allBlogs` keeps every record. "Munnar with family" is a draft (HIJRA does not sell Kerala local tours), and its old 'kerala' category is retired.
 
 The body is structured blocks, not HTML, so a CMS can map rich text into these blocks. `h2` blocks build the article contents.
 
@@ -338,7 +418,7 @@ export async function submitEnquiry(payload: EnquiryPayload): Promise<EnquiryRes
 ## 12. Contact and branch configuration
 
 - **Demonstration content** (`data/demo.ts`): copy only (no contact details), shown in preview builds; a build with `NEXT_PUBLIC_ALLOW_INDEXING=true` ignores the file entirely.
-- **Contact guard** (`scripts/check-contacts.mjs`, run by `prebuild` before every `npm run build`, or alone with `npm run check:contacts`): the build stops if demonstration or placeholder contact details appear anywhere in the source (reserved-domain emails, `000 0000`/`XXXX` numbers, hard-coded `tel:`, `mailto:` or `wa.me` links, contact fields in `data/demo.ts`), if a phone, WhatsApp, email or Google link in `data/site.ts` or `data/branches.ts` is not a real one, or if a launch build lacks the central phone, WhatsApp and email. Deploy with `npm run build` (not `next build` directly) so the guard runs.
+- **Contact guard** (`scripts/check-contacts.mjs`, run by `next.config.ts` at the start of every production build, or alone with `npm run check:contacts`; see section 17): the build stops if demonstration or placeholder contact details appear anywhere in the source (reserved-domain emails, `000 0000`/`XXXX` numbers, hard-coded `tel:`, `mailto:` or `wa.me` links, contact fields in `data/demo.ts`), if a phone, WhatsApp, email or Google link in `data/site.ts` or `data/branches.ts` is not a real one, or if a launch build lacks the central phone, WhatsApp and email.
 - **Central contacts** (`data/site.ts`, `site.contact`):
   - `phone`, `whatsapp` and `email` (E.164 or address);
   - `hours` (display text) and `replyTime`.
@@ -404,45 +484,52 @@ export async function submitEnquiry(payload: EnquiryPayload): Promise<EnquiryRes
   - All records and photographs are samples or temporary.
 - **No security headers yet.** There is no Content-Security-Policy or other security header configuration (section 18).
 
-## 17. Production environment variables
+## 17. Production environment variables and build modes
 
 | Variable | Default | When |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | **Required for every deployed build.** It sets the canonical URLs, Open Graph URLs, sitemap and robots `Sitemap:` line. Without it, the production HTML points to localhost. |
-| `NEXT_PUBLIC_ALLOW_INDEXING` | unset (off) | Set to `true` only for the launch build, after the sample content is replaced and approved |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Set for every deployed build: canonical URLs, Open Graph URLs, sitemap and the robots `Sitemap:` line. A launch build requires the live `https://` domain. |
+| `NEXT_PUBLIC_ALLOW_INDEXING` | unset: **trial mode** | `true` is **launch mode**: indexing on, and the strict launch guard |
 | Milestone 2 server secrets | — | Database, mail and WhatsApp provider keys: server-only, no `NEXT_PUBLIC_` prefix |
 
-**How the indexing gate works:**
-- **Closed (default):** every page has `noindex, nofollow`, and `robots.txt` is `Disallow: /`.
-- **Open (`NEXT_PUBLIC_ALLOW_INDEXING=true` at build time):**
-  - `robots.txt` allows crawling and names the sitemap.
-  - Pages are indexable except sample tours, sample articles, unverified branches and the legal or credit pages.
-  - The sitemap lists only the indexable pages.
-- **Check it before launch:**
-  ```
-  node scripts/qa/seo-check.mjs --base <url> --gate-open --site <NEXT_PUBLIC_SITE_URL>
-  ```
-  This was verified on a gate-open build: 16 indexable pages, matching the 16 sitemap URLs.
-- **Before switching it on:**
-  - Replace or remove all sample records.
-  - Confirm the facts, contacts and branch details.
-  - Have Privacy and Terms approved.
-  - Set `NEXT_PUBLIC_SITE_URL` to the live domain.
-  - Then rebuild.
+**Trial mode** (the client presentation, and any staging site): sample content shown and labelled, placeholders for unconfirmed facts, contact buttons open the "not connected yet" notice, enquiries in demo mode, `noindex` everywhere, a trial notice in the footer.
 
-## 18. Deployment considerations
+**Launch mode** is guarded in two layers, both inside the build, so `npm run build` and `next build` behave the same:
+1. `next.config.ts` runs `scripts/check-contacts.mjs` at the start of every production build. Both modes: no demonstration or placeholder contact details in the source, and every contact value real. Launch mode also requires the central phone, WhatsApp and email, the live `https://` domain, a real `submitEnquiry()` (not the demo in `lib/enquiry.ts`), and no `sample: true` records in `data/`.
+2. In launch mode, any pending placeholder, sample label or empty client-photo slot throws during prerendering (`assertTrial`, `components/ui/pending.tsx`). Branch details, legal details (Grievance Officer, contacts), figures and photographs therefore have to be real before a launch build succeeds.
+
+Verified on 23 November 2026: a trial `npm run build` passes; a direct `next build` with a demonstration email is stopped by the guard; a launch build is stopped by the guard (domain, demo enquiries, sample records); and a launch build that passes the guard is stopped at prerender by the remaining sample labels.
+
+**How the indexing gate works** once a launch build exists:
+- **Closed (trial):** every page has `noindex, nofollow`, and `robots.txt` is `Disallow: /`.
+- **Open (launch):** `robots.txt` allows crawling and names the sitemap; pages are indexable except draft branches and the legal or credit pages; the sitemap lists only the indexable pages.
+- **Check it on the launch build:** `node scripts/qa/seo-check.mjs --base <url> --gate-open --site <NEXT_PUBLIC_SITE_URL>`. (A gate-open build can only be produced once the launch checklist below is complete.)
+
+## 18. Deployment considerations and the launch checklist
 
 - **Runtime:**
-  - Node.js 20.9 or newer, with `next build` then `next start` (or a host with full Next.js 16 support).
+  - Node.js 20.9 or newer, with `npm run build` then `npm run start` (or a host with full Next.js 16 support).
   - `proxy.ts` (the 404 slug check) runs on the Node.js runtime.
   - The `/_next/image` optimiser runs in the Next.js server and uses `sharp`, which Next installs as an optional dependency.
   - A static export (`output: 'export'`) is **not** compatible: no proxy, no image optimiser, no 404 status codes.
-- **Separate builds for staging and production:** the `NEXT_PUBLIC_*` values are compiled in. Staging must keep indexing off.
+- **Separate builds for trial or staging and production:** the `NEXT_PUBLIC_*` values are compiled in. Trial and staging builds keep `NEXT_PUBLIC_ALLOW_INDEXING` unset.
 - **Security headers (Milestone 2):** add HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` and a Content-Security-Policy. The site loads no third-party scripts, fonts or images today, so a strict `'self'` policy fits, but Next's inline scripts need nonces or hashes.
 - **Caching:** `/_next/static/*` files are content-hashed (immutable). HTML is static, so cache it at the CDN and purge it on deploy.
 - **Monitoring:** real-user Core Web Vitals (LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1). Add error logging for the enquiry API, without personal data.
 - **Checks before each release:**
   ```
-  npm run lint && npm run typecheck && npm run check:forms && npm run build   # build runs check:contacts first
+  npm run lint && npm run typecheck && npm run check:forms && npm run build   # the build runs the contact and launch guard
   ```
-  Then run the browser suites in `scripts/qa/` against `next start`.
+  Then run the browser suites in `scripts/qa/` against `npm run start`.
+
+**Launch checklist** (the build enforces the items marked ★):
+1. ★ Central phone, WhatsApp and email in `data/site.ts` (E.164 numbers, a real domain); office hours and reply time.
+2. ★ `NEXT_PUBLIC_SITE_URL` = the live `https://` domain; `NEXT_PUBLIC_ALLOW_INDEXING=true`.
+3. ★ The enquiry backend connected: `submitEnquiry()` replaced (section 8), with delivery to HIJRA confirmed end to end.
+4. ★ Every `sample: true` record replaced with HIJRA's verified content, or removed: packages, tours, visas, testimonials and stories (with written consent), articles (reviewed).
+5. ★ Every branch verified: address and PIN code, phone, WhatsApp, hours, Google Maps and Business Profile links, office coordinates (`geo`), directions, at least two photographs, services; `status: 'verified'`. Confirm the Wayanad branch's town.
+6. ★ Facts confirmed: years of experience; the branch total, if a number is to be shown.
+7. ★ Privacy and Terms approved by HIJRA's legal adviser, with the Grievance Officer's name, email and phone.
+8. ★ HIJRA's own photographs for the client-photo slots (team, offices, real pilgrims with consent).
+9. Social profile links; the brand spelling ("Haj" or "Hajj").
+10. Security headers, real-user monitoring, and `seo-check.mjs --gate-open` on the launch build.

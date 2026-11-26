@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { isCurrent, mainNav } from '@/data/navigation';
+import { isCurrent, mainNav, menuMore } from '@/data/navigation';
 import type { Dictionary } from '@/lib/dictionary';
 import { Icon } from '@/components/ui/icons';
 import { DEMO_CONTACT_ID, waHref } from '@/components/ui/contact-action';
@@ -109,10 +109,14 @@ export function SiteNav({ t, logo, portrait, social, contact }: NavProps) {
     document.documentElement.dataset.menu = 'animating';
     setState('opening');
     // Keep the click itself light (INP): the sheet paints first; the page becomes inert and scroll-locked on the next
-    // frame, and the nine destinations (not prefetched while the menu is hidden) are prefetched when the browser is idle.
+    // frame (a whole-page style recalculation), and the nine destinations (not prefetched while the menu is hidden) are
+    // prefetched when the browser is idle. A requestAnimationFrame callback set from the click runs before the click's
+    // own first paint, so the page lock waits for the second one.
     requestAnimationFrame(() => {
-      setPage(true);
-      requestAnimationFrame(() => setState('open'));
+      requestAnimationFrame(() => {
+        setPage(true);
+        setState('open');
+      });
     });
     const prefetchAll = () => mainNav.forEach((item) => router.prefetch(item.href));
     if ('requestIdleCallback' in window) window.requestIdleCallback(prefetchAll);
@@ -298,6 +302,20 @@ export function SiteNav({ t, logo, portrait, social, contact }: NavProps) {
                     </li>
                   );
                 })}
+              </ul>
+              <ul className="menu-more">
+                {menuMore.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      prefetch={false}
+                      aria-current={path === item.href ? 'page' : undefined}
+                      onClick={(e) => onLink(e, item.href)}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </nav>
           </div>

@@ -14,7 +14,7 @@ export function orderBranches(list: Branch[]) {
 export const serviceInfo: Record<ServiceKey, { label: string; phrase: string; href: string; icon: IconName; text: string }> = {
   umrah: { label: 'Umrah', phrase: 'Umrah', href: routes.umrah, icon: 'compass', text: 'Departures from Kerala, the visa and preparation before you travel.' },
   hajj: { label: 'Hajj', phrase: 'Hajj', href: routes.hajj, icon: 'users', text: 'Registration routes and the days of Hajj, explained step by step.' },
-  tour: { label: 'Tours', phrase: 'tours', href: routes.tours, icon: 'globe', text: 'Holidays in Kerala, across India and abroad, for families and groups.' },
+  tour: { label: 'Tours', phrase: 'tours', href: routes.tours, icon: 'globe', text: 'Holidays abroad and within India, for families and groups.' },
   flight: { label: 'Flight tickets', phrase: 'flight tickets', href: routes.flights, icon: 'plane', text: 'Domestic and international fares, group bookings and date changes.' },
   visa: { label: 'Visa assistance', phrase: 'visas', href: routes.visa, icon: 'passport', text: 'Umrah, visit and tourist visas, with your documents checked first.' },
 };

@@ -3,6 +3,7 @@ import { site } from '@/data/site';
 import { photoAsset } from '@/lib/image';
 import { cn } from '@/lib/cn';
 import { Icon, type IconName } from './icons';
+import { assertTrial } from './pending';
 import { PhotoFrame, type PhotoFrameProps } from './photo-frame';
 
 /** A photograph from the licensed library (data/images.ts) in a frame that holds its space while loading.
@@ -31,6 +32,7 @@ export function ClientPhoto({
   image?: ImageKey;
   sizes?: string;
 }) {
+  assertTrial(`a client photograph slot (${subject})`);
   if (image && site.demo)
     return (
       <div className={cn('photo', className)} role="img" aria-label={`${title}: ${subject}`}>

@@ -91,7 +91,7 @@ export const faqs: Record<FaqGroup, Faq[]> = {
   tours: [
     {
       q: 'Do you plan tours for families and groups?',
-      a: ['Yes. Tell us who is travelling, how long you have and what you enjoy, and we will suggest an itinerary within India or abroad.'],
+      a: ['Yes. Tell us who is travelling, how long you have and what you enjoy, and we will suggest an itinerary abroad or within India.'],
     },
     {
       q: 'Can a tour be customised?',

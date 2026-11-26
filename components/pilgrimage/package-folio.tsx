@@ -1,11 +1,14 @@
 import Link from 'next/link';
-import type { Package } from '@/data/packages';
-import { enquiryPath } from '@/data/navigation';
+import type { Package, PackageStatus } from '@/data/packages';
+import { enquiryPath, packagePath } from '@/data/navigation';
 import { cn } from '@/lib/cn';
 import { ContactAction } from '@/components/ui/contact-action';
 import { Icon } from '@/components/ui/icons';
 import { SampleTag } from '@/components/ui/pending';
-import { airportsText, nights, splitDeparture } from './trip';
+import { Photo } from '@/components/ui/photo';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { stretched } from '@/components/travel/tour-tile';
+import { airportsText, nights } from './trip';
 
 /** Makkah navy, Madinah a navy tint, the holy sites of the days of Hajj red. */
 const stayTone = (city: Package['stays'][number]['city']) =>
@@ -33,37 +36,41 @@ export function StaysBar({ stays, className }: { stays: Package['stays']; classN
 }
 
 /**
- * One package, the same component for Umrah and Hajj: when, what, where the nights go, what is included and how
- * to ask. Fares are never shown (packages.ts has none); the advisor confirms them on enquiry.
+ * One package in a listing, the same component for Umrah and Hajj: photograph, when, status, where the nights go, and
+ * the way on to its own page. Fares are never shown (packages.ts has none); the advisor confirms them on enquiry.
+ * The whole card opens the package page; Enquire and WhatsApp sit above that link.
  */
-export function PackageFolio({ p, note, className }: { p: Package; note?: string; className?: string }) {
-  const [when, year] = splitDeparture(p.departure);
-  const n = nights(p);
+export function PackageFolio({ p, status, note, className }: { p: Package; status: PackageStatus | null; note?: string; className?: string }) {
+  const href = packagePath(p.service, p.slug);
   return (
-    <article id={p.slug} aria-labelledby={`${p.slug}-h`} className={cn('card p-5 sm:p-7 lg:p-9', className)}>
-      <div className="grid gap-x-10 gap-y-6 lg:grid-cols-[11rem_minmax(0,1fr)_15rem]">
-        {/* When */}
-        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-warm-border pb-5 lg:block lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-          <p className="font-serif text-navy">
-            <span className="block text-[clamp(1.625rem,1.3rem+0.9vw,2.25rem)] font-semibold leading-none">{when}</span>
-            <span className="mt-1.5 block text-h4 font-semibold leading-none text-muted">{year}</span>
-          </p>
-          <div className="lg:mt-6">
-            <p className="text-small font-semibold text-navy">
-              {p.days} days · {n} nights
-            </p>
-            <SampleTag className="mt-2">Sample package</SampleTag>
-          </div>
-        </div>
+    <article id={p.slug} aria-labelledby={`${p.slug}-h`} className={cn('card photo-zoom relative overflow-hidden', className)}>
+      <div className="grid md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)_14rem] xl:grid-cols-[minmax(0,21rem)_minmax(0,1fr)_15rem]">
+        <Photo
+          image={p.image}
+          alt=""
+          sizes="(min-width: 1360px) 21rem, (min-width: 1200px) 18rem, (min-width: 810px) 38vw, 100vw"
+          className="aspect-[16/9] md:aspect-auto md:h-full md:min-h-[17rem]"
+        />
 
-        {/* What */}
-        <div className="min-w-0">
-          <h3 id={`${p.slug}-h`} className="text-h3">
-            {p.name}
+        <div className="min-w-0 px-5 pt-5 sm:px-7 sm:pt-7 lg:p-8">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <p className="font-serif text-h4 font-semibold leading-none text-navy">{p.departure}</p>
+            <p className="text-small font-semibold text-slate">
+              {p.days} days · {nights(p)} nights
+            </p>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <StatusBadge status={status} />
+            <SampleTag>Sample package</SampleTag>
+          </div>
+          <h3 id={`${p.slug}-h`} className="mt-4 text-h3">
+            <Link href={href} className={stretched}>
+              {p.name}
+            </Link>
           </h3>
           <p className="mt-2 max-w-[40rem]">{p.summary}</p>
-          <StaysBar stays={p.stays} className="mt-6 max-w-[34rem]" />
-          <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 text-small md:gap-x-8">
+          <StaysBar stays={p.stays} className="mt-5 max-w-[34rem]" />
+          <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-small md:gap-x-8">
             <div>
               <dt className="text-caption font-semibold uppercase tracking-[0.12em] text-muted">Flying from</dt>
               <dd className="mt-1 text-navy">{airportsText(p)}</dd>
@@ -73,59 +80,20 @@ export function PackageFolio({ p, note, className }: { p: Package; note?: string
               <dd className="mt-1 text-navy">{p.pace}</dd>
             </div>
           </dl>
-          <ul className="mt-6 grid gap-2 text-small">
-            {p.highlights.map((h) => (
-              <li key={h} className="flex gap-2.5">
-                <Icon name="check" size={18} className="mt-0.5 shrink-0 text-red" />
-                {h}
-              </li>
-            ))}
-          </ul>
-          <details className="group mt-7 border-t border-warm-border">
-            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 font-semibold text-navy [&::-webkit-details-marker]:hidden">
-              What is included, and what is not
-              <Icon name="chevronDown" className="shrink-0 transition-transform duration-300 group-open:rotate-180" />
-            </summary>
-            <div className="grid gap-6 pb-2 pt-1 text-small sm:grid-cols-2">
-              <div>
-                <h4 className="font-sans text-caption font-semibold uppercase tracking-[0.12em] text-muted">Included</h4>
-                <ul className="mt-3 grid gap-2">
-                  {p.inclusions.map((x) => (
-                    <li key={x} className="flex gap-2.5">
-                      <Icon name="check" size={18} className="mt-0.5 shrink-0 text-success" />
-                      {x}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-sans text-caption font-semibold uppercase tracking-[0.12em] text-muted">Not included</h4>
-                <ul className="mt-3 grid gap-2">
-                  {p.exclusions.map((x) => (
-                    <li key={x} className="flex gap-2.5">
-                      <Icon name="minus" size={18} className="mt-0.5 shrink-0 text-muted" />
-                      {x}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </details>
         </div>
 
         {/* How to ask */}
-        <div className="flex flex-col gap-4 border-t border-warm-border pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+        <div className="mx-5 mb-5 mt-6 flex flex-col gap-4 border-t border-warm-border pt-5 sm:mx-7 sm:mb-7 md:col-span-2 lg:col-span-1 lg:m-0 lg:border-l lg:border-t-0 lg:py-8 lg:pl-7 lg:pr-8">
           <p className="flex items-baseline justify-between gap-3 lg:block">
             <span className="text-caption font-semibold uppercase tracking-[0.12em] text-muted">Fare</span>
             <span className="font-serif text-h4 font-semibold text-navy lg:mt-1 lg:block">On enquiry</span>
           </p>
-          {note ? (
-            <p className="text-small text-muted">{note}</p>
-          ) : (
-            <p className="hidden text-small text-muted lg:block">An advisor confirms the fare, rooms and seats with you before anything is booked.</p>
-          )}
-          <div className="grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap lg:mt-1 lg:grid lg:grid-cols-1">
-            <Link href={enquiryPath(p.service, p.slug)} className="btn btn-secondary btn-sm">
+          <p className="hidden text-small text-muted lg:block">{note ?? 'An advisor confirms the fare, rooms and seats with you before anything is booked.'}</p>
+          <div className="relative z-[2] grid gap-2.5 sm:grid-cols-3 lg:mt-auto lg:grid-cols-1">
+            <Link href={href} className="btn btn-secondary btn-sm">
+              View details<span className="sr-only"> of {p.name}</span>
+            </Link>
+            <Link href={enquiryPath(p.service, p.slug)} className="btn btn-outline btn-sm">
               Enquire<span className="sr-only"> about {p.name}</span>
             </Link>
             <ContactAction
@@ -141,5 +109,23 @@ export function PackageFolio({ p, note, className }: { p: Package; note?: string
         </div>
       </div>
     </article>
+  );
+}
+
+/** A compact package card (related packages): photograph, when, name and length; the whole card is the link. */
+export function PackageCard({ p, status, sizes }: { p: Package; status: PackageStatus | null; sizes: string }) {
+  return (
+    <Link href={packagePath(p.service, p.slug)} className="group block">
+      <div className="relative">
+        <Photo image={p.image} alt="" sizes={sizes} className="aspect-[3/2] rounded-md" />
+        <StatusBadge status={status} className="absolute left-3 top-3" />
+      </div>
+      <p className="eyebrow mt-4">{p.departure}</p>
+      <h3 className="mt-1.5 text-[clamp(1.25rem,1.1rem+0.4vw,1.5rem)] leading-tight group-hover:text-red">{p.name}</h3>
+      <p className="mt-1.5 text-small text-muted">
+        {p.days} days · {nights(p)} nights · Fare on enquiry
+      </p>
+      <span className="link-arrow mt-1">View details</span>
+    </Link>
   );
 }

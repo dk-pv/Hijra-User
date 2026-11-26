@@ -1,8 +1,6 @@
-import { airportNames, type Package } from '@/data/packages';
+import { airportNames, MONTHS, type Package } from '@/data/packages';
 
 // Small, pure helpers that present the (sample) package data on the pilgrimage pages.
-
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /** 'February 2027' -> a sortable number; strings without a month sort to the start of their year. */
 export const departureOrder = (departure: string) =>

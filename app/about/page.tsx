@@ -83,7 +83,7 @@ export default function AboutPage() {
   const facts = [
     { term: 'Company', value: site.fullName, note: 'As written on HIJRA’s logo.' },
     { term: 'Specialisation', value: 'Hajj and Umrah, for pilgrims from Kerala' },
-    { term: 'Also arranged', value: 'Tours within India and abroad, flight tickets and visa assistance' },
+    { term: 'Also arranged', value: 'Holidays abroad and selected tours within India, flight tickets and visa assistance' },
     {
       term: 'Years serving pilgrims',
       value: years ?? <Pending>25+ or 30+ years</Pending>,
@@ -171,7 +171,7 @@ export default function AboutPage() {
                 advisors explain every step, and the same care continues while you are away.
               </p>
               <p>
-                Pilgrimage comes first, and the same attention goes into everything else we arrange: holidays in Kerala, across India and abroad, flight
+                Pilgrimage comes first, and the same attention goes into everything else we arrange: holidays abroad and within India, flight
                 tickets, and visa assistance with your documents checked first.
               </p>
             </div>

@@ -1,8 +1,10 @@
 import type { ImageKey } from './images';
+import type { PackageStatus } from './packages';
 
-// Domestic and international tours. ALL RECORDS ARE SAMPLES for the preview: the itineraries show how HIJRA's tours
+// International and domestic tours. ALL RECORDS ARE SAMPLES for the preview: the itineraries show how HIJRA's tours
 // are presented, with no fares, availability or confirmed departures. HIJRA's own tour data replaces them before
 // launch. Destination facts are general guidance; visa rules and seasonal closures must be checked when quoting.
+// HIJRA's holidays are mainly international; India is a smaller range, and Kerala local tours are not offered here.
 
 export type IdealFor = 'families' | 'groups' | 'couples' | 'seniors';
 
@@ -12,7 +14,7 @@ export type Tour = {
   region: 'domestic' | 'international';
   destination: string;
   country: string;
-  /** Domestic tours: the state or area shown on tiles (Kerala first). */
+  /** Domestic tours: the state or area shown on tiles. */
   state?: string;
   days: number;
   nights: number;
@@ -32,341 +34,15 @@ export type Tour = {
   bestTime: string;
   idealFor: IdealFor[];
   fare: null;
+  /** Availability as HIJRA sets it; null (the default for itineraries planned on request) shows nothing. */
+  status: PackageStatus | null;
   sample: true;
+  /** Shown on the homepage (international tours only, three or four). */
   featured?: boolean;
 };
 
-const keralaPickup = 'Pick-up and drop at the airport or your home in Kerala';
-const indiaExcludes = ['Lunches and dinners, unless listed', 'Entry tickets and activity fees, unless listed', 'Personal expenses', 'Travel insurance, unless added on request'];
-const idNote = 'Documents: Carry a government photo ID for every adult; hotels ask for it at check-in.';
-
 export const tours: Tour[] = [
-  // Kerala first
-  {
-    slug: 'munnar-tea-hills',
-    title: 'Munnar and the tea hills',
-    region: 'domestic',
-    destination: 'Munnar',
-    country: 'India',
-    state: 'Kerala',
-    days: 4,
-    nights: 3,
-    summary: 'Cool mornings among the tea estates, waterfalls on the drive up and a day at Eravikulam: an easy first holiday for the whole family.',
-    overview: [
-      'Munnar sits high in the Western Ghats, where tea estates cover the hills for miles. This sample itinerary keeps the drives short and the days unhurried, so it suits grandparents and young children alike.',
-      'Your driver collects you from the airport or your home, and the plan can stretch to Thekkady or the backwaters if you have a few more days.',
-    ],
-    description:
-      'A sample four-day Munnar tour from HIJRA Travels: tea estates, waterfalls and Eravikulam National Park, at an easy pace for families. Fares on enquiry.',
-    highlights: [
-      'The Cheeyappara and Valara waterfalls on the way up',
-      'Eravikulam National Park, home of the Nilgiri tahr',
-      'Mattupetty Dam, Echo Point and Kundala Lake',
-      'The tea museum and a walk through the estates',
-    ],
-    itinerary: [
-      { day: 'Day 1', title: 'Up into the hills', detail: 'Pick-up from Kochi airport or your home. The road climbs past the Cheeyappara and Valara waterfalls, with stops for photographs and tea. Check in and rest.' },
-      { day: 'Day 2', title: 'Eravikulam and the tea museum', detail: 'A morning at Eravikulam National Park, where Nilgiri tahr graze on the slopes. In the afternoon, the tea museum and a short walk through the estates.' },
-      { day: 'Day 3', title: 'Lakes and viewpoints', detail: 'A gentle day on the Top Station road: Mattupetty Dam, Echo Point and Kundala Lake, stopping wherever the children want. Evening in Munnar town.' },
-      { day: 'Day 4', title: 'Down to the plains', detail: 'A slow breakfast, a stop for spices and tea on the way down, and drop at Kochi airport or your home.' },
-    ],
-    inclusions: ['Three nights in a hotel or resort in Munnar, with breakfast', 'A private vehicle with driver for the whole tour', keralaPickup, 'Sightseeing as listed in the itinerary'],
-    exclusions: indiaExcludes,
-    notes: [
-      'Prayer: Munnar town has mosques, and the days can be planned around Friday prayers.',
-      'Food: Halal food is easy to find in town, and most hotels cook Kerala dishes on request.',
-      'Weather: Mornings and nights are cool all year, so pack a light jacket. Expect heavy rain from June to August.',
-      'Seasons: Eravikulam National Park usually closes for a few weeks early in the year, during the tahr calving season.',
-      idNote,
-    ],
-    image: 'kerala-munnar-tea-hills',
-    gallery: [],
-    bestTime: 'September to May',
-    idealFor: ['families', 'seniors', 'couples', 'groups'],
-    fare: null,
-    sample: true,
-    featured: true,
-  },
-  {
-    slug: 'alappuzha-backwaters',
-    title: 'Alappuzha backwaters by houseboat',
-    region: 'domestic',
-    destination: 'Alappuzha',
-    country: 'India',
-    state: 'Kerala',
-    days: 3,
-    nights: 2,
-    summary: 'A night on a private houseboat through the canals and paddy fields of Kuttanad, then a quiet day by the sea at Marari.',
-    overview: [
-      'The backwaters south of Alappuzha are best seen slowly, from the deck of a kettuvallam, the old rice barge rebuilt as a houseboat. Your own crew steers and cooks while villages, mosques and paddy fields drift past.',
-      'After a night on the water, the second night is at a beach resort in Marari, a short drive away.',
-    ],
-    description:
-      'A sample three-day Kerala backwaters tour: a private houseboat through Kuttanad, sunset on Vembanad Lake and a beach day at Marari. Planned by HIJRA Travels.',
-    highlights: [
-      'A private houseboat with its own crew and cook',
-      'Kuttanad, where paddy fields lie below sea level',
-      'Sunset over Vembanad Lake',
-      'A slow beach day at Marari',
-    ],
-    itinerary: [
-      { day: 'Day 1', title: 'On board', detail: 'Arrive in Alappuzha around midday and board your houseboat. Lunch is served on deck as you cruise into the Kuttanad canals. Boats moor for the night by early evening, leaving time for a walk along the bank.' },
-      { day: 'Day 2', title: 'To the coast', detail: 'Breakfast on board, then a short drive to Marari. The afternoon is free for the beach, a walk through the fishing village or simply rest.' },
-      { day: 'Day 3', title: 'Home', detail: 'A slow morning by the sea, then drop at Kochi airport or your home.' },
-    ],
-    inclusions: [
-      'One night on a private houseboat, with lunch, dinner and breakfast on board',
-      'One night at a beach resort in Marari, with breakfast',
-      'A private vehicle with driver for transfers',
-      keralaPickup,
-    ],
-    exclusions: ['Meals not listed', 'Personal expenses', 'Travel insurance, unless added on request'],
-    notes: [
-      'Prayer: Houseboats have room on deck to pray; the crew can show you the qibla direction.',
-      'Food: Meals are cooked on board: fish, chicken and Kerala vegetarian dishes. Tell us if you need halal-certified meat.',
-      'Weather: Warm and humid all year; the monsoon brings heavy rain from June to August.',
-      'Documents: The houseboat operator records a government photo ID for every adult guest.',
-    ],
-    image: 'kerala-alappuzha-houseboat',
-    gallery: [],
-    bestTime: 'August to March',
-    idealFor: ['families', 'couples', 'seniors'],
-    fare: null,
-    sample: true,
-  },
-  {
-    slug: 'wayanad-hills',
-    title: 'Wayanad: forests, lakes and caves',
-    region: 'domestic',
-    destination: 'Wayanad',
-    country: 'India',
-    state: 'Kerala',
-    days: 3,
-    nights: 2,
-    summary: 'Up the hairpin bends from Kozhikode into cool forest country: Pookode Lake, the carvings of Edakkal and the heart-shaped lake on Chembra Peak.',
-    overview: [
-      'Wayanad is the green plateau above Kozhikode, a short drive from the Malabar coast and a world away from its heat. Forests, spice gardens and reservoirs fill the days, and the nights are quiet.',
-      'The plan avoids long walks for those who prefer it: Edakkal and Chembra are steep climbs, so older travellers can swap them for a garden, a viewpoint or a boat on the reservoir.',
-    ],
-    description:
-      'A sample three-day Wayanad tour from HIJRA Travels: the ghat road from Kozhikode, Pookode Lake, Edakkal Caves and Chembra Peak. Fares on enquiry.',
-    highlights: [
-      'The Thamarassery ghat road and the Lakkidi viewpoint',
-      'Pookode, a freshwater lake ringed by forest',
-      'Edakkal Caves and its ancient rock carvings',
-      'Chembra Peak’s heart-shaped lake, for walkers',
-    ],
-    itinerary: [
-      { day: 'Day 1', title: 'The ghat road', detail: 'Pick-up from Kozhikode airport or your home. The road climbs the Thamarassery ghat to the Lakkidi viewpoint and on to Pookode Lake for an evening by the water.' },
-      { day: 'Day 2', title: 'Edakkal and the spice gardens', detail: 'Edakkal Caves in the morning, where ancient carvings cover the rock walls. Lunch in Sulthan Bathery, then a spice garden and a quiet evening at your stay.' },
-      { day: 'Day 3', title: 'Chembra or Banasura Sagar', detail: 'For walkers, an early start up Chembra Peak to its heart-shaped lake, when the trail is open; for everyone else, a morning on the Banasura Sagar reservoir. Then the drive back down to Kozhikode.' },
-    ],
-    inclusions: ['Two nights in a resort or plantation stay, with breakfast', 'A private vehicle with driver', keralaPickup, 'Sightseeing as listed in the itinerary'],
-    exclusions: indiaExcludes,
-    notes: [
-      'Prayer: There are mosques in Kalpetta, Sulthan Bathery and along the main roads.',
-      'Food: Halal food is widely available, and plantation stays cook Malabar dishes on request.',
-      'Weather: Cool and misty for much of the year. Some sites close after heavy monsoon rain.',
-      'Pace: Edakkal and Chembra are steep climbs on steps, rock and grass; tell us if anyone needs an easier day.',
-      idNote,
-    ],
-    image: 'kerala-wayanad-chembra-heart-lake',
-    gallery: [],
-    bestTime: 'October to May',
-    idealFor: ['families', 'groups', 'couples'],
-    fare: null,
-    sample: true,
-  },
-  {
-    slug: 'kochi-athirappilly',
-    title: 'Kochi and Athirappilly',
-    region: 'domestic',
-    destination: 'Kochi',
-    country: 'India',
-    state: 'Kerala',
-    days: 3,
-    nights: 2,
-    summary: 'The old port of Fort Kochi and Mattancherry, with its Chinese fishing nets and historic mosques, and a day at the Athirappilly waterfalls.',
-    overview: [
-      'Kochi has traded with Arabia, China and Europe for centuries, and its old quarters still show it: fishing nets on the shore, warehouses full of spices, and old mosques in the lanes of Kochangadi and Mattancherry.',
-      'A day trip inland brings you to Athirappilly, the largest waterfall in Kerala, at its fullest just after the monsoon.',
-    ],
-    description:
-      'A sample three-day Kochi tour from HIJRA Travels: Fort Kochi, the old mosques and spice warehouses of Mattancherry, and the Athirappilly waterfalls.',
-    highlights: [
-      'The Chinese fishing nets at Fort Kochi',
-      'The old mosques of Kochangadi and Mattancherry',
-      'Mattancherry Palace and the spice warehouses',
-      'A day at the Athirappilly and Vazhachal waterfalls',
-    ],
-    itinerary: [
-      { day: 'Day 1', title: 'Fort Kochi', detail: 'Arrive in Kochi and check in. In the late afternoon, walk along the shore by the fishing nets and through the lanes of Fort Kochi as the sun sets.' },
-      { day: 'Day 2', title: 'Mattancherry and the old port', detail: 'Mattancherry Palace, the spice warehouses and the old mosques of Kochangadi. Evening on Marine Drive, with time for shopping.' },
-      { day: 'Day 3', title: 'Athirappilly', detail: 'A morning drive to the Athirappilly and Vazhachal waterfalls and a walk to the viewpoints, then drop at Kochi airport or your home.' },
-    ],
-    inclusions: ['Two nights in a hotel in Kochi, with breakfast', 'A private vehicle with driver', keralaPickup, 'Sightseeing as listed in the itinerary'],
-    exclusions: indiaExcludes,
-    notes: [
-      'Prayer: Mosques are close by throughout Kochi, including the historic mosques of Kochangadi and Mattancherry.',
-      'Food: Kochi is known for its biryani and seafood, and halal food is easy to find.',
-      'Weather: Warm and humid all year. Athirappilly is fullest from August to October, and the paths can be slippery.',
-      'Opening days: Mattancherry Palace is usually closed on Fridays, so the days are ordered around it.',
-      idNote,
-    ],
-    image: 'kerala-kochi-fishing-nets',
-    gallery: ['kerala-athirappilly-falls'],
-    bestTime: 'October to March',
-    idealFor: ['families', 'seniors', 'groups'],
-    fare: null,
-    sample: true,
-  },
-  {
-    slug: 'malabar-coast-kozhikode-bekal',
-    title: 'The Malabar coast: Kozhikode to Bekal',
-    region: 'domestic',
-    destination: 'Kozhikode',
-    country: 'India',
-    state: 'Kerala',
-    days: 4,
-    nights: 3,
-    summary: 'Malabar’s Mappila heritage along the coast: the old mosques of Kozhikode, the dhow builders of Beypore, the Arakkal palace in Kannur and the sea fort at Bekal.',
-    overview: [
-      'North Kerala’s coast traded with Arabia for centuries, and its Muslim heritage runs deep: mosques of carved wood in Kozhikode, the yards where Beypore’s wooden dhows are still built by hand, and the palace of the Arakkal family, Kerala’s only Muslim royal house, in Kannur.',
-      'The tour ends at Bekal, where a laterite fort stands on a headland above long, quiet beaches.',
-    ],
-    description:
-      'A sample four-day Malabar heritage tour by HIJRA Travels: the Mishkal Mosque in Kozhikode, Beypore’s dhow yards, Kannur’s Arakkal palace and Bekal Fort.',
-    highlights: [
-      'The Mishkal Mosque and the old quarter of Kuttichira',
-      'The uru yards of Beypore, where wooden dhows are built by hand',
-      'The Arakkal Museum in Kannur',
-      'Bekal Fort and the beaches below it',
-      'The historic Malik Dinar mosque in Kasaragod',
-    ],
-    itinerary: [
-      { day: 'Day 1', title: 'Kozhikode', detail: 'Pick-up from Kozhikode airport or your home. The Mishkal Mosque and the lanes of Kuttichira, then sunset on Kozhikode beach and halwa on SM Street.' },
-      { day: 'Day 2', title: 'Beypore to Kannur', detail: 'The uru yards of Beypore in the morning, then north along the coast to Kannur for the Arakkal Museum and an evening by the sea.' },
-      { day: 'Day 3', title: 'Bekal', detail: 'On to Bekal for an afternoon on the walls of the fort, and the beach below it at sunset.' },
-      { day: 'Day 4', title: 'Kasaragod', detail: 'The Malik Dinar mosque in Kasaragod, then drop at Kannur or Mangaluru airport, or your home.' },
-    ],
-    inclusions: ['Three nights in hotels and a beach resort, with breakfast', 'A private vehicle with driver', keralaPickup, 'Sightseeing as listed in the itinerary'],
-    exclusions: indiaExcludes,
-    notes: [
-      'Prayer: Every town on the coast has mosques, and Friday prayers fit easily into the plan.',
-      'Food: Halal food is the norm in Malabar; try the biryani, the seafood and the Mappila snacks.',
-      'Weather: Hot from March to May, with heavy rain from June to August.',
-      'Visits: Entry to working mosques follows each mosque’s own practice; your driver or guide checks before each visit.',
-      idNote,
-    ],
-    image: 'kerala-bekal-beach',
-    gallery: ['kerala-kozhikode-mishkal-mosque'],
-    bestTime: 'October to March',
-    idealFor: ['families', 'groups', 'seniors'],
-    fare: null,
-    sample: true,
-  },
-
-  // The rest of India
-  {
-    slug: 'kashmir-srinagar-gulmarg',
-    title: 'Kashmir: Srinagar, Gulmarg and Sonamarg',
-    region: 'domestic',
-    destination: 'Srinagar',
-    country: 'India',
-    state: 'Kashmir',
-    days: 6,
-    nights: 5,
-    summary: 'A houseboat on Dal Lake, the Mughal gardens, the Hazratbal shrine and the meadows of Gulmarg and Sonamarg, at an unhurried pace.',
-    overview: [
-      'Kashmir rewards a slow pace: a night on a houseboat, mornings in the Mughal gardens, and long days in the high meadows. The valley’s mosques and shrines are part of the plan, and halal food is everywhere.',
-      'The itinerary leaves a free day in Srinagar, which you can keep for the markets or use for a longer drive.',
-    ],
-    description:
-      'A sample six-day Kashmir tour from HIJRA Travels: a Dal Lake houseboat, the Mughal gardens, Hazratbal, Gulmarg and Sonamarg, planned for families.',
-    highlights: [
-      'A night on a houseboat, and a shikara ride on Dal Lake',
-      'Nishat and Shalimar, the Mughal gardens',
-      'The Hazratbal shrine and the Jamia Masjid',
-      'The Gulmarg gondola, weather permitting',
-      'The Sonamarg valley and the Thajiwas glacier',
-    ],
-    itinerary: [
-      { day: 'Day 1', title: 'Srinagar and Dal Lake', detail: 'Arrive in Srinagar and check in to your houseboat. A shikara ride across Dal Lake at sunset.' },
-      { day: 'Day 2', title: 'Gardens and mosques', detail: 'The Mughal gardens of Nishat and Shalimar, the Hazratbal shrine on the lake shore and the Jamia Masjid in the old city. Move to a hotel in the evening.' },
-      { day: 'Day 3', title: 'Gulmarg', detail: 'A day in the meadows of Gulmarg, with a ride on the gondola when the weather allows. Back to Srinagar for the night.' },
-      { day: 'Day 4', title: 'Sonamarg', detail: 'Along the Sindh valley to Sonamarg for the meadows and, for those who wish, a pony ride towards the Thajiwas glacier.' },
-      { day: 'Day 5', title: 'Srinagar at leisure', detail: 'A free day for the markets of walnut wood, pashmina and dry fruits, or simply time by the lake.' },
-      { day: 'Day 6', title: 'Home', detail: 'Drop at Srinagar airport for your flight home.' },
-    ],
-    inclusions: [
-      'One night on a houseboat and four nights in a Srinagar hotel, with breakfast and dinner',
-      'Airport transfers and a private vehicle with driver',
-      'A shikara ride on Dal Lake',
-      'Sightseeing as listed in the itinerary',
-    ],
-    exclusions: ['Flights to and from Srinagar, unless added', 'Gondola tickets, pony rides and local taxis in Gulmarg and Sonamarg', 'Lunches', 'Personal expenses', 'Travel insurance, unless added on request'],
-    notes: [
-      'Prayer: Kashmir is predominantly Muslim; mosques are never far away, and the call to prayer carries across Dal Lake.',
-      'Food: Halal food is the norm. Try a traditional wazwan meal at least once.',
-      'Weather: Summer days are mild and evenings cool. Winter brings snow, and high roads can close.',
-      'Documents: Carry a government photo ID, as some roads have checkpoints. Some prepaid mobile connections from other states do not work in the valley, so check with your operator.',
-    ],
-    image: 'india-kashmir-dal-lake',
-    gallery: [],
-    bestTime: 'April to October',
-    idealFor: ['families', 'couples', 'groups'],
-    fare: null,
-    sample: true,
-    featured: true,
-  },
-  {
-    slug: 'delhi-agra-jaipur',
-    title: 'Delhi, Agra and Jaipur',
-    region: 'domestic',
-    destination: 'Agra',
-    country: 'India',
-    state: 'North India',
-    days: 6,
-    nights: 5,
-    summary: 'The Mughal north in six days: Old Delhi’s Jama Masjid, the Taj Mahal at sunrise, Fatehpur Sikri and the forts and palaces of Jaipur.',
-    overview: [
-      'Three cities and two empires: the Mughal capitals of Delhi, Agra and Fatehpur Sikri, and the Rajput city of Jaipur. The drives between them are on good highways, and each day ends at a comfortable hotel.',
-      'The plan keeps the Taj Mahal off Fridays, when it is closed to visitors, and leaves time for Friday prayers at one of the great mosques.',
-    ],
-    description:
-      'A sample six-day tour of Delhi, Agra and Jaipur by HIJRA Travels: the Jama Masjid, the Taj Mahal at sunrise, Fatehpur Sikri and Amber Fort. Fare on enquiry.',
-    highlights: [
-      'The Jama Masjid of Old Delhi and Chandni Chowk',
-      'Humayun’s Tomb and the Qutub Minar',
-      'The Taj Mahal at sunrise, and Agra Fort',
-      'Fatehpur Sikri and its great mosque',
-      'Amber Fort and the palaces of Jaipur',
-    ],
-    itinerary: [
-      { day: 'Day 1', title: 'Old Delhi', detail: 'Arrive in Delhi. In the afternoon, the Jama Masjid and the lanes of Chandni Chowk, with dinner in the old city.' },
-      { day: 'Day 2', title: 'New Delhi to Agra', detail: 'Humayun’s Tomb and the Qutub Minar in the morning, then the drive to Agra along the expressway.' },
-      { day: 'Day 3', title: 'The Taj Mahal', detail: 'The Taj Mahal at sunrise, Agra Fort after breakfast, and a quiet afternoon at the hotel.' },
-      { day: 'Day 4', title: 'Fatehpur Sikri to Jaipur', detail: 'Fatehpur Sikri, Akbar’s abandoned capital, with its great mosque and gateway, then on to Jaipur.' },
-      { day: 'Day 5', title: 'Jaipur', detail: 'Amber Fort in the morning, the City Palace and Hawa Mahal in the afternoon, and time in the bazaars.' },
-      { day: 'Day 6', title: 'Home', detail: 'Drop at Jaipur airport for your flight home, or the drive back to Delhi.' },
-    ],
-    inclusions: ['Five nights in hotels, with breakfast', 'A private air-conditioned vehicle with driver', 'Local guides at the main monuments', 'Airport transfers'],
-    exclusions: ['Flights to Delhi and from Jaipur, unless added', 'Monument entry tickets', 'Lunches and dinners', 'Personal expenses'],
-    notes: [
-      'Prayer: Friday prayers at the Jama Masjid in Delhi or at Fatehpur Sikri can be built into the plan.',
-      'Food: Halal Mughlai food is easy to find in Delhi and Agra; in Jaipur we suggest trusted restaurants.',
-      'Weather: Very hot from April to June. Winter mornings can be foggy, which sometimes delays flights.',
-      'Documents: Carry a government photo ID; monuments and hotels check it.',
-    ],
-    image: 'india-agra-taj-mahal',
-    gallery: [],
-    bestTime: 'October to March',
-    idealFor: ['families', 'groups', 'seniors'],
-    fare: null,
-    sample: true,
-  },
-
-  // International
+  // International: HIJRA's main holiday offering, listed first wherever tours appear in data order
   {
     slug: 'istanbul-bursa',
     title: 'Istanbul and Bursa',
@@ -411,6 +87,7 @@ export const tours: Tour[] = [
     bestTime: 'Spring and autumn',
     idealFor: ['families', 'couples', 'groups', 'seniors'],
     fare: null,
+    status: null,
     sample: true,
     featured: true,
   },
@@ -456,7 +133,9 @@ export const tours: Tour[] = [
     bestTime: 'November to March',
     idealFor: ['families', 'groups', 'couples', 'seniors'],
     fare: null,
+    status: null,
     sample: true,
+    featured: true,
   },
   {
     slug: 'malaysia-singapore',
@@ -502,7 +181,9 @@ export const tours: Tour[] = [
     bestTime: 'All year',
     idealFor: ['families', 'couples', 'groups'],
     fare: null,
+    status: null,
     sample: true,
+    featured: true,
   },
   {
     slug: 'egypt-cairo-nile',
@@ -555,6 +236,7 @@ export const tours: Tour[] = [
     bestTime: 'October to April',
     idealFor: ['families', 'groups', 'couples'],
     fare: null,
+    status: null,
     sample: true,
   },
   {
@@ -602,7 +284,9 @@ export const tours: Tour[] = [
     bestTime: 'Spring and autumn',
     idealFor: ['groups', 'couples', 'families'],
     fare: null,
+    status: null,
     sample: true,
+    featured: true,
   },
   {
     slug: 'baku-azerbaijan',
@@ -645,6 +329,108 @@ export const tours: Tour[] = [
     bestTime: 'May to October',
     idealFor: ['couples', 'families'],
     fare: null,
+    status: null,
+    sample: true,
+  },
+
+  // Within India: a smaller, secondary range
+  {
+    slug: 'kashmir-srinagar-gulmarg',
+    title: 'Kashmir: Srinagar, Gulmarg and Sonamarg',
+    region: 'domestic',
+    destination: 'Srinagar',
+    country: 'India',
+    state: 'Kashmir',
+    days: 6,
+    nights: 5,
+    summary: 'A houseboat on Dal Lake, the Mughal gardens, the Hazratbal shrine and the meadows of Gulmarg and Sonamarg, at an unhurried pace.',
+    overview: [
+      'Kashmir rewards a slow pace: a night on a houseboat, mornings in the Mughal gardens, and long days in the high meadows. The valley’s mosques and shrines are part of the plan, and halal food is everywhere.',
+      'The itinerary leaves a free day in Srinagar, which you can keep for the markets or use for a longer drive.',
+    ],
+    description:
+      'A sample six-day Kashmir tour from HIJRA Travels: a Dal Lake houseboat, the Mughal gardens, Hazratbal, Gulmarg and Sonamarg, planned for families.',
+    highlights: [
+      'A night on a houseboat, and a shikara ride on Dal Lake',
+      'Nishat and Shalimar, the Mughal gardens',
+      'The Hazratbal shrine and the Jamia Masjid',
+      'The Gulmarg gondola, weather permitting',
+      'The Sonamarg valley and the Thajiwas glacier',
+    ],
+    itinerary: [
+      { day: 'Day 1', title: 'Srinagar and Dal Lake', detail: 'Arrive in Srinagar and check in to your houseboat. A shikara ride across Dal Lake at sunset.' },
+      { day: 'Day 2', title: 'Gardens and mosques', detail: 'The Mughal gardens of Nishat and Shalimar, the Hazratbal shrine on the lake shore and the Jamia Masjid in the old city. Move to a hotel in the evening.' },
+      { day: 'Day 3', title: 'Gulmarg', detail: 'A day in the meadows of Gulmarg, with a ride on the gondola when the weather allows. Back to Srinagar for the night.' },
+      { day: 'Day 4', title: 'Sonamarg', detail: 'Along the Sindh valley to Sonamarg for the meadows and, for those who wish, a pony ride towards the Thajiwas glacier.' },
+      { day: 'Day 5', title: 'Srinagar at leisure', detail: 'A free day for the markets of walnut wood, pashmina and dry fruits, or simply time by the lake.' },
+      { day: 'Day 6', title: 'Home', detail: 'Drop at Srinagar airport for your flight home.' },
+    ],
+    inclusions: [
+      'One night on a houseboat and four nights in a Srinagar hotel, with breakfast and dinner',
+      'Airport transfers and a private vehicle with driver',
+      'A shikara ride on Dal Lake',
+      'Sightseeing as listed in the itinerary',
+    ],
+    exclusions: ['Flights to and from Srinagar, unless added', 'Gondola tickets, pony rides and local taxis in Gulmarg and Sonamarg', 'Lunches', 'Personal expenses', 'Travel insurance, unless added on request'],
+    notes: [
+      'Prayer: Kashmir is predominantly Muslim; mosques are never far away, and the call to prayer carries across Dal Lake.',
+      'Food: Halal food is the norm. Try a traditional wazwan meal at least once.',
+      'Weather: Summer days are mild and evenings cool. Winter brings snow, and high roads can close.',
+      'Documents: Carry a government photo ID, as some roads have checkpoints. Some prepaid mobile connections from other states do not work in the valley, so check with your operator.',
+    ],
+    image: 'india-kashmir-dal-lake',
+    gallery: [],
+    bestTime: 'April to October',
+    idealFor: ['families', 'couples', 'groups'],
+    fare: null,
+    status: null,
+    sample: true,
+  },
+  {
+    slug: 'delhi-agra-jaipur',
+    title: 'Delhi, Agra and Jaipur',
+    region: 'domestic',
+    destination: 'Agra',
+    country: 'India',
+    state: 'North India',
+    days: 6,
+    nights: 5,
+    summary: 'The Mughal north in six days: Old Delhi’s Jama Masjid, the Taj Mahal at sunrise, Fatehpur Sikri and the forts and palaces of Jaipur.',
+    overview: [
+      'Three cities and two empires: the Mughal capitals of Delhi, Agra and Fatehpur Sikri, and the Rajput city of Jaipur. The drives between them are on good highways, and each day ends at a comfortable hotel.',
+      'The plan keeps the Taj Mahal off Fridays, when it is closed to visitors, and leaves time for Friday prayers at one of the great mosques.',
+    ],
+    description:
+      'A sample six-day tour of Delhi, Agra and Jaipur by HIJRA Travels: the Jama Masjid, the Taj Mahal at sunrise, Fatehpur Sikri and Amber Fort. Fare on enquiry.',
+    highlights: [
+      'The Jama Masjid of Old Delhi and Chandni Chowk',
+      'Humayun’s Tomb and the Qutub Minar',
+      'The Taj Mahal at sunrise, and Agra Fort',
+      'Fatehpur Sikri and its great mosque',
+      'Amber Fort and the palaces of Jaipur',
+    ],
+    itinerary: [
+      { day: 'Day 1', title: 'Old Delhi', detail: 'Arrive in Delhi. In the afternoon, the Jama Masjid and the lanes of Chandni Chowk, with dinner in the old city.' },
+      { day: 'Day 2', title: 'New Delhi to Agra', detail: 'Humayun’s Tomb and the Qutub Minar in the morning, then the drive to Agra along the expressway.' },
+      { day: 'Day 3', title: 'The Taj Mahal', detail: 'The Taj Mahal at sunrise, Agra Fort after breakfast, and a quiet afternoon at the hotel.' },
+      { day: 'Day 4', title: 'Fatehpur Sikri to Jaipur', detail: 'Fatehpur Sikri, Akbar’s abandoned capital, with its great mosque and gateway, then on to Jaipur.' },
+      { day: 'Day 5', title: 'Jaipur', detail: 'Amber Fort in the morning, the City Palace and Hawa Mahal in the afternoon, and time in the bazaars.' },
+      { day: 'Day 6', title: 'Home', detail: 'Drop at Jaipur airport for your flight home, or the drive back to Delhi.' },
+    ],
+    inclusions: ['Five nights in hotels, with breakfast', 'A private air-conditioned vehicle with driver', 'Local guides at the main monuments', 'Airport transfers'],
+    exclusions: ['Flights to Delhi and from Jaipur, unless added', 'Monument entry tickets', 'Lunches and dinners', 'Personal expenses'],
+    notes: [
+      'Prayer: Friday prayers at the Jama Masjid in Delhi or at Fatehpur Sikri can be built into the plan.',
+      'Food: Halal Mughlai food is easy to find in Delhi and Agra; in Jaipur we suggest trusted restaurants.',
+      'Weather: Very hot from April to June. Winter mornings can be foggy, which sometimes delays flights.',
+      'Documents: Carry a government photo ID; monuments and hotels check it.',
+    ],
+    image: 'india-agra-taj-mahal',
+    gallery: [],
+    bestTime: 'October to March',
+    idealFor: ['families', 'groups', 'seniors'],
+    fare: null,
+    status: null,
     sample: true,
   },
 ];

@@ -1,12 +1,19 @@
-// Contact-data guard. Runs before every `npm run build` (the `prebuild` script) and alone as `npm run check:contacts`.
-// The build stops when:
+// Contact and launch guard. next.config.ts runs it at the start of every production build (`npm run build` and
+// `next build` alike, so it cannot be skipped); `npm run check:contacts` runs it alone.
+// Mode: TRIAL is the default; LAUNCH is NEXT_PUBLIC_ALLOW_INDEXING=true (from the shell or the .env files).
+// Every build stops when:
 //   1. demonstration or placeholder contact details appear in the source: reserved-domain email addresses
 //      (.example, example.com, .test, .invalid), placeholder numbers (000 0000, XXXX), hard-coded tel:, mailto: or
 //      wa.me links, or contact fields in data/demo.ts;
 //   2. a contact value in data/site.ts or data/branches.ts is not a real one: phone and WhatsApp must be +91 and
-//      10 digits (not a run of one digit), email a real domain, Google links on Google's own domains;
-//   3. a launch build (NEXT_PUBLIC_ALLOW_INDEXING=true, from the shell or the .env files) lacks HIJRA's central phone,
-//      WhatsApp or email, so its Call, WhatsApp and Email buttons would open the "not connected yet" notice.
+//      10 digits (not a run of one digit), email a real domain, Google links on Google's own domains.
+// A LAUNCH build also stops when:
+//   3. HIJRA's central phone, WhatsApp or email is missing (its buttons would open the "not connected yet" notice);
+//   4. NEXT_PUBLIC_SITE_URL is not the live https domain;
+//   5. the enquiry form still runs the demo submission (lib/enquiry.ts), i.e. the backend is not connected;
+//   6. a data file still holds sample records (`sample: true`).
+// Anything else unconfirmed (branch details, legal details, figures, photo slots) renders a pending mark or sample
+// label, and those throw during a launch build's prerender (components/ui/pending.tsx), which stops it too.
 // A line that must keep an address-like example (a form hint) ends with the comment `contact-check-ignore`.
 // Usage: node scripts/check-contacts.mjs [project root]
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -71,14 +78,29 @@ for (const file of ['data/site.ts', 'data/branches.ts']) {
   });
 }
 
-// 3. A launch build needs the central contacts.
+// 3–6. A launch build needs the real thing.
 if (launch) {
   for (const key of ['phone', 'whatsapp', 'email'])
     if (!central[key]) problems.push(`data/site.ts: launch build without HIJRA's central ${key}: its buttons would open the "not connected yet" notice`);
+  const url = process.env.NEXT_PUBLIC_SITE_URL ?? '';
+  if (!/^https:\/\/[a-z0-9.-]+\.[a-z]{2,}\/?$/i.test(url) || /localhost|127\.0\.0\.1|\.example\b|\.test\b/i.test(url))
+    problems.push(`NEXT_PUBLIC_SITE_URL is "${url}": a launch build needs the live https domain (canonical URLs, sitemap, Open Graph)`);
+  if (/mode: 'demo',/.test(readFileSync(join(root, 'lib/enquiry.ts'), 'utf8')))
+    problems.push('lib/enquiry.ts: submitEnquiry() is still the demo, so enquiries would not reach HIJRA; connect the backend (Milestone 2)');
+  for (const f of files(join(root, 'data'))) {
+    // Records end `sample: true,` or `sample: true }`; the type declarations (`sample: true;`) are not records.
+    const n = (readFileSync(f, 'utf8').match(/\bsample: true(?=\s*[,}])/g) ?? []).length;
+    if (n) problems.push(`${relative(root, f)}: ${n} sample record${n > 1 ? 's' : ''} (sample: true); replace with HIJRA's verified content or remove`);
+  }
 }
 
+const mode = launch ? 'LAUNCH (indexable; strict checks)' : 'TRIAL (not indexable; sample content allowed and labelled; enquiries in demo mode)';
 if (problems.length) {
-  console.error(`Contact check failed (${problems.length}):\n- ${problems.join('\n- ')}`);
+  console.error(`Build mode: ${mode}\nContact and launch check failed (${problems.length}):\n- ${problems.join('\n- ')}`);
   process.exit(1);
 }
-console.log(`contact check: no demonstration or placeholder contact details${launch ? '; central contacts present for launch' : ' (preview build)'}`);
+console.log(`Build mode: ${mode}. Contact${launch ? ' and launch' : ''} check passed: no demonstration or placeholder contact details.`);
+// For the project owner: what a trial build still shows as "not connected yet".
+const missing = ['phone', 'whatsapp', 'email'].filter((k) => !central[k]);
+if (missing.length)
+  console.warn(`Not connected yet: HIJRA's verified ${missing.join(', ')} (data/site.ts, contact). Until set, those buttons, the floating WhatsApp button included, open the "not connected yet" notice.`);

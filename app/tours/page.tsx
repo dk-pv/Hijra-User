@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { routes } from '@/data/navigation';
+import { enquiryPath, routes, tourPath } from '@/data/navigation';
 import { faqs } from '@/data/faqs';
 import type { ImageKey } from '@/data/images';
-import { tours } from '@/data/tours';
-import { dictionary } from '@/lib/dictionary';
+import { tours, type Tour } from '@/data/tours';
 import { pageMetadata } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { ContactAction } from '@/components/ui/contact-action';
@@ -15,37 +14,40 @@ import { Photo } from '@/components/ui/photo';
 import { SectionIntro } from '@/components/ui/section';
 import { EnquirySection } from '@/components/travel/enquiry-section';
 import { Steps } from '@/components/travel/steps';
-import { TourBrowser } from '@/components/travel/tour-browser';
+import { TourTile } from '@/components/travel/tour-tile';
 import { toCard } from '@/components/travel/tour-card';
 
-// Tours (report 8.2 "Tours listing"; audit 2.4): a magazine opener, the filterable catalogue (featured mosaic, then a
-// ledger), families and groups, customised travel on Deep Navy, questions and the enquiry.
+// Tours: international holidays first, because they are HIJRA's main holiday offering; India follows as a smaller
+// range. Opener, the international packages, a destination index, India, why HIJRA, customised travel, questions
+// and the enquiry. Too few tours to need filters: every tour is on the page.
 
-// Not the hero of any tour below, so no photograph repeats on the page.
-const HERO: ImageKey = 'kerala-athirappilly-falls';
+// Not the cover of any tour below, so no photograph repeats on the page.
+const HERO: ImageKey = 'intl-singapore-marina-bay';
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
     path: routes.tours,
-    title: 'Tours from Kerala, within India and abroad',
+    title: 'International holiday tours',
     description:
-      'Sample tours from HIJRA Travels: Munnar, the backwaters and Kashmir, then Istanbul, Dubai and Malaysia, planned around prayer, halal food and family.',
+      'Sample holiday tours from HIJRA Travels: Istanbul, Dubai, Malaysia and Singapore, Egypt and Uzbekistan, and a smaller range within India. Fares on enquiry.',
     image: HERO,
   });
 }
 
-const family = [
-  'Unhurried days, with rest built in for grandparents and small children',
-  'Prayer times planned into each day, with Friday prayers in mind',
-  'Halal food, and honest advice where the choice is limited',
-  'Rooms close together, and wheelchair help at airports on request',
-];
-const group = [
-  'One advisor for the organiser, from the first plan to the journey home',
-  'A single quote that sets out clearly what each person pays',
-  'Names, passports and visas collected and checked in one place',
-  'Departures from the Kerala airport that suits most of the group',
-];
+const international = [...tours.filter((t) => t.region === 'international')].sort((a, b) => Number(b.featured ?? false) - Number(a.featured ?? false));
+const india = tours.filter((t) => t.region === 'domestic');
+/** Destination index: each country with its tours, international first. */
+const byCountry = [...international, ...india].reduce<Record<string, Tour[]>>((acc, t) => {
+  (acc[t.country] ??= []).push(t);
+  return acc;
+}, {});
+
+const reasons = [
+  { icon: 'compass', title: 'Planned around you', text: 'Prayer times, halal food and rest planned into each day, with the pace set for every generation travelling.' },
+  { icon: 'chat', title: 'One advisor throughout', text: 'One person who knows your plans, from the first itinerary to the journey home, for families and groups alike.' },
+  { icon: 'passport', title: 'Flights and visas arranged', text: 'Flight tickets and visa assistance alongside the tour, with your documents checked before anything is submitted.' },
+  { icon: 'shield', title: 'Enquiry first', text: 'A written quote with the fare and what is included before anything is booked. Nothing is paid online.' },
+] as const;
 
 const customSteps = [
   { title: 'Tell us the basics', text: 'Who is travelling, when, for how long, and what matters most: pace, food, prayer and comfort.' },
@@ -55,7 +57,7 @@ const customSteps = [
 ];
 
 export default function ToursPage() {
-  const t = dictionary;
+  const links = (x: Tour) => ({ href: tourPath(x.slug), enquireHref: enquiryPath('tour', x.slug) });
 
   return (
     <>
@@ -65,21 +67,20 @@ export default function ToursPage() {
           <Breadcrumbs items={[{ label: 'Tours' }]} />
           <div className="site-grid mt-8 items-end gap-y-6 lg:mt-12">
             <div className="col-span-full lg:col-span-7">
-              <p className="eyebrow rise">Tours · Kerala, India and abroad</p>
-              <h1 className="rise rise-2 mt-5 text-display">Travel further, with the same care.</h1>
+              <p className="eyebrow rise">Holiday tours · International</p>
+              <h1 className="rise rise-2 mt-5 text-display">Discover extraordinary journeys.</h1>
             </div>
             <div className="col-span-full lg:col-span-5 lg:pb-2">
               <p className="rise rise-3 max-w-[34rem] text-lead">
-                From the tea hills of Munnar to the mosques of Istanbul, HIJRA plans tours the way it plans pilgrimages: around your family, your prayers and your pace.
+                Explore international destinations and thoughtfully planned holiday experiences with HIJRA Travels.
               </p>
               <div className="rise rise-4 mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <a href="#enquiry" className="btn btn-primary">
-                  Plan a tour
+                <a href="#international" className="btn btn-primary">
+                  Explore packages
                 </a>
-                <ContactAction kind="whatsapp" className="btn btn-outline" message="Hello HIJRA, I would like to plan a tour.">
-                  <Icon name="whatsapp" className="wa-mark" />
-                  {t.common.whatsappUs}
-                </ContactAction>
+                <a href="#enquiry" className="btn btn-outline">
+                  Enquire now
+                </a>
               </div>
             </div>
           </div>
@@ -91,73 +92,112 @@ export default function ToursPage() {
               className="aspect-[4/3] rounded-[18px] md:aspect-[16/9] md:rounded-lg lg:aspect-[21/9]"
             />
             <figcaption className="mt-4 max-w-[30rem] lg:absolute lg:-bottom-10 lg:left-8 lg:mt-0 lg:rounded-md lg:bg-white lg:px-7 lg:py-6">
-              <span className="eyebrow block">Kerala first</span>
+              <span className="eyebrow block">Holidays abroad</span>
               <span className="mt-2 block font-serif text-[clamp(1.25rem,1.1rem+0.5vw,1.625rem)] font-semibold leading-snug text-navy">
-                Hills, backwaters and the Malabar coast, then the rest of India and the world beyond.
+                Great mosques, old cities and new skylines, planned around your family, your prayers and your pace.
               </span>
-              <a href="#tours" className="link-arrow mt-2 text-small">
-                Browse the tours
+              <a href="#destinations" className="link-arrow mt-2 text-small">
+                Explore by destination
               </a>
             </figcaption>
           </figure>
         </div>
       </section>
 
-      {/* 02 The catalogue: featured mosaic and ledger, filtered in the browser */}
-      <section id="tours" aria-labelledby="tours-h" className="py-section">
+      {/* 02 International packages: the main section */}
+      <section id="international" aria-labelledby="intl-h" className="scroll-mt-24 py-section">
         <div className="wrap">
           <SectionIntro
-            eyebrow="Sample tours"
-            title={<span id="tours-h">Find your tour.</span>}
-            lead="Kerala first, then the rest of India and abroad. Choose a region, a length or who is travelling; every itinerary can be changed."
-            className="mb-8 md:mb-10"
+            eyebrow="International packages"
+            title={<span id="intl-h">Holidays abroad.</span>}
+            lead="Itineraries planned for families, groups and couples. Open a tour for the day-by-day plan, what is included and how to enquire; every itinerary can be changed."
+            className="mb-10 md:mb-12"
           >
             <SampleTag className="mt-5">Sample itineraries · fares on enquiry</SampleTag>
           </SectionIntro>
-          <TourBrowser tours={tours.map(toCard)} />
-        </div>
-      </section>
-
-      {/* 03 Families and groups */}
-      <section className="bg-warm-grey py-section" aria-labelledby="families-h">
-        <div className="wrap site-grid gap-y-12">
-          <div className="col-span-full lg:col-span-5">
-            <p className="eyebrow">Families and groups</p>
-            <h2 id="families-h" className="mt-3 text-h2">
-              Planned around prayer, food and every generation.
-            </h2>
-            <p className="mt-5 max-w-[36rem] text-lead">
-              A good family holiday starts with the people, not the sights: who needs rest, where everyone will pray, and what the children will eat.
-            </p>
-            <p className="mt-5 max-w-[36rem]">
-              For groups of relatives, friends, mahallu and community groups, colleagues or alumni, one advisor handles the whole party.
-            </p>
-            <a href="#enquiry" className="link-arrow mt-6">
-              Plan a family or group tour
-            </a>
-          </div>
-          <div className="col-span-full grid gap-10 md:grid-cols-2 md:gap-gutter lg:col-span-6 lg:col-start-7 lg:grid-cols-1 lg:gap-12">
-            {[
-              { title: 'Travelling as a family', items: family },
-              { title: 'Travelling as a group', items: group },
-            ].map((block) => (
-              <div key={block.title}>
-                <h3 className="text-h4">{block.title}</h3>
-                <ul className="mt-4 border-b border-warm-border">
-                  {block.items.map((item) => (
-                    <li key={item} className="flex gap-3 border-t border-warm-border py-3.5">
-                      <Icon name="check" className="mt-0.5 shrink-0 text-red" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <ul role="list" className="grid gap-x-(--g) gap-y-12 min-[600px]:grid-cols-2 lg:grid-cols-3 lg:gap-y-14">
+            {international.map((x) => (
+              <li key={x.slug}>
+                <TourTile tour={toCard(x)} {...links(x)} sizes="(min-width: 1200px) 30vw, (min-width: 600px) 46vw, 94vw" className="h-full" />
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* 04 Customised travel: the night chapter */}
+      {/* 03 Explore by destination: a plain index, one line per country */}
+      <section id="destinations" aria-labelledby="dest-h" className="scroll-mt-24 bg-warm-grey py-12 md:py-16">
+        <div className="wrap site-grid gap-y-6">
+          <div className="col-span-full lg:col-span-4">
+            <p className="eyebrow">Explore by destination</p>
+            <h2 id="dest-h" className="mt-3 text-h3">
+              Where would you like to go?
+            </h2>
+          </div>
+          <ul role="list" className="col-span-full grid border-b border-warm-border sm:grid-cols-2 sm:gap-x-(--g) lg:col-span-8">
+            {Object.entries(byCountry).map(([country, list]) => (
+              <li key={country} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-warm-border py-3.5">
+                <span className="font-semibold text-navy">{country}</span>
+                <span className="flex flex-wrap gap-x-4">
+                  {list.map((x) => (
+                    <Link key={x.slug} href={tourPath(x.slug)} className="link-inline text-small">
+                      {x.title}
+                    </Link>
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* 04 India: a smaller, secondary range */}
+      {india.length ? (
+        <section aria-labelledby="india-h" className="py-section">
+          <div className="wrap">
+            <SectionIntro
+              eyebrow="Within India"
+              title={<span id="india-h">Explore India.</span>}
+              lead="A smaller range of tours within India, planned with the same care."
+              size="h3"
+              className="mb-4 md:mb-6"
+            />
+            <ul role="list" aria-labelledby="india-h" className="border-b border-warm-border">
+              {india.map((x) => (
+                <li key={x.slug}>
+                  <TourTile tour={toCard(x)} {...links(x)} layout="row" />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
+
+      {/* 05 Why travel with HIJRA */}
+      <section className="bg-warm-grey py-section" aria-labelledby="why-h">
+        <div className="wrap site-grid gap-y-10">
+          <div className="col-span-full lg:col-span-4">
+            <p className="eyebrow">Travel assistance</p>
+            <h2 id="why-h" className="mt-3 text-h2">
+              Why travel with HIJRA?
+            </h2>
+            <p className="mt-4 max-w-[32rem] text-lead">The care that goes into a pilgrimage, brought to your holiday.</p>
+          </div>
+          <ul className="col-span-full grid gap-x-(--g) gap-y-8 sm:grid-cols-2 lg:col-span-7 lg:col-start-6">
+            {reasons.map((r) => (
+              <li key={r.title} className="flex gap-4 border-t border-warm-border pt-5">
+                <Icon name={r.icon} className="mt-0.5 shrink-0 text-red" />
+                <div>
+                  <h3 className="font-sans text-ui font-semibold text-navy">{r.title}</h3>
+                  <p className="mt-1 text-small text-muted">{r.text}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* 06 Customised travel: the night chapter */}
       <section className="on-dark bg-deep py-section" aria-labelledby="custom-h">
         <div className="wrap">
           <div className="max-w-[46rem]">
@@ -194,7 +234,7 @@ export default function ToursPage() {
         </div>
       </section>
 
-      {/* 05 Questions */}
+      {/* 07 Questions */}
       <section className="py-section" aria-labelledby="faq-h">
         <div className="wrap site-grid gap-y-10">
           <div className="col-span-full lg:col-span-4">
@@ -217,12 +257,12 @@ export default function ToursPage() {
         </div>
       </section>
 
-      {/* 06 Enquiry */}
+      {/* 08 Enquiry */}
       <EnquirySection
         className="bg-warm-grey"
-        eyebrow="Plan a tour"
-        title="Tell us where you would like to go."
-        lead="Share your dates and who is travelling. An advisor replies with a suggested itinerary and the fare; nothing is booked or paid online."
+        eyebrow="Talk to our travel team"
+        title="Planning your next journey?"
+        lead="Share where you would like to go, your dates and who is travelling. An advisor replies with a suggested itinerary and the fare; nothing is booked or paid online."
         service="tour"
         tours={tours.map((x) => ({ slug: x.slug, name: x.title }))}
         source="tours"

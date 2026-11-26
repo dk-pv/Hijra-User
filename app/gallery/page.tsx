@@ -1,33 +1,31 @@
-import { Icon } from '@/components/ui/icons';
 import type { Metadata } from 'next';
 import { routes } from '@/data/navigation';
 import { pageMetadata } from '@/lib/seo';
-import { photoAsset } from '@/lib/image';
-import { images } from '@/data/images';
-import { collections, galleryPhotos } from '@/data/gallery';
-import { PhotoGallery } from '@/components/content/photo-gallery';
+import { galleryCategories, galleryCollections } from '@/data/gallery';
+import { CollectionCard } from '@/components/content/collection-card';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { CtaBand } from '@/components/ui/cta-band';
-import { Note } from '@/components/ui/pending';
+import { Icon } from '@/components/ui/icons';
+import { Note, SampleTag } from '@/components/ui/pending';
 
-// Gallery: a compact title so the photographs start on the first screen, the collections with their lightbox, then
-// the slots for HIJRA's own trip photography (consented), and the closing enquiry.
+// Gallery: completed journeys in four separate categories (international tours, Indian tours, Umrah, Hajj), never
+// mixed. Each collection opens its own page with the photo grid and lightbox (/gallery/<slug>).
 
 export function generateMetadata(): Metadata {
   return pageMetadata({
     path: routes.gallery,
-    title: 'Gallery: Makkah, Madinah, Hajj and tours',
+    title: 'Gallery: tours, Umrah and Hajj journeys',
     description:
-      'Photographs of Makkah, Madinah, the days of Hajj and destinations in Kerala, India and abroad, each credited to its photographer, from HIJRA Travels.',
+      'Photographs from HIJRA Travels journeys, kept in four collections: international tours, tours within India, Umrah journeys and Hajj journeys.',
     image: 'madinah-piazza-umbrellas',
   });
 }
 
-const ownPhotos = [
-  { subject: 'HIJRA groups in Makkah and Madinah' },
-  { subject: 'Pre-departure sessions at the branches' },
-  { subject: 'Family tours in Kerala, across India and abroad' },
-];
+const categories = galleryCategories
+  .map((cat) => ({ ...cat, items: galleryCollections.filter((c) => c.category === cat.id) }))
+  .filter((cat) => cat.items.length);
+
+const ownPhotos = ['HIJRA’s Umrah and Hajj groups', 'Tours abroad and within India', 'Pre-departure sessions at the branches'];
 
 export default function GalleryPage() {
   return (
@@ -38,25 +36,52 @@ export default function GalleryPage() {
           <div className="site-grid mt-8 items-end gap-y-5 md:mt-12">
             <div className="col-span-full lg:col-span-7">
               <p className="eyebrow rise">Gallery</p>
-              <h1 className="rise rise-2 mt-4 text-h1">Where the journey leads.</h1>
+              <h1 className="rise rise-2 mt-4 text-h1">Journeys, collection by collection.</h1>
             </div>
             <p className="rise rise-3 col-span-full max-w-[36rem] text-lead md:col-span-6 lg:col-span-5 lg:col-start-8 lg:pb-1">
-              Makkah and Madinah, the days of Hajj, and destinations in Kerala, across India and abroad.
+              Photographs from completed tours and pilgrimages, each journey in its own collection.
             </p>
           </div>
-          <Note className="rise rise-4 mt-8 max-w-[46rem]">
-            These are licensed photographs of places, shown until HIJRA’s own trip photography is ready, and each caption credits its
-            photographer. The people in them are not HIJRA’s customers.
+          <nav aria-label="Gallery categories" className="rise rise-4 mt-8 flex flex-wrap gap-2.5">
+            {categories.map((cat) => (
+              <a key={cat.id} href={`#${cat.id}`} className="btn btn-outline btn-sm">
+                {cat.label}
+                <span className="font-normal text-muted">{cat.items.length}</span>
+              </a>
+            ))}
+          </nav>
+          <Note className="mt-8 max-w-[46rem]">
+            <SampleTag className="mb-2">Sample collections</SampleTag>
+            <br />
+            These collections show the layout with licensed photographs of the places, each credited to its photographer. They are not photographs of HIJRA’s
+            travellers, and no journey or date is claimed.
           </Note>
         </div>
       </section>
 
-      <div className="pb-section pt-10 md:pt-14">
-        <PhotoGallery
-          photos={galleryPhotos.map(({ key, collection }) => ({ key, collection, file: images[key].src, asset: photoAsset(key), credit: images[key].credit }))}
-          collections={collections}
-          creditsHref={routes.imageCredits}
-        />
+      <div className="pb-section">
+        {categories.map((cat, i) => (
+          <section key={cat.id} id={cat.id} aria-labelledby={`${cat.id}-h`} className="scroll-mt-24 pt-14 md:pt-20">
+            <div className="wrap">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-t border-warm-border pt-5 md:pt-7">
+                <h2 id={`${cat.id}-h`} className="flex items-baseline gap-3 text-h3">
+                  <span className="font-sans text-small font-semibold tabular-nums text-red">{String(i + 1).padStart(2, '0')}</span>
+                  {cat.label}
+                </h2>
+                <p className="text-small text-muted">
+                  {cat.note} {cat.items.length} {cat.items.length === 1 ? 'collection' : 'collections'}.
+                </p>
+              </div>
+              <ul role="list" className="mt-8 grid gap-x-(--g) gap-y-10 min-[600px]:grid-cols-2 lg:grid-cols-3">
+                {cat.items.map((c) => (
+                  <li key={c.slug}>
+                    <CollectionCard c={c} sizes="(min-width: 1200px) 30vw, (min-width: 600px) 46vw, 94vw" />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        ))}
       </div>
 
       <section aria-labelledby="own-h" className="bg-warm-grey py-section">
@@ -67,8 +92,7 @@ export default function GalleryPage() {
               Real journeys, shared with consent.
             </h2>
             <p className="mt-4 max-w-[34rem] text-lead">
-              At launch, this gallery opens with photographs from HIJRA’s own groups and tours, published only with the consent of
-              everyone pictured.
+              At launch, each collection is one of HIJRA’s completed journeys, with its travel date, published only with the consent of everyone pictured.
             </p>
           </div>
           <div className="on-dark col-span-full rounded-lg bg-deep p-7 md:p-10 lg:col-span-6 lg:col-start-7">
@@ -78,12 +102,12 @@ export default function GalleryPage() {
             <p className="mt-6 font-serif text-h3 text-warm-white">What this gallery will show</p>
             <ul className="mt-5 divide-y divide-white/15 border-y border-white/15">
               {ownPhotos.map((p) => (
-                <li key={p.subject} className="py-3.5 text-small text-mist">
-                  {p.subject}
+                <li key={p} className="py-3.5 text-small text-mist">
+                  {p}
                 </li>
               ))}
             </ul>
-            <p className="mt-5 text-caption text-mist">Added by HIJRA at launch, with the written consent of everyone pictured.</p>
+            <p className="mt-5 text-caption text-mist">Added by HIJRA, with the written consent of everyone pictured.</p>
           </div>
         </div>
       </section>

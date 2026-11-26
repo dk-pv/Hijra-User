@@ -35,7 +35,7 @@ export type EnquiryFormProps = {
   source: string;
   /** Extra content inside the success card (e.g. next steps and a WhatsApp action on Book A Trip). */
   after?: ReactNode;
-  /** Prefilled values, e.g. { destination: 'Munnar and the tea hills', interest: 'munnar-tea-hills' } on a tour page. */
+  /** Prefilled values, e.g. { destination: 'Istanbul and Bursa', interest: 'istanbul-bursa' } on a tour page. */
   initial?: Partial<Pick<EnquiryValues, 'destination' | 'interest' | 'tourType' | 'visaCountry' | 'branch'>>;
   className?: string;
 };
@@ -206,7 +206,7 @@ export function EnquiryForm({
   if (done) {
     const s = done.values.service;
     return (
-      <div className={cn('card p-6 md:p-8', className)} data-wa-zone="" role="status">
+      <div className={cn('card p-6 md:p-8', className)} role="status">
         <div className="flex items-center gap-3 text-success">
           <span className="grid size-10 place-items-center rounded-full bg-success text-white">
             <Icon name="check" />
@@ -244,7 +244,7 @@ export function EnquiryForm({
   const pk = packages.filter((p) => p.service === sv);
 
   return (
-    <form noValidate onSubmit={onSubmit} className={cn('card p-5 sm:p-6 md:p-8', className)} data-wa-zone="" aria-busy={busy || undefined}>
+    <form noValidate onSubmit={onSubmit} className={cn('card p-5 sm:p-6 md:p-8', className)} aria-busy={busy || undefined}>
       {tried && errorList.length ? (
         <div ref={summaryRef} tabIndex={-1} className="mb-6 rounded-md border-[1.5px] border-red bg-white p-4 outline-none" aria-labelledby={id('summary')}>
           <p id={id('summary')} className="flex items-center gap-2 font-semibold text-red">

@@ -1,16 +1,16 @@
 import Link from 'next/link';
 import type { IdealFor, Tour } from '@/data/tours';
 import { PhotoFrame, type PhotoAsset } from '@/components/ui/photo-frame';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { cn } from '@/lib/cn';
 
 // The one tour tile (report 15.9): photo with a duration chip, place eyebrow, title, "Fare on enquiry" and Enquire.
-// Three layouts give the listings their editorial rhythm: 'feature' and 'card' for mosaics, 'row' for the ledger.
-// A plain component (no hooks, no server APIs) so server pages and the client filter share it. Cards come from
-// toCard() in tour-card.ts (server), which resolves the photo.
+// Three layouts give the listings their editorial rhythm: 'feature' and 'card' for grids, 'row' for the ledger.
+// Cards come from toCard() in tour-card.ts (server), which resolves the photo.
 
 export type TourCard = Pick<
   Tour,
-  'slug' | 'title' | 'region' | 'state' | 'country' | 'days' | 'nights' | 'summary' | 'bestTime' | 'idealFor' | 'featured'
+  'slug' | 'title' | 'region' | 'state' | 'country' | 'days' | 'nights' | 'summary' | 'bestTime' | 'idealFor' | 'featured' | 'status'
 > & { image: PhotoAsset };
 
 export const idealForLabel: Record<IdealFor, string> = {
@@ -23,8 +23,8 @@ export const idealForLabel: Record<IdealFor, string> = {
 export const tourPlace = (t: Pick<Tour, 'region' | 'state' | 'country'>) => (t.region === 'domestic' ? (t.state ?? t.country) : t.country);
 export const tourLength = (t: Pick<Tour, 'days' | 'nights'>) => `${t.days} days · ${t.nights} nights`;
 
-// The title link stretches over the whole tile; Enquire sits above it as its own link.
-const stretched =
+// The title link stretches over the whole tile; Enquire sits above it as its own link (z-[2]).
+export const stretched =
   "outline-none after:absolute after:inset-0 after:z-[1] after:rounded-md after:content-[''] hover:text-red-dark focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-navy";
 
 function Enquire({ tour, enquireHref, className }: { tour: TourCard; enquireHref: string; className?: string }) {
@@ -128,6 +128,7 @@ export function TourTile({
           className={cn('rounded-md', photoClassName ?? 'aspect-[3/2]')}
         />
         <span className="chip absolute left-3.5 top-3.5">{tourLength(tour)}</span>
+        <StatusBadge status={tour.status} className="absolute bottom-3.5 left-3.5" />
       </div>
       <p className={cn('eyebrow', feature ? 'mt-5' : 'mt-4')}>{tourPlace(tour)}</p>
       <H className={cn('mt-1.5', feature ? 'text-h3' : 'text-[clamp(1.375rem,1.2rem+0.4vw,1.5rem)] leading-[1.2]')}>
@@ -135,7 +136,7 @@ export function TourTile({
           {tour.title}
         </Link>
       </H>
-      {feature ? <p className="mt-3 max-w-[36rem] text-muted">{tour.summary}</p> : null}
+      <p className={cn('text-muted', feature ? 'mt-3 max-w-[36rem]' : 'mt-2 line-clamp-3 text-small')}>{tour.summary}</p>
       <FareLine tour={tour} enquireHref={enquireHref} className="mt-4" />
     </article>
   );

@@ -4,10 +4,11 @@ import { branchPath, enquiryPath, routes } from '@/data/navigation';
 import { branches } from '@/data/branches';
 import { faqs } from '@/data/faqs';
 import { hajjDays, hajjPreparation } from '@/data/guides';
-import { hajjPackages } from '@/data/packages';
+import { hajjPackages, isListed, shownStatus } from '@/data/packages';
 import type { ImageKey } from '@/data/images';
 import { dictionary } from '@/lib/dictionary';
 import { pageMetadata } from '@/lib/seo';
+import { today } from '@/lib/today';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { ContactAction } from '@/components/ui/contact-action';
 import { CtaBand } from '@/components/ui/cta-band';
@@ -60,8 +61,11 @@ const support = [
   { title: 'Health and documents', text: 'Vaccinations, medicines and paperwork checked with you before you leave.' },
 ];
 
-export default function HajjPage() {
+export default async function HajjPage() {
   const t = dictionary;
+  // Packages still to depart; departed ones leave the page (lib/today.ts).
+  const day = await today();
+  const listed = hajjPackages.filter((p) => isListed(p, day));
 
   return (
     <>
@@ -381,17 +385,26 @@ export default function HajjPage() {
             <div className="col-span-full lg:col-span-7">
               <p className="eyebrow">Packages</p>
               <h2 id="packages-h" className="mt-3 text-h2">
-                Hajj package outlines.
+                Hajj packages.
               </h2>
-              <p className="mt-4 max-w-[38rem] text-lead">Two ways to make Hajj with a group: a longer stay in Azizia, or a shorter one closer to the Haram.</p>
+              <p className="mt-4 max-w-[38rem] text-lead">
+                {listed.length
+                  ? 'Group packages for the coming season. Open a package for the journey, what is included and how to register your interest.'
+                  : 'Packages for the next season are announced once the Hajj dates are known. Register your interest and we will contact you.'}
+              </p>
             </div>
             <Note className="col-span-full md:col-span-6 lg:col-span-4 lg:col-start-9">
               Sample outlines, subject to the Hajj quota and registration. HIJRA’s package data replaces them; fares are given on enquiry.
             </Note>
           </div>
           <div className="mt-10 grid gap-5 md:mt-14 md:gap-6">
-            {hajjPackages.map((p) => (
-              <PackageFolio key={p.slug} p={p} note="Subject to the Hajj quota, registration and approval. An advisor confirms the fare and the details with you." />
+            {listed.map((p) => (
+              <PackageFolio
+                key={p.slug}
+                p={p}
+                status={shownStatus(p, day)}
+                note="Subject to the Hajj quota, registration and approval. An advisor confirms the fare and the details with you."
+              />
             ))}
           </div>
         </div>

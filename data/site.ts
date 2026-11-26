@@ -34,7 +34,7 @@ export const site = {
   positioning: 'Hajj & Umrah Travel Specialist',
   region: 'Malabar, Kerala',
   description:
-    'HIJRA Travels guides families from Kerala on Hajj and Umrah, and arranges tours, flight tickets and visa assistance. Enquire by form, phone or WhatsApp.',
+    'HIJRA Travels guides families from Kerala on Hajj and Umrah, and arranges holidays abroad, flight tickets and visa assistance. Enquire by form, phone or WhatsApp.',
   /** Set NEXT_PUBLIC_SITE_URL to the live domain at launch (canonical URLs, sitemap, Open Graph). */
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, ''),
   indexable,

@@ -26,6 +26,8 @@ export type RouteKey = keyof typeof routes;
 
 export const branchPath = (slug: string) => `/branches/${slug}`;
 export const tourPath = (slug: string) => `/tours/${slug}`;
+export const packagePath = (service: 'umrah' | 'hajj', slug: string) => `/${service}/packages/${slug}`;
+export const galleryPath = (slug: string) => `/gallery/${slug}`;
 export const blogPath = (slug: string) => `/blogs/${slug}`;
 
 /** Enquiry services offered on Book A Trip and the forms. */
@@ -58,6 +60,14 @@ export const mainNav: { key: NavKey; href: string; section: string[] }[] = [
   { key: 'visa', href: routes.visa, section: [routes.visa] },
   { key: 'blogs', href: routes.blogs, section: [routes.blogs] },
   { key: 'bookATrip', href: routes.bookATrip, section: [routes.bookATrip] },
+];
+
+/** A short second row in the menu: the pages visitors look for most, one tap away (the nine items above stay as confirmed). */
+export const menuMore = [
+  { label: 'Umrah', href: routes.umrah },
+  { label: 'Hajj', href: routes.hajj },
+  { label: 'Gallery', href: routes.gallery },
+  { label: 'Contact', href: routes.contact },
 ];
 
 /** True when `path` belongs to the nav item. */

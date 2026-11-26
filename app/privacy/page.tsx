@@ -87,7 +87,7 @@ const sections: LegalSection[] = [
             India, and a package you are interested in;
           </li>
           <li>
-            <strong>Tours:</strong> whether the tour is within India or abroad, the destination, your preferred month and the number
+            <strong>Tours:</strong> whether the tour is abroad or within India, the destination, your preferred month and the number
             of travellers;
           </li>
           <li>

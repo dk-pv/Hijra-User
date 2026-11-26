@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { enquiryPath, routes } from '@/data/navigation';
+import { enquiryPath, packagePath, routes } from '@/data/navigation';
 import { faqs } from '@/data/faqs';
 import { guidanceSteps, hubFaqs } from '@/data/guides';
-import { hajjPackages, umrahPackages } from '@/data/packages';
+import { hajjPackages, isListed, umrahPackages } from '@/data/packages';
 import { site } from '@/data/site';
 import type { ImageKey } from '@/data/images';
 import { pageMetadata } from '@/lib/seo';
+import { today } from '@/lib/today';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { FaqList } from '@/components/ui/faq';
 import { Icon } from '@/components/ui/icons';
@@ -35,7 +36,6 @@ export function generateMetadata(): Metadata {
   });
 }
 
-const nextUmrah = byDeparture(umrahPackages).slice(0, 3);
 const [, hajjSeason] = splitDeparture(hajjPackages[0]?.departure ?? '');
 
 const questions = [hubFaqs.first, faqs.umrah[1], hubFaqs.visaTime, faqs.umrah[2], faqs.branches[0], faqs.booking[0]];
@@ -68,7 +68,9 @@ const compare: { topic: string; umrah: ReactNode; hajj: ReactNode }[] = [
   },
 ];
 
-export default function HajjUmrahPage() {
+export default async function HajjUmrahPage() {
+  const day = await today();
+  const nextUmrah = byDeparture(umrahPackages.filter((p) => isListed(p, day))).slice(0, 3);
   const itemList = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -119,7 +121,7 @@ export default function HajjUmrahPage() {
                 {nextUmrah.map((p) => (
                   <li key={p.slug}>
                     <Link
-                      href={`${routes.umrah}#${p.slug}`}
+                      href={packagePath('umrah', p.slug)}
                       className="group grid grid-cols-[1fr_auto] items-baseline gap-x-4 gap-y-1 border-t border-warm-border py-3.5 text-small transition-colors hover:bg-warm-grey/60 md:grid-cols-[6.5rem_1fr_auto] lg:grid-cols-[7.5rem_1fr_auto]"
                     >
                       <span className="text-muted">{p.departure}</span>

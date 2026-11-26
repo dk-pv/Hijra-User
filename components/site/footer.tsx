@@ -29,7 +29,7 @@ export function Footer() {
   );
 
   return (
-    <footer data-wa-zone="" className="mt-auto">
+    <footer className="mt-auto">
       <div className="border-t border-warm-border bg-white">
         <div className="wrap flex flex-wrap items-center justify-between gap-x-8 gap-y-5 py-8">
           <Link href={routes.home} className="block rounded-md" aria-label={`${site.fullName}, home`}>
@@ -91,8 +91,8 @@ export function Footer() {
               </ul>
             </div>
           </div>
-          <p className="border-t border-white/15 py-5 text-caption text-mist">{t.footer.sampleNote}</p>
-          <div className="flex flex-wrap items-center justify-between gap-x-7 gap-y-3 border-t border-white/15 pb-24 pt-6 text-caption text-mist md:pb-8">
+          {site.demo ? <p className="border-t border-white/15 py-5 text-caption text-mist">{t.footer.sampleNote}</p> : null}
+          <div className="flex flex-wrap items-center justify-between gap-x-7 gap-y-3 border-t border-white/15 pb-fab pt-6 text-caption text-mist">
             <span>© {site.fullName}</span>
             <span className="flex flex-wrap gap-x-5 gap-y-1">
               <Link href={routes.privacy} className="footer-legal-link">

@@ -58,6 +58,8 @@ export function EnquirySection({
   lead,
   service,
   tours,
+  packages,
+  variant = 'compact',
   source,
   message,
   initial,
@@ -67,11 +69,14 @@ export function EnquirySection({
   eyebrow?: string;
   title: ReactNode;
   lead: ReactNode;
-  service: 'tour' | 'visa';
+  service: 'tour' | 'visa' | 'umrah' | 'hajj';
   tours?: { slug: string; name: string }[];
+  packages?: EnquiryFormProps['packages'];
+  /** 'full' shows the package choice and message (package pages); 'compact' keeps the form short. */
+  variant?: 'full' | 'compact';
   source: string;
   message?: string;
-  /** Prefilled form values (a tour page passes its destination). */
+  /** Prefilled form values (a tour page passes its destination, a package page its slug as `interest`). */
   initial?: EnquiryFormProps['initial'];
   /** Extra notes under the contact options. */
   children?: ReactNode;
@@ -92,10 +97,11 @@ export function EnquirySection({
         </div>
         <EnquiryForm
           t={t.form}
-          variant="compact"
+          variant={variant}
           defaultService={service}
           lockService
           tours={tours}
+          packages={packages}
           initial={initial}
           source={source}
           className="col-span-full lg:col-span-6 lg:col-start-7"

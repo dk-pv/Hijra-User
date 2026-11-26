@@ -47,7 +47,7 @@ try {
   }
   console.log(`checked ${pages.length} URLs, non-200: ${Object.values(report.status).filter((c) => c !== 200).length}`);
   report.mustBe404 = {};
-  for (const u of ['/ml', '/ml/about', '/en/about', '/no-such-page', '/tours/no-such-tour', '/blogs/no-such-article', '/branches/no-such-branch']) {
+  for (const u of ['/ml', '/ml/about', '/en/about', '/no-such-page', '/tours/no-such-tour', '/blogs/no-such-article', '/branches/no-such-branch', '/gallery/no-such-collection', '/umrah/packages/no-such-package', '/hajj/packages/no-such-package', '/umrah/packages/hajj-group-azizia', '/tours/munnar-tea-hills', '/testimonials/no-such-review', '/blogs/munnar-with-family']) {
     const r = await fetch(base + u, { redirect: 'manual' });
     report.mustBe404[u] = r.status;
     if (r.status !== 404) console.log(`EXPECTED 404, GOT ${r.status} ${u}`);

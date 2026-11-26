@@ -9,7 +9,7 @@ export default function PageError({ error, retry }: { error: unknown; retry: () 
     console.error(error);
   }, [error]);
   return (
-    <section className="pt-nav pb-section">
+    <section data-no-fab="" className="pt-nav pb-section">
       <div className="wrap pt-12 md:pt-20">
         <span className="rule-double mb-5" aria-hidden="true" />
         <p className="eyebrow">Something went wrong</p>

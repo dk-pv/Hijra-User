@@ -108,35 +108,85 @@ try {
   await sleep(250);
   check('reduced motion: open within 250 ms', (await page.eval(`getComputedStyle(document.getElementById('site-menu')).opacity`)) === '1');
 
-  // Floating WhatsApp button (F11, F14): not on the first screen, appears after scrolling, hidden in the open menu,
-  // steps aside for the footer, absent on Book A Trip.
+  // Floating actions (Upcoming Tours above WhatsApp): on screen at every scroll position, hidden only in the open
+  // menu and on the 404 and error screens, never covering each other, the header pill or the footer's last row.
+  const fab = () => page.eval(`(() => {
+    const g = document.querySelector('.fab-group'); if (!g) return null;
+    const box = (e) => { const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom, w: r.width, h: r.height }; };
+    const t = g.querySelector('.fab-tours'), w = g.querySelector('.wa-fab'), cs = getComputedStyle(g);
+    return { visible: cs.display !== 'none' && cs.visibility === 'visible' && cs.opacity === '1', tours: box(t), wa: box(w), label: t.textContent.trim(), href: t.getAttribute('href'), current: t.getAttribute('aria-current'), vw: innerWidth, vh: innerHeight };
+  })()`);
+  const onScreen = (f) => f && f.visible && [f.tours, f.wa].every((b) => b.l >= 0 && b.t >= 0 && b.r <= f.vw && b.b <= f.vh);
+  const apart = (a, b) => a.b <= b.t || b.b <= a.t || a.r <= b.l || b.r <= a.l;
   await page.viewport(390, 844, { reduced: true });
   await page.goto(base + '/about');
   await sleep(1500);
-  const fab = () => page.eval(`(() => { const f = document.querySelector('.wa-fab'); return f ? { show: f.dataset.show, visibility: getComputedStyle(f).visibility } : null })()`);
-  check('WhatsApp button hidden on the first screen', (await fab())?.show === 'false', await fab());
-  let shownAt = null;
-  for (let y = 400; y < 8000 && shownAt === null; y += 400) {
+  let f = await fab();
+  check('floating actions on the first screen: "Upcoming Tours" links to /tours, above WhatsApp', onScreen(f) && f.label === 'Upcoming Tours' && f.href === '/tours' && f.tours.b <= f.wa.t, f);
+  const offAt = [];
+  for (let y = 400; y < 8000; y += 400) {
     await page.eval(`scrollTo(0, ${y})`);
-    await sleep(350);
-    if ((await fab())?.show === 'true') shownAt = y;
+    await sleep(150);
+    if (!onScreen(await fab())) offAt.push(y);
   }
-  check(`WhatsApp button appears after scrolling (at ${shownAt} px)`, shownAt !== null);
+  check('floating actions stay on screen while scrolling', offAt.length === 0, offAt);
   // The pill hides while scrolling down; a visitor scrolls up a little to bring it back.
   await page.eval('scrollBy(0, -60)');
   await sleep(600);
   check('header returns when scrolling up', await page.eval(`!document.querySelector('.nav-pill').hasAttribute('data-hidden')`));
   await click('.nav-burger');
   await sleep(500);
-  check('WhatsApp button hidden while the menu is open', (await fab())?.visibility === 'hidden', await fab());
+  check('floating actions hidden while the menu is open', (await fab())?.visible === false, await fab());
   await key('Escape', 'Escape', 27);
   await sleep(500);
-  await page.eval('scrollTo(0, document.documentElement.scrollHeight)');
-  await sleep(600);
-  check('WhatsApp button steps aside at the footer', (await fab())?.show === 'false', await fab());
+  check('floating actions back after the menu closes', onScreen(await fab()), await fab());
+  // Keyboard: Tab from the footer's last link reaches Upcoming Tours, then WhatsApp, each with a two-tone focus ring.
+  const ring = () => page.eval(`(() => { const e = document.activeElement, s = getComputedStyle(e); return e.matches(':focus-visible') && s.outlineStyle === 'solid' && parseFloat(s.outlineWidth) >= 2 && s.boxShadow.includes('255, 255, 255') })()`);
+  await page.eval(`[...document.querySelectorAll('footer a')].at(-1).focus()`);
+  await tab();
+  check('Tab reaches Upcoming Tours after the footer, with a focus ring', (await active())?.endsWith('|fab-tours') && (await ring()), await active());
+  await tab();
+  check('then WhatsApp, with a focus ring', (await active())?.endsWith('|wa-fab') && (await ring()), await active());
+  if (await page.eval(`document.activeElement.tagName === 'BUTTON'`)) {
+    // A button activates on the Enter character, which rawKeyDown does not send.
+    const enter = { key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 };
+    await page.send('Input.dispatchKeyEvent', { type: 'keyDown', text: '\r', ...enter });
+    await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...enter });
+    await sleep(200);
+    check('WhatsApp without a verified number opens the "not connected yet" notice', await page.eval(`document.getElementById('demo-contact').matches(':popover-open')`));
+    await key('Escape', 'Escape', 27);
+    await sleep(200);
+  }
+  await tab(true);
+  check('Shift+Tab back to Upcoming Tours', (await active())?.endsWith('|fab-tours'), await active());
+  await key('Enter', 'Enter', 13);
+  await sleep(2500);
+  check('Enter on Upcoming Tours opens /tours, marked as the current page', (await page.eval('location.pathname')) === '/tours' && (await fab())?.current === 'page', await page.eval('location.pathname'));
   await page.goto(base + '/book-a-trip');
   await sleep(1000);
-  check('no WhatsApp button on Book A Trip', (await fab()) === null);
+  check('floating actions on Book A Trip', onScreen(await fab()), await fab());
+  await page.goto(base + '/no-such-page');
+  await sleep(1000);
+  check('no floating actions on the 404 screen', (await fab())?.visible === false, await fab());
+
+  // Every width: on screen, inside the viewport with no overflow, apart from each other and the header pill, a
+  // 44 px+ touch target, the same spacing from the right and bottom edges, and the footer's last row clear of them.
+  for (const [w, h] of [[320, 568], [360, 740], [390, 844], [430, 932], [768, 1024], [1024, 768], [1440, 900], [1920, 1080]]) {
+    await page.viewport(w, h, { reduced: true });
+    await page.goto(base + '/tours');
+    await sleep(800);
+    f = await fab();
+    const pill = await page.eval(`(() => { const r = document.querySelector('.nav-pill').getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom } })()`);
+    const edge = { right: f.vw - f.wa.r, bottom: f.vh - f.wa.b };
+    check(`${w}px: floating actions on screen, apart, clear of the header, ≥ 44 px, ${edge.right}/${edge.bottom} px from the edges`,
+      onScreen(f) && apart(f.tours, f.wa) && apart(f.tours, pill) && apart(f.wa, pill) && f.tours.h >= 44 && f.wa.h >= 44 && edge.right === edge.bottom && Math.abs(f.tours.r - f.wa.r) < 1, { f, pill });
+    await page.eval('scrollTo(0, document.documentElement.scrollHeight)');
+    await sleep(400);
+    f = await fab();
+    const end = await page.eval(`(() => { const row = document.querySelector('footer .pb-fab'); return { items: [...row.querySelectorAll('span, a')].map((e) => { const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom } }), overflow: document.documentElement.scrollWidth - innerWidth } })()`);
+    check(`${w}px: page end: footer's last row clear of the floating actions, no horizontal overflow`, onScreen(f) && end.items.every((i) => apart(i, f.tours) && apart(i, f.wa)) && end.overflow <= 0, end);
+    if (w === 390 || w === 1440) await page.shot(join(out, `fab-footer-${w}.jpg`), { full: false });
+  }
 
   // Phones
   for (const [w, h] of [[390, 844], [375, 667], [320, 568]]) {

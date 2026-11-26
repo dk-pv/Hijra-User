@@ -7,7 +7,7 @@ import { dictionary as t } from '@/lib/dictionary';
 import { fixedImg, photoAsset } from '@/lib/image';
 import { SiteNav } from '@/components/site/site-nav';
 import { Footer } from '@/components/site/footer';
-import { WhatsAppFab } from '@/components/site/whatsapp-fab';
+import { FloatingActions } from '@/components/site/floating-actions';
 import { DemoContactPopover } from '@/components/site/demo-popover';
 
 // Fonts (report 6.2): self-hosted, swap with size-matched fallbacks. English only: Newsreader for headings,
@@ -70,8 +70,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           </main>
           <Footer />
         </div>
-        <div id="scroll-sentinel" aria-hidden="true" className="pointer-events-none absolute left-0 top-[320px] h-px w-px" />
-        <WhatsAppFab number={site.contact.whatsapp} label={t.common.whatsappUs} />
+        <FloatingActions number={site.contact.whatsapp} label="Chat with HIJRA on WhatsApp" tours={t.upcomingTours} />
         <DemoContactPopover />
       </body>
     </html>

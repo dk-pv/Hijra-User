@@ -1,15 +1,16 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { routes } from '@/data/navigation';
+import { packagePath, routes } from '@/data/navigation';
 import { branches } from '@/data/branches';
 import { faqs } from '@/data/faqs';
 import { umrahRites } from '@/data/guides';
-import { umrahPackages } from '@/data/packages';
+import { isListed, shownStatus, umrahPackages } from '@/data/packages';
 import { site } from '@/data/site';
 import { stories } from '@/data/stories';
 import type { ImageKey } from '@/data/images';
 import { dictionary } from '@/lib/dictionary';
 import { pageMetadata } from '@/lib/seo';
+import { today } from '@/lib/today';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { ContactAction } from '@/components/ui/contact-action';
 import { FaqGroups } from '@/components/ui/faq';
@@ -20,7 +21,7 @@ import { EnquiryForm } from '@/components/forms/enquiry-form';
 import { articleLinks, LinkIndex } from '@/components/pilgrimage/link-index';
 import { PackageFolio } from '@/components/pilgrimage/package-folio';
 import { StoryCard } from '@/components/pilgrimage/story-card';
-import { allAirports, byDeparture, dayRange, numberWord, orList } from '@/components/pilgrimage/trip';
+import { allAirports, byDeparture, numberWord, orList } from '@/components/pilgrimage/trip';
 import { ContactValue } from '@/components/ui/contact-value';
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -44,8 +45,6 @@ export function generateMetadata(): Metadata {
   });
 }
 
-const packages = byDeparture(umrahPackages);
-const next = packages[0];
 const familyStory = stories.find((s) => s.slug === 'three-generations');
 // Three Umrah stories whose photographs differ from this page's own (the Ramadan story shares the clock tower).
 const shownStories = ['at-her-own-pace', 'the-questions-we-were-shy-to-ask', 'nine-days-unhurried']
@@ -108,8 +107,12 @@ const care = [
   },
 ];
 
-export default function UmrahPage() {
+export default async function UmrahPage() {
   const t = dictionary;
+  // Packages still to depart, soonest first; departed ones leave the page (lib/today.ts).
+  const day = await today();
+  const packages = byDeparture(umrahPackages).filter((p) => isListed(p, day));
+  const next = packages[0];
 
   return (
     <>
@@ -146,19 +149,21 @@ export default function UmrahPage() {
               sizes="(min-width: 1280px) 80rem, 100vw"
               className="aspect-[4/3] rounded-[18px] sm:aspect-[16/10] md:rounded-lg lg:aspect-[21/9]"
             />
-            <figcaption className="mt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between lg:absolute lg:-bottom-8 lg:left-8 lg:mt-0 lg:block lg:w-[22rem] lg:rounded-md lg:bg-white lg:px-6 lg:py-5">
-              <span>
-                <span className="flex items-center gap-2 text-caption font-semibold uppercase tracking-[0.12em] text-muted">
-                  Next departure <SampleTag className="normal-case tracking-normal">Sample</SampleTag>
+            {next ? (
+              <figcaption className="mt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between lg:absolute lg:-bottom-8 lg:left-8 lg:mt-0 lg:block lg:w-[22rem] lg:rounded-md lg:bg-white lg:px-6 lg:py-5">
+                <span>
+                  <span className="flex items-center gap-2 text-caption font-semibold uppercase tracking-[0.12em] text-muted">
+                    Next departure <SampleTag className="normal-case tracking-normal">Sample</SampleTag>
+                  </span>
+                  <Link href={packagePath('umrah', next.slug)} className="mt-1.5 block font-serif text-h4 font-semibold text-navy hover:text-red">
+                    {next.departure}: {next.name}
+                  </Link>
                 </span>
-                <span className="mt-1.5 block font-serif text-h4 font-semibold text-navy">
-                  {next.departure}: {next.name}
-                </span>
-              </span>
-              <a href="#packages" className="link-arrow text-small lg:mt-1">
-                All {packages.length} packages
-              </a>
-            </figcaption>
+                <a href="#packages" className="link-arrow text-small lg:mt-1">
+                  All {packages.length} packages
+                </a>
+              </figcaption>
+            ) : null}
           </figure>
         </div>
       </section>
@@ -250,8 +255,9 @@ export default function UmrahPage() {
                 Choose your Umrah.
               </h2>
               <p className="mt-4 max-w-[38rem] text-lead">
-                {cap(numberWord(packages.length))} ways to travel, by month, length and pace, from {dayRange(packages)}. Every itinerary can be adjusted to suit who is
-                travelling.
+                {packages.length
+                  ? `${cap(numberWord(packages.length))} upcoming ${packages.length === 1 ? 'departure' : 'departures'}, by month, length and pace. Open any package for the journey, what is included and how to enquire.`
+                  : 'New departures are announced through the year. Tell us the month you have in mind and an advisor will let you know.'}
               </p>
             </div>
             <Note className="col-span-full md:col-span-6 lg:col-span-4 lg:col-start-9">
@@ -260,7 +266,7 @@ export default function UmrahPage() {
           </div>
           <div className="mt-10 grid gap-5 md:mt-14 md:gap-6">
             {packages.map((p) => (
-              <PackageFolio key={p.slug} p={p} />
+              <PackageFolio key={p.slug} p={p} status={shownStatus(p, day)} />
             ))}
           </div>
         </div>

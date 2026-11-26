@@ -52,12 +52,6 @@ const closing: Record<BlogCategory, { service: ServiceKey; title: string; body: 
     body: 'Tell us where you would like to go, and an advisor will shape the itinerary around your family.',
     cta: 'Ask about a tour',
   },
-  kerala: {
-    service: 'tour',
-    title: 'Planning a family break in Kerala?',
-    body: 'Tell us your dates and who is travelling, and an advisor will suggest a route at a gentle pace.',
-    cta: 'Ask about a tour',
-  },
 };
 
 type Props = { params: Promise<{ lang: string; slug: string }> };

@@ -3,8 +3,10 @@ import type { ImageKey } from './images';
 // Blog articles. Written for the preview: HIJRA reviews every article before launch, and articles marked `religious`
 // are reviewed by HIJRA's religious adviser. Dates and the byline are SAMPLES and are labelled as such wherever they show.
 // In any text, a [bracketed phrase] renders as a placeholder for a fact HIJRA must supply.
+// An article with `status: 'draft'` stays here as a record but is not published: no page, link, listing or sitemap
+// entry (everything reads `blogs`, the published list).
 
-export type BlogCategory = 'umrah' | 'hajj' | 'preparation' | 'documents' | 'travel' | 'kerala';
+export type BlogCategory = 'umrah' | 'hajj' | 'preparation' | 'documents' | 'travel';
 
 export type BlogBlock =
   | { type: 'p'; text: string }
@@ -31,6 +33,7 @@ export type BlogPost = {
   featured?: boolean;
   /** Describes religious practice: shown with a note to follow one's scholars, pending HIJRA's adviser review. */
   religious?: boolean;
+  status: 'published' | 'draft';
   sample: true;
 };
 
@@ -40,13 +43,13 @@ export const categories: Record<BlogCategory, string> = {
   preparation: 'Preparation',
   documents: 'Documents',
   travel: 'Travel',
-  kerala: 'Kerala',
 };
 
-type Draft = Omit<BlogPost, 'readingMinutes' | 'author' | 'sample'>;
+/** An article as written; reading time, byline and status (published unless set to 'draft') are added below. */
+type Source = Omit<BlogPost, 'readingMinutes' | 'author' | 'sample' | 'status'> & { status?: 'draft' };
 
-// Newest first; exactly one featured.
-const drafts: Draft[] = [
+// Newest first; exactly one featured among the published.
+const sources: Source[] = [
   {
     slug: 'umrah-step-by-step',
     title: 'Umrah, step by step: a guide for first-time pilgrims',
@@ -326,11 +329,15 @@ const drafts: Draft[] = [
     ],
   },
   {
+    // UNPUBLISHED (26 November 2026): HIJRA does not offer Kerala local tours, so this guide is kept only as a
+    // record. Its category was 'kerala', now retired. Before any republishing, the last section's offer to plan a
+    // Kerala route must go.
+    status: 'draft',
     slug: 'munnar-with-family',
     title: 'Munnar with family: a short guide to the tea hills',
     excerpt:
       'When to go, how to get there and what to see in Munnar, with practical notes on food, prayer and pace for Kerala families with children or elderly parents.',
-    category: 'kerala',
+    category: 'travel',
     date: '2026-10-16',
     image: 'kerala-munnar-tea-hills',
     related: ['istanbul-for-muslim-travellers', 'umrah-with-elderly-parents', 'umrah-step-by-step'],
@@ -668,7 +675,7 @@ const drafts: Draft[] = [
     category: 'travel',
     date: '2026-08-28',
     image: 'intl-istanbul-golden-horn',
-    related: ['munnar-with-family', 'umrah-visa-documents-india', 'visiting-madinah'],
+    related: ['umrah-with-elderly-parents', 'umrah-visa-documents-india', 'visiting-madinah'],
     body: [
       {
         type: 'p',
@@ -882,13 +889,18 @@ const AUTHOR = 'HIJRA editorial team';
 const wordsIn = (b: BlogBlock) =>
   ('items' in b ? b.items.join(' ') : 'text' in b ? b.text : '').split(/\s+/).filter(Boolean).length;
 
-export const blogs: BlogPost[] = drafts.map((d) => ({
+/** Every article, drafts included: the content record. Pages never read this directly. */
+export const allBlogs: BlogPost[] = sources.map((d) => ({
   ...d,
   author: AUTHOR,
   // ~200 words a minute, rounded up.
   readingMinutes: Math.max(1, Math.ceil(d.body.reduce((n, b) => n + wordsIn(b), 0) / 200)),
+  status: d.status ?? 'published',
   sample: true,
 }));
+
+/** The published articles: the only ones with a page, a listing, related links, a 404-free URL or a sitemap entry. */
+export const blogs = allBlogs.filter((b) => b.status === 'published');
 
 export function getBlog(slug: string): BlogPost | undefined {
   return blogs.find((b) => b.slug === slug);

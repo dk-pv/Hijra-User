@@ -79,10 +79,12 @@
   --sec: clamp(56px, 4.5vw + 36px, 128px);
   --nav-clear: 96px;
   --focus: var(--color-navy);
+  --fab-gap: 16px; /* the floating actions' distance from the right and bottom edges */
+  --fab-stack: 116px; /* their height: the 48 px pill, a 12 px gap and the 56 px WhatsApp button */
 }
 @media (min-width: 375px) { :root { --m: 20px; --g: 16px; } }
 @media (min-width: 430px) { :root { --m: 24px; } }
-@media (min-width: 810px) { :root { --m: 32px; --g: 20px; --nav-clear: 104px; } }
+@media (min-width: 810px) { :root { --m: 32px; --g: 20px; --nav-clear: 104px; --fab-gap: 24px; } }
 @media (min-width: 1200px) { :root { --m: 40px; --g: 24px; } }
 @media (min-width: 1920px) { :root { --g: 32px; } }
 
@@ -108,6 +110,7 @@
 @utility pt-section { padding-top: var(--sec); }
 @utility pb-section { padding-bottom: var(--sec); }
 @utility pt-nav { padding-top: var(--nav-clear); }
+@utility pb-fab { padding-bottom: calc(var(--fab-stack) + 2 * var(--fab-gap) + env(safe-area-inset-bottom, 0px)); }
 
 @layer base {
   html {
@@ -212,6 +215,12 @@
   .sample-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--color-sand); }
   .on-dark .sample-tag { background: rgb(250 249 246 / 0.08); color: var(--color-warm-white); border-color: rgb(250 249 246 / 0.25); }
   .chip { display: inline-flex; align-items: center; min-height: 28px; padding: 0 12px; border-radius: 999px; font: 600 0.875rem/1 var(--font-sans); background: rgb(250 249 246 / 0.92); color: var(--color-navy); }
+  .status { display: inline-flex; align-items: center; gap: 8px; min-height: 28px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--color-warm-border); background: #fff; font: 600 0.875rem/1 var(--font-sans); color: var(--color-navy); white-space: nowrap; --dot: var(--color-navy); }
+  .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dot); }
+  .status:is([data-status="enquiry-open"], [data-status="available"]) { --dot: var(--color-success); }
+  .status[data-status="fully-booked"] { --dot: var(--color-red); }
+  .status[data-status="completed"] { --dot: var(--color-field); color: var(--color-muted); }
+  .on-dark .status { background: rgb(250 249 246 / 0.08); border-color: rgb(250 249 246 / 0.25); color: var(--color-warm-white); --dot: var(--color-sand); }
   .tagline { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--color-navy); font: 600 0.875rem/1 var(--font-sans); letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-navy); white-space: nowrap; }
 
   /* Client photograph slot (8.10): never a stock image where an authentic photo is needed */
@@ -236,7 +245,7 @@
   }
   .field-input:hover { border-color: var(--color-slate); }
   .field-input:focus-visible { border-color: var(--color-navy); outline: 2px solid var(--color-navy); outline-offset: 2px; }
-  .field-input::placeholder { color: var(--color-field); }
+  .field-input::placeholder { color: var(--color-muted); }
   textarea.field-input { min-height: 132px; padding: 14px 16px; resize: vertical; }
   select.field-input {
     appearance: none; padding-right: 44px; cursor: pointer;
@@ -428,6 +437,11 @@ html[data-menu="animating"] .menu-sheet { will-change: clip-path, transform; }
 .menu-link[aria-current="page"]::before {
   content: ""; position: absolute; left: -20px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: var(--color-sand);
 }
+.menu-more { width: 248px; margin-top: clamp(20px, 4vh, 40px); padding-top: 16px; border-top: 1px solid rgb(255 255 255 / 0.2); display: flex; flex-wrap: wrap; column-gap: 20px; }
+.menu-more a { min-height: 44px; display: inline-flex; align-items: center; font: 600 1rem/1.2 var(--font-sans); color: var(--color-mist); text-decoration: none; border-radius: 4px; }
+.menu-more a:hover, .menu-more a[aria-current="page"] { color: #fff; }
+.menu-more a:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+@media (max-width: 809px) { .menu-more { justify-content: center; } }
 /* The open-state pill (O4): the logo stays visible above the overlay (it fails on dark glass) */
 .menu-pill {
   position: fixed; top: 8px; left: 50%; translate: -50% 0; z-index: 2;
@@ -449,16 +463,38 @@ html[data-menu="animating"] .menu-sheet { will-change: clip-path, transform; }
   .menu-link[aria-current="page"]::before { position: static; flex: none; margin: 0 12px 0 -20px; }
 }
 
-/* Floating WhatsApp button (R15, F11, F14) */
+/* Floating actions (R15, F14): Upcoming Tours above WhatsApp, on screen at all times, clear of the bottom safe area.
+   The group's own box ignores the pointer, so the empty corner beside the pill never blocks the page. The footer's
+   last row is padded by the group's height (pb-fab), so nothing there stays covered. */
+.fab-group {
+  position: fixed; z-index: 60;
+  right: calc(var(--fab-gap) + env(safe-area-inset-right, 0px)); bottom: calc(var(--fab-gap) + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; align-items: flex-end; gap: 12px; pointer-events: none;
+  transition: opacity 0.2s linear, visibility 0s;
+}
+.fab-group > * { pointer-events: auto; }
+.fab-tours {
+  display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px 0 15px; border-radius: 999px;
+  border: 1px solid rgb(1 32 82 / 0.14); background: #fff; color: var(--color-navy); box-shadow: var(--shadow-raise);
+  font: 600 0.9375rem/1 var(--font-sans); white-space: nowrap; text-decoration: none;
+  transition: background-color 0.2s var(--ease-out), border-color 0.2s var(--ease-out), transform 0.12s var(--ease-out);
+}
+.fab-tours svg { flex: none; color: var(--color-red); }
+.fab-tours:hover { background: var(--color-warm-grey); border-color: var(--color-navy); }
+.fab-tours:active { transform: scale(0.97); }
 .wa-fab {
-  position: fixed; z-index: 60; bottom: 88px; right: 20px; width: 56px; height: 56px; border-radius: 50%;
+  width: 56px; height: 56px; border-radius: 50%;
   display: grid; place-items: center; background: var(--color-wa); color: #fff; box-shadow: var(--shadow-fab); cursor: pointer;
-  opacity: 0; visibility: hidden; transition: opacity 0.2s linear, visibility 0s linear 0.2s;
 }
 .wa-fab svg { width: 30px; height: 30px; }
-.wa-fab[data-show="true"] { opacity: 1; visibility: visible; transition: opacity 0.2s linear, visibility 0s; }
-@media (min-width: 810px) { .wa-fab { bottom: 40px; right: clamp(12px, (100vw - 80rem) / 4 - 28px, 32px); } }
-html[data-menu] .wa-fab { opacity: 0; visibility: hidden; }
+/* Two-tone focus ring: the navy ring shows on light sections, the white one on the navy footer */
+.fab-group :focus-visible { outline: 2px solid var(--color-navy); outline-offset: 0; box-shadow: 0 0 0 4px #fff, var(--shadow-fab); }
+html[data-menu] .fab-group { opacity: 0; visibility: hidden; transition: opacity 0.2s linear, visibility 0s linear 0.2s; }
+body:has([data-no-fab]) .fab-group { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .fab-group, .fab-tours { transition: none; }
+  .fab-tours:active { transform: none; }
+}
 
 /* Demo contact notice (popover): stands in for phone, WhatsApp, email, social and directions until HIJRA supplies them */
 .demo-pop {

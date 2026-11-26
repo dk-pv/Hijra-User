@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/check-contacts.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "check:forms": "node --experimental-strip-types --no-warnings scripts/check-forms.mjs",
-    "check:contacts": "node scripts/check-contacts.mjs"
+    "check:contacts": "node scripts/check-contacts.mjs",
+    "check:packages": "node --experimental-strip-types --no-warnings scripts/check-packages.mjs",
+    "check:testimonials": "node --experimental-strip-types --no-warnings scripts/check-testimonials.mjs"
   },
   "dependencies": {
     "next": "16.4.6",

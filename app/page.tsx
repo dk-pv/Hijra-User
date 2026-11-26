@@ -5,13 +5,12 @@ import { branchArea, branches, formatAddress } from '@/data/branches';
 import { faqs } from '@/data/faqs';
 import { site } from '@/data/site';
 import { demo } from '@/data/demo';
-import { testimonials } from '@/data/testimonials';
 import type { ImageKey } from '@/data/images';
 import { dictionary } from '@/lib/dictionary';
 import { pageMetadata } from '@/lib/seo';
 import { Departures } from '@/components/home/departures';
 import { HeroPanel } from '@/components/home/hero-panel';
-import { ToursMosaic } from '@/components/home/tours-mosaic';
+import { FeaturedTours } from '@/components/home/featured-tours';
 import { Guides } from '@/components/home/guides';
 import { ContactAction } from '@/components/ui/contact-action';
 import { FaqGroups } from '@/components/ui/faq';
@@ -23,9 +22,12 @@ import { SectionIntro } from '@/components/ui/section';
 import { EnquiryForm } from '@/components/forms/enquiry-form';
 import { umrahPackages, hajjPackages } from '@/data/packages';
 import { ContactValue } from '@/components/ui/contact-value';
+import { videoItems, writtenItems } from '@/components/content/testimonial-items';
+import { Attribution, Quote } from '@/components/content/testimonial-parts';
+import { VideoPlayer } from '@/components/content/video-player';
 
 // Homepage (report 7.3, mock-up 2): the split pilgrimage hero, the trust ledger, Umrah departures, the Hajj night
-// chapter, HIJRA's story, pilgrim voices, branches, tours, flight and visa, guides, questions and the enquiry.
+// chapter, HIJRA's story, pilgrim voices, branches, holidays abroad, flight and visa, guides, questions and the enquiry.
 
 const IMG: Record<'umrahHero' | 'hajjHero' | 'umrah' | 'hajj', ImageKey> = {
   umrahHero: 'madinah-green-dome',
@@ -39,7 +41,7 @@ export function generateMetadata(): Metadata {
     path: routes.home,
     title: 'HIJRA Travels | Hajj & Umrah specialists from Kerala',
     description:
-      'HIJRA Travels guides families from Kerala on Umrah and Hajj, with an advisor beside you from enquiry to return, plus tours, flight tickets and visa help. Enquire today.',
+      'HIJRA Travels guides families from Kerala on Umrah and Hajj, with an advisor beside you from enquiry to return, plus holidays abroad, flights and visas. Enquire today.',
     image: IMG.umrahHero,
   });
 }
@@ -52,6 +54,11 @@ const hajjDays = [
   { when: '11–13 Dhul Hijjah', title: 'Days of Tashreeq', text: 'The final days in Mina.' },
 ];
 
+// Testimonials: the first featured video, and up to three featured written reviews (featured first, then the rest).
+const homeVideo = videoItems[0];
+const homeWritten = [...writtenItems.filter((t) => t.featured), ...writtenItems.filter((t) => !t.featured)].slice(0, 3);
+const voicesSample = [homeVideo, ...homeWritten].every((t) => !t || t.sample);
+
 const reasons = [
   { icon: 'chat', title: 'Guidance at every step', text: 'Advisors explain every step before you travel, and stay in touch while you are away.' },
   { icon: 'pin', title: 'Branches you can visit', text: 'Sit down with an advisor near home. Families often come together to plan.' },
@@ -61,8 +68,6 @@ const reasons = [
 
 export default function HomePage() {
   const t = dictionary;
-  const quote = testimonials.find((x) => x.featured) ?? testimonials[0];
-  const moreQuotes = testimonials.filter((x) => x !== quote).slice(0, 2);
   const years = site.facts.yearsOfExperience;
   const headOffice = branches.find((b) => b.isHeadOffice);
   // The leadership's opening line: HIJRA's own words when supplied; a demonstration line in preview builds.
@@ -169,9 +174,9 @@ export default function HomePage() {
                 The days of Hajj, explained step by step, with classes before you leave and a group leader beside you throughout.
               </p>
               <p className="mt-6 flex flex-wrap items-center gap-3 text-small">
-                <SampleTag>{hajjPackages.length} sample package outlines</SampleTag>
-                <Link href={routes.hajj} className="link-arrow">
-                  The Hajj journey
+                <SampleTag>{hajjPackages.length} sample packages</SampleTag>
+                <Link href={`${routes.hajj}#packages`} className="link-arrow">
+                  Hajj packages
                 </Link>
               </p>
             </div>
@@ -260,45 +265,57 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 07 Pilgrim voices */}
+      {/* 07 Stories from our travellers: one video and three written reviews, all from data/testimonials.ts */}
       <section className="py-section" aria-labelledby="voices-h">
-        <div className="wrap site-grid items-center gap-y-12">
-          <div className="col-span-full lg:col-span-6">
-            <div className="flex flex-wrap items-center gap-3">
-              <p className="eyebrow" id="voices-h">
-                Pilgrim voices
-              </p>
-              <SampleTag>Sample testimonials</SampleTag>
+        <div className="wrap">
+          <div className="site-grid mb-10 items-end gap-y-6 md:mb-14">
+            <div className="col-span-full lg:col-span-6">
+              <p className="eyebrow">Testimonials</p>
+              <h2 id="voices-h" className="mt-3 text-h2">
+                Stories from our travellers.
+              </h2>
             </div>
-            <blockquote className="mt-5">
-              <p className="font-serif text-[clamp(1.5rem,1.2rem+0.9vw,2.125rem)] font-semibold leading-[1.22] text-navy">
-                <span className="text-red" aria-hidden="true">“</span>
-                {quote.quote}
-                <span className="text-red" aria-hidden="true">”</span>
+            <div className="col-span-full lg:col-span-5 lg:col-start-8 lg:pb-1">
+              {/* The promise of real experiences is made only once real ones are shown. */}
+              <p className="text-lead">
+                {voicesSample ? 'How travellers’ own words and videos will appear here, once they agree to share them.' : 'Real experiences. Meaningful journeys. Memories that last.'}
               </p>
-              <footer className="mt-5 text-small text-muted">{quote.context}</footer>
-            </blockquote>
-            <p className="mt-6 max-w-[34rem] text-small text-muted">
-              At launch this section shows only reviews and stories HIJRA has written consent to publish.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-x-7">
-              <Link href={routes.pilgrimStories} className="link-arrow">
-                Pilgrim stories
-              </Link>
-              <Link href={routes.testimonials} className="link-arrow">
-                All testimonials
-              </Link>
+              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <Link href={routes.testimonials} className="link-arrow">
+                  Explore all experiences
+                </Link>
+                {voicesSample ? <SampleTag>Sample testimonials</SampleTag> : null}
+              </div>
             </div>
           </div>
-          <div className="col-span-full grid gap-8 md:grid-cols-2 lg:col-span-5 lg:col-start-8 lg:grid-cols-1 lg:gap-10">
-            {moreQuotes.map((q) => (
-              <figure key={q.id} className="border-l-2 border-sand pl-5 md:pl-6">
-                <blockquote>
-                  <p className="font-serif text-h4 font-semibold leading-[1.35] text-navy">“{q.quote}”</p>
-                </blockquote>
-                <figcaption className="mt-3 text-caption text-muted">{q.context}</figcaption>
+          <div className="site-grid items-start gap-y-12">
+            {homeVideo ? (
+              <figure className="col-span-full lg:col-span-7">
+                <VideoPlayer
+                  title={homeVideo.title}
+                  thumb={homeVideo.thumb}
+                  source={homeVideo.source}
+                  sample={homeVideo.sample}
+                  sizes="(min-width: 1200px) 54vw, 94vw"
+                  className="rounded-lg"
+                />
+                <figcaption className="mt-5">
+                  <p className="font-serif text-h4 font-semibold text-navy">{homeVideo.title}</p>
+                  <p className="mt-1.5 max-w-[36rem] text-small text-muted">{homeVideo.description}</p>
+                  <Attribution t={homeVideo} className="mt-3" />
+                </figcaption>
               </figure>
-            ))}
+            ) : null}
+            <div className={homeVideo ? 'col-span-full grid gap-8 md:grid-cols-2 lg:col-span-5 lg:col-start-8 lg:grid-cols-1 lg:gap-9' : 'col-span-full grid gap-8 md:grid-cols-3'}>
+              {homeWritten.map((t, i) => (
+                <figure key={t.id} className={i ? 'border-l-2 border-sand pl-5 md:pl-6' : 'md:col-span-2 lg:col-span-1'}>
+                  <Quote text={t.review} className={i ? 'text-h4 leading-[1.35]' : 'text-[clamp(1.375rem,1.15rem+0.7vw,1.875rem)] leading-[1.25]'} />
+                  <figcaption>
+                    <Attribution t={t} className="mt-3" />
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -359,16 +376,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 09 Tours */}
+      {/* 09 Holidays abroad: featured international tours */}
       <section className="pt-section" aria-labelledby="tours-h">
         <div className="wrap">
-          <div className="mb-10 flex flex-wrap items-end justify-between gap-x-10 gap-y-4 md:mb-14">
-            <SectionIntro eyebrow="Tours" title={<span id="tours-h">Beyond the pilgrimage.</span>} lead="Holidays in Kerala, across India and abroad, planned with the same care: prayer times, food and rest included." />
-            <Link href={routes.tours} className="link-arrow">
-              View all tours
-            </Link>
+          <div className="site-grid mb-10 items-end gap-y-6 md:mb-14">
+            <div className="col-span-full lg:col-span-6">
+              <p className="eyebrow">Holidays abroad</p>
+              <h2 id="tours-h" className="mt-3 text-h2">
+                Explore the world with HIJRA.
+              </h2>
+            </div>
+            <div className="col-span-full lg:col-span-5 lg:col-start-8 lg:pb-1">
+              <p className="text-lead">
+                Discover carefully planned international journeys, memorable destinations and holiday experiences designed for families, groups and travellers.
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <Link href={routes.tours} className="btn btn-secondary">
+                  Explore all tours
+                  <Icon name="arrowRight" />
+                </Link>
+                <SampleTag>Sample itineraries</SampleTag>
+              </div>
+            </div>
           </div>
-          <ToursMosaic />
+          <FeaturedTours />
         </div>
       </section>
 

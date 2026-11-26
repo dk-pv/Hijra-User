@@ -10,9 +10,9 @@ export const DEMO_CONTACT_ID = 'demo-contact';
 
 type Common = { className?: string; children: ReactNode; label?: string };
 
-function DemoButton({ className, children, label, wa }: Common & { wa?: boolean }) {
+function DemoButton({ className, children, label }: Common) {
   return (
-    <button type="button" popoverTarget={DEMO_CONTACT_ID} className={className} aria-label={label} data-wa-zone={wa ? '' : undefined}>
+    <button type="button" popoverTarget={DEMO_CONTACT_ID} className={className} aria-label={label}>
       {children}
     </button>
   );
@@ -34,10 +34,10 @@ export function ContactAction({
 }: Common & { kind: 'call' | 'whatsapp' | 'email'; value?: string | null; message?: string }) {
   const v =
     value !== undefined ? value : kind === 'call' ? site.contact.phone : kind === 'whatsapp' ? site.contact.whatsapp : site.contact.email;
-  if (!v) return <DemoButton className={className} label={label} wa={kind === 'whatsapp'}>{children}</DemoButton>;
+  if (!v) return <DemoButton className={className} label={label}>{children}</DemoButton>;
   if (kind === 'whatsapp')
     return (
-      <a href={waHref(v, message)} target="_blank" rel="noopener noreferrer" className={className} aria-label={label} data-wa-zone="">
+      <a href={waHref(v, message)} target="_blank" rel="noopener noreferrer" className={className} aria-label={label}>
         {children}
       </a>
     );

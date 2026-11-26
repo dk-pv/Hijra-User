@@ -1,5 +1,19 @@
+import type { ImageKey } from './images';
+
 // Umrah and Hajj packages. ALL RECORDS ARE SAMPLES for the preview: names, durations and departure months show
-// the layout only; there are no fares, seat counts or confirmed offers. HIJRA's package data replaces them (I5).
+// the layout only; there are no fares, seat counts, dates or confirmed offers. HIJRA's package data replaces them (I5).
+// Each package has its own page (/umrah/packages/<slug>, /hajj/packages/<slug>); listings drop it once it departs.
+
+/** Availability as HIJRA sets it. `null` = not confirmed, and nothing is shown; never defaulted to 'available'. */
+export type PackageStatus = 'upcoming' | 'enquiry-open' | 'available' | 'fully-booked' | 'completed';
+
+export const statusLabel: Record<PackageStatus, string> = {
+  upcoming: 'Upcoming',
+  'enquiry-open': 'Enquiry open',
+  available: 'Available',
+  'fully-booked': 'Fully booked',
+  completed: 'Completed',
+};
 
 export type Airport = 'COK' | 'CCJ' | 'CNN' | 'TRV';
 
@@ -13,6 +27,11 @@ export type Package = {
   stays: { city: 'Makkah' | 'Madinah' | 'Mina, Arafat and Muzdalifah' | 'Azizia, Makkah'; nights: number }[];
   /** Sample departure window, e.g. 'February 2027'. */
   departure: string;
+  /** Confirmed travel dates (YYYY-MM-DD); null until HIJRA announces them, so no date is ever invented. */
+  dates: { depart: string; return: string } | null;
+  status: PackageStatus | null;
+  /** Cover photograph (licensed temporary photography until HIJRA's own). */
+  image: ImageKey;
   airports: Airport[];
   pace: string;
   highlights: string[];
@@ -53,6 +72,9 @@ export const packages: Package[] = [
     days: 16,
     stays: [{ city: 'Makkah', nights: 10 }, { city: 'Madinah', nights: 5 }],
     departure: 'February 2027',
+    dates: null,
+    status: 'enquiry-open',
+    image: 'makkah-clock-tower-night',
     airports: ['COK', 'CCJ'],
     pace: 'Steady; the nights are long, the days are kept light',
     highlights: ['The last ten nights in Makkah', 'Eid preparations explained in advance', 'Ziyarat in Madinah after Ramadan'],
@@ -69,6 +91,9 @@ export const packages: Package[] = [
     days: 12,
     stays: [{ city: 'Makkah', nights: 6 }, { city: 'Madinah', nights: 5 }],
     departure: 'April 2027',
+    dates: null,
+    status: 'upcoming',
+    image: 'madinah-piazza-umbrellas',
     airports: ['CCJ', 'CNN'],
     pace: 'Unhurried, with free afternoons',
     highlights: ['Family rooms on request', 'Children’s questions welcome in the briefing', 'Madinah first or Makkah first'],
@@ -85,6 +110,9 @@ export const packages: Package[] = [
     days: 14,
     stays: [{ city: 'Madinah', nights: 5 }, { city: 'Makkah', nights: 8 }],
     departure: 'January 2027',
+    dates: null,
+    status: 'enquiry-open',
+    image: 'madinah-green-dome',
     airports: ['COK', 'TRV'],
     pace: 'Gentle; one main visit a day',
     highlights: ['Wheelchair assistance requested where available', 'Ground-floor or near-lift rooms on request', 'A companion briefing for family members'],
@@ -101,6 +129,9 @@ export const packages: Package[] = [
     days: 9,
     stays: [{ city: 'Makkah', nights: 4 }, { city: 'Madinah', nights: 4 }],
     departure: 'November 2026',
+    dates: null,
+    status: 'enquiry-open',
+    image: 'makkah-haram-king-fahd-gate',
     airports: ['CCJ', 'COK'],
     pace: 'Focused, with the rites unhurried',
     highlights: ['Weekend departures', 'Compact ziyarat programme', 'Return in time for work'],
@@ -117,6 +148,9 @@ export const packages: Package[] = [
     days: 35,
     stays: [{ city: 'Azizia, Makkah', nights: 22 }, { city: 'Mina, Arafat and Muzdalifah', nights: 5 }, { city: 'Madinah', nights: 7 }],
     departure: 'Hajj season 2027',
+    dates: null,
+    status: 'enquiry-open',
+    image: 'hajj-arafat-plain',
     airports: ['COK', 'CCJ'],
     pace: 'Structured, with rest days before the days of Hajj',
     highlights: ['Pre-departure classes', 'A group leader through the days of Hajj', 'Madinah after Hajj'],
@@ -139,6 +173,9 @@ export const packages: Package[] = [
     days: 24,
     stays: [{ city: 'Makkah', nights: 13 }, { city: 'Mina, Arafat and Muzdalifah', nights: 5 }, { city: 'Madinah', nights: 5 }],
     departure: 'Hajj season 2027',
+    dates: null,
+    status: 'upcoming',
+    image: 'makkah-haram-aerial',
     airports: ['COK'],
     pace: 'Compact, with shorter walks to the Haram',
     highlights: ['Hotels nearer the Haram', 'Small group size', 'Madinah before or after Hajj'],
@@ -157,4 +194,23 @@ export const packages: Package[] = [
 
 export const umrahPackages = packages.filter((p) => p.service === 'umrah');
 export const hajjPackages = packages.filter((p) => p.service === 'hajj');
-export const getPackage = (slug: string) => packages.find((p) => p.slug === slug);
+export const getPackage = (service: Package['service'], slug: string) => packages.find((p) => p.service === service && p.slug === slug);
+
+export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/** The last day the package can still depart: its confirmed date, else the end of its month ('…-31' compares correctly
+ * as text) or of its year ('Hajj season 2027'). */
+export function lastDeparture(p: Pick<Package, 'dates' | 'departure'>) {
+  if (p.dates) return p.dates.depart;
+  const year = /\d{4}/.exec(p.departure)?.[0];
+  if (!year) return '9999-12-31';
+  const m = MONTHS.findIndex((x) => p.departure.includes(x));
+  return `${year}-${m < 0 ? '12' : String(m + 1).padStart(2, '0')}-31`;
+}
+
+/** The status to show on `today` (YYYY-MM-DD): once a package has departed it is completed, whatever the data says. */
+export const shownStatus = (p: Pick<Package, 'dates' | 'departure' | 'status'>, today: string): PackageStatus | null =>
+  lastDeparture(p) < today ? 'completed' : p.status;
+
+/** Listings show only packages still to depart and not marked completed. */
+export const isListed = (p: Pick<Package, 'dates' | 'departure' | 'status'>, today: string) => shownStatus(p, today) !== 'completed';

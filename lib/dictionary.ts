@@ -3,6 +3,7 @@
 
 export const dictionary = {
   skip: 'Skip to content',
+  upcomingTours: 'Upcoming Tours',
   nav: {
     home: 'Home',
     about: 'About Us',
@@ -25,7 +26,7 @@ export const dictionary = {
     email: 'Email',
   },
   footer: {
-    about: 'Hajj and Umrah specialists from the Malabar coast of Kerala, also arranging tours, flight tickets and visas.',
+    about: 'Hajj and Umrah specialists from the Malabar coast of Kerala, also arranging holidays abroad, flight tickets and visas.',
     pilgrimage: 'Pilgrimage',
     travel: 'Travel',
     company: 'Company',
@@ -35,7 +36,7 @@ export const dictionary = {
     privacy: 'Privacy policy',
     terms: 'Terms of use',
     credits: 'Image credits',
-    sampleNote: 'Preview build: branch records, packages, tours, testimonials, stories, contact details and some figures are demonstration content until HIJRA supplies verified information.',
+    sampleNote: 'Trial preview: packages, tours, articles, testimonials, stories and some figures are sample content, marked as such. Contact numbers and branch details are still to be confirmed, and enquiries are not sent to HIJRA.',
     follow: 'Follow HIJRA',
   },
   common: {
@@ -100,7 +101,7 @@ export const dictionary = {
     tourType: 'Tour type',
     tourTypes: { domestic: 'Within India', international: 'International' },
     destination: 'Destination',
-    destinationPh: 'e.g. Munnar or Istanbul',
+    destinationPh: 'e.g. Istanbul or Dubai',
     tripType: 'Trip',
     tripTypes: { return: 'Return', oneWay: 'One way' },
     from: 'From',

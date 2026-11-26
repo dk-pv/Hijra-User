@@ -85,7 +85,7 @@ English at the root; every route also works under `/ml` (`noindex` until transla
 - `components/site/`:
   - `site-nav` (pill and menu);
   - `footer`;
-  - `whatsapp-fab` (floating WhatsApp, rule F11);
+  - `floating-actions` (Upcoming Tours and WhatsApp, always on screen; replaced `whatsapp-fab` and rule F11 on 26 November 2026);
   - `demo-popover` and `popover-link` (the preview notice behind unconnected contact buttons);
   - `lang-links`;
   - `translation-notice`.
@@ -1187,3 +1187,200 @@ When a branch's verified premises `geo` is set, its pin moves there and the labe
 **Seen and left as they are:**
 - On Umrah at 810–1199 px, the "Arranged for you" photo column ends well before its text column; the column is sticky only from 1200 px.
 - On Hajj at 810 px, the "11–13" numeral sits close to its heading.
+
+# Master completion pass: trial readiness (23 November 2026)
+
+**Audit result.** Every approved route was already populated from the earlier passes:
+- Home has all 17 sections in the brief.
+- About, Branches and the six branch pages, Hajj, Umrah, Tours (13 tour pages), Flights, Visa, Blogs (10 articles), Book A Trip, Contact, Gallery, Pilgrim Guide, Pilgrim Stories and Testimonials are all complete.
+- No railway reference remains anywhere. No certification, IATA, approval or guarantee claims (the only hits are disclaimers).
+- Structured data names the organisation only: no dates, ratings or invented details.
+- All 38 library photos are in use, and no page photo appears on more than 5 of 16 main pages.
+
+The work in this pass:
+
+**Trial and launch modes.**
+- **One switch:** `NEXT_PUBLIC_ALLOW_INDEXING`. Unset means trial; `true` means launch. Every build prints its mode.
+- **Guard inside the build:** `next.config.ts` runs `scripts/check-contacts.mjs` during every production build, so `next build` can no longer skip it (the npm `prebuild` hook is gone).
+- **Launch requirements:** central contacts, the live `https://` domain, a real enquiry backend, and no `sample: true` records.
+- **Render-level stop:** in launch mode, any pending placeholder, sample label or client-photo slot throws during prerender (`assertTrial`).
+- **Verified four ways:**
+  - a trial build passes;
+  - a direct `next build` with a demo email is stopped;
+  - a launch build is stopped by the guard;
+  - a launch build that passes the guard is stopped at prerender.
+
+**Footer trial notice.** It is reworded (contact details are no longer called demonstration content) and shows only in trial builds.
+
+**Performance regression fixed.** Opening the menu took 280–480 ms at 4× CPU, against 40–80 ms in Milestone 1.1. The page lock (`inert` and scroll lock, a whole-page style recalculation) ran in a `requestAnimationFrame` scheduled from the click, which fires before the click's first paint. It now waits one more frame. Menu open is now 112–120 ms.
+
+**Checks** (production build, `npm run start` on port 3100):
+
+| Check | Result |
+| --- | --- |
+| `npm run lint` / `typecheck` / `check:forms` / `check:contacts` / `build` | Pass (the build prints "Build mode: TRIAL" and runs TypeScript) |
+| `site-qa.mjs` at 320, 360, 375, 390, 430, 768, 810, 1024, 1280, 1440, 1920, 2560 px | 48/48 pages clean at all 12 widths: no overflow, broken images, dead links, unnamed controls, text under 14 px, console errors; one h1 each; 7/7 must-be-404 URLs |
+| `seo-check.mjs` | Pass: 48/48 unique titles and descriptions (128–168 characters), every page `noindex`, `robots.txt` closed |
+| `nav-test.mjs` / `form-test.mjs` | 34/34 / 13/13 |
+| Content check (22 pages) and map QA (12 widths plus the 10 px sweep) | Pass |
+| JavaScript (12 pages) | 142.2–150.4 KB gzip at load; no failed requests or console errors |
+| `perf.mjs`, mobile (Slow 4G, 4× CPU, median of 3), 10 pages | LCP 1.48–2.20 s, CLS 0, interaction proxy 56–112 ms |
+| `perf.mjs --desktop` | LCP 0.19–0.23 s, CLS 0.004, interaction proxy 40–64 ms |
+
+**Not done:**
+- Real phones and tablets, Safari and Firefox were not tested; every browser check ran in Chrome.
+- The INP figure is a lab proxy, not field INP.
+- There is no automated colour-contrast audit.
+
+# Tour packages, gallery and website experience (25 November 2026)
+
+**The brief.** Hajj and Umrah stay first. International holidays are the main tour offering, India a smaller one, and Kerala local tours are not promoted. Every package gets its own page. The gallery is organised by completed journey. The floating WhatsApp button stays. No invented prices, dates, availability or journeys.
+
+**Audit (what already existed).**
+- Tour pages at `/tours/[slug]` already existed.
+- The floating WhatsApp button already existed, with the trial "not connected yet" behaviour.
+- `data/packages.ts` (4 Umrah, 2 Hajj) and `data/tours.ts` (13 tours, 5 of them Kerala local tours, filtered in the browser).
+- The gallery was one page of collections by place.
+
+All of this was reused and extended. No new backend or dependency was added.
+
+**What changed.**
+- **Data.**
+  - `data/tours.ts`: the five Kerala sample tours were removed. There are now 6 international and 2 India tours. Tours carry `status` (null) and `featured`, which now marks four international tours.
+  - `data/packages.ts`: packages carry `status`, `dates` (null until announced) and a cover `image`. `shownStatus` and `isListed` keep departed packages out of the listings (handover 5a).
+  - `data/gallery.ts`: rewritten as 11 collections in four categories (handover 5b).
+- **Homepage.**
+  - "Explore the world with HIJRA" shows four featured international tours as portraits, linking to `/tours`. It sits after the pilgrimage sections, as before.
+  - The Umrah departures ledger lists only packages still to depart and links each row to its package page. The Hajj chapter links to the Hajj packages.
+- **Tours.**
+  - Order: international packages first, a destination index, "Explore India" (smaller rows), "Why travel with HIJRA?", customised travel, questions, and the enquiry ("Planning your next journey?").
+  - The client-side filter (`TourBrowser`) was removed: eight tours do not justify one.
+  - Related tours are now three, under "Explore more journeys".
+- **Umrah and Hajj.**
+  - Listing cards gain a photograph, a status and "View details". Inclusions move to the package page.
+  - New pages `/umrah/packages/[slug]` and `/hajj/packages/[slug]` (shared `PackageDetail`). Each shows the hero and facts, the route in travel order, highlights, inclusions, notes, the full enquiry form with the package preselected, and other packages of the same service.
+  - The Hajj package page opens in the night chapter, the Umrah page in daylight.
+- **Gallery.**
+  - `/gallery` shows the four categories with collection cards: cover, country, date when confirmed, photo count.
+  - `/gallery/[slug]` holds one collection: justified rows, a lightbox (arrows, swipe, arrow keys, Escape, focus return) and more collections from the same category.
+  - All collections are labelled samples: photographs of the places, no journey or date claimed.
+- **WhatsApp.** Accessible name "Chat with HIJRA on WhatsApp" and a prefilled message by section (Umrah, Hajj, tours, general). The number still comes only from `data/site.ts`. It is not supplied, so the button opens the preview notice, and every build now prints what is not connected.
+- **Navigation.** The nine confirmed menu items are unchanged. A short second row (Umrah, Hajj, Gallery, Contact) makes those pages one tap away.
+- **Guard.** `scripts/check-contacts.mjs` counted only `sample: true,` and missed one-line records. It now counts `sample: true` before `,` or `}`.
+- **Copy.** About and the branch service text now say "holidays abroad and within India" (was "in Kerala, across India and abroad").
+
+**Checks** (production build, `next start` on port 3100):
+
+| Check | Result |
+| --- | --- |
+| `lint` / `typecheck` / `check:forms` / `check:packages` (new) / `build` | Pass; trial mode |
+| `site-qa.mjs` at 320, 360, 375, 390, 430, 768, 810, 1024, 1280, 1440, 1920 px | 60/60 pages clean at all 11 widths (660 probes, 0 issues); 12/12 must-be-404 URLs, including unknown package and collection slugs and a Hajj slug under `/umrah/packages/` |
+| `gallery-test.mjs` (new) | 28/28: four categories in order, 11 collection pages, lightbox at 1440 and 390 px, every package card to its page with status, preselected package and related packages, 3 related tours |
+| `nav-test.mjs` / `form-test.mjs` | 34/34 / 13/13 |
+| `seo-check.mjs` | Pass: 60/60 unique titles and descriptions (102–168 characters), all `noindex`, `robots.txt` closed |
+| JavaScript (8 pages) | 142.3–148.1 KB gzip at load; no failed requests or console errors |
+| `perf.mjs`, mobile (Slow 4G, 4× CPU, median of 3), 4 pages | LCP 1.24–2.00 s, CLS 0, interaction proxy 24–64 ms |
+
+**Still open:**
+- HIJRA's real packages: statuses, dates, hotels and photographs.
+- Its completed journeys, with consented photographs and dates.
+- The WhatsApp number.
+- The Kerala blog article (`munnar-with-family`, category "Kerala") is unchanged: HIJRA to decide whether it stays.
+
+# Testimonials: written and video (25 November 2026)
+
+**Audit.**
+- `data/testimonials.ts` held 6 written samples (Umrah, Hajj, tour, visa, flight), each with an optional consented name, town and year.
+- `/testimonials` had a client service filter (`TestimonialWall`) and four 9:16 "video with consent" poster slots with no player.
+- The homepage showed one large quote and two smaller ones.
+- The project has no video player, media storage or backend.
+
+**What changed.**
+- **Data** (`data/testimonials.ts`): one list of written and video records, categorised Hajj, Umrah, International tours or Indian tours (handover 5c).
+  - The visa and flight samples were removed; one international written sample and four video samples were added.
+  - Samples have no name, place, year, photograph or video.
+  - `testimonialProblem` validates each record by type, `publishedTestimonials` is what pages read, and `videoSource` accepts YouTube, Vimeo or https `.mp4`/`.webm` only.
+- **Player** (`components/content/video-player.tsx`): click to play. Nothing loads from YouTube or Vimeo until play is pressed. YouTube runs without cookies and Vimeo with do-not-track. Full screen is allowed and focus moves into the player. A missing or failing video shows a notice, and focus moves to it.
+- **Homepage:** "Stories from our travellers." shows one video and three written reviews, with "Explore all experiences". The line "Real experiences. Meaningful journeys. Memories that last." appears only once a real testimonial is shown; with samples, a neutral line and the "Sample testimonials" label stand in.
+- **`/testimonials`:**
+  - Layout: the introduction, one filter (All experiences, Hajj, Umrah, International tours, Indian tours, each only when it has content), a featured video, the other videos, then the written reviews.
+  - The publishing rules moved to a light background so they no longer sit beside the dark closing band.
+- **Accessibility:**
+  - Form placeholders were 3.76:1 and now use the muted text colour (5.89:1).
+  - The play button's focus ring is now white and navy, visible over any photograph.
+
+**Checks** (production build, `next start` on port 3100):
+
+| Check | Result |
+| --- | --- |
+| `lint` / `typecheck` / `check:forms` / `check:contacts` / `check:packages` / `check:testimonials` (new) / `build` | Pass; trial mode |
+| `site-qa.mjs` at 320, 360, 375, 390, 430, 768, 810, 1024, 1280, 1440, 1920 px | 60/60 pages, 660 probes, 0 issues; 13/13 must-be-404 URLs |
+| `testimonial-test.mjs` (new) | 20/20 at 1440 and 390 px: filters, sample labels, notices, homepage link, `/testimonials/*` 404, WhatsApp inactive, `noindex` |
+| Same test, temporary build with real links | YouTube and Vimeo play from the keyboard, titled, focused, 16:9, full screen allowed; a failing `.mp4` shows its notice with focus; an unsupported link is refused by `check:testimonials` and kept off the page. Data restored afterwards |
+| `gallery-test` / `nav-test` / `form-test` / `seo-check` | 28/28 / 34/34 (twice) / 13/13 / pass (60 pages `noindex`) |
+| JavaScript | `/` 149.0 KB gzip (+0.9 KB for the player), `/testimonials` 145.3 KB |
+| `perf.mjs` mobile | `/testimonials` LCP 1.62 s; `/` LCP 2.20–2.59 s over three runs (2.0 s last pass; same first-view images, so lab variance), CLS 0 |
+| Contrast (WCAG) | Every text pair passes AA (muted 5.22–5.89, red 5.67–6.08, sand on navy 6.83, placeholders now 5.89); the sand rules and dots are decorative |
+
+**Not tested:** Firefox and Safari/WebKit are not installed on this machine, so every browser check ran in Chrome.
+
+# Content alignment (26 November 2026)
+
+- **"Munnar with family" unpublished, not deleted.**
+  - Blog articles now have `status: 'published' | 'draft'`. The article stays in `data/blogs.ts` as a draft, with a note on what to change before any republishing.
+  - `blogs` is the published list, and every page, related link, slug check (`proxy.ts`) and the sitemap read only it.
+  - Result: `/blogs/munnar-with-family` is a 404, and the blog shows 9 articles in 5 topics.
+- **"Kerala" blog category retired.** Its label, topic note and "Planning a family break in Kerala?" closing were removed. The draft now sits under Travel.
+- **Istanbul article:** its related link to Munnar is replaced by "Umrah with elderly parents".
+- **Positioning, abroad first:**
+  - International tours are listed first in `data/tours.ts`, so any list in data order (the Book A Trip tour list, form suggestions) leads with them.
+  - The form placeholder reads "e.g. Istanbul or Dubai" (was Munnar).
+  - The site, homepage and footer descriptions say "holidays abroad".
+  - About says "Holidays abroad and selected tours within India".
+  - The tour FAQ and the privacy notice list "abroad or within India".
+- **Testimonials:** unchanged in function. The README now has the five steps for adding a genuine review or video, with consent first.
+- **Checks:** lint, typecheck, forms, contacts, packages, testimonials and the build pass.
+  - Sweep: 59 pages × 11 widths, 649 probes, 0 issues; 14/14 must-be-404 URLs, including the draft's URL.
+  - Testimonial test 20/20, gallery test 28/28, SEO check pass (59 pages `noindex`, `robots.txt` closed, sitemap without drafts).
+- **Concurrent work:** another session changed the floating actions, layout and styles during this pass. The final checks ran on its build of the shared tree (09:14), which includes these changes.
+
+# Floating actions (26 November 2026)
+
+**The brief.** Two floating buttons on every public page, always visible: "Upcoming Tours" (to `/tours`) above the existing WhatsApp button. WhatsApp keeps its look, its verified-number logic and the "not connected yet" notice. No new page, no departure dates, no availability claims.
+
+**Decision changed.** Rule F11 is replaced. The WhatsApp button used to stay off the first screen, step aside near forms, other WhatsApp actions and the footer, and stay off Book A Trip. Both buttons are now on screen at every scroll position, Book A Trip included.
+
+- **Component:** `components/site/floating-actions.tsx` (`FloatingActions`) replaces `whatsapp-fab.tsx`. It is mounted once in `app/layout.tsx`.
+  - The IntersectionObserver, MutationObserver, scroll sentinel and `data-wa-zone` markers are removed, since nothing reads them any more.
+  - The label comes from `lib/dictionary.ts` (`upcomingTours`).
+- **Upcoming Tours:** a plain link to `/tours`, with `aria-current="page"` on `/tours`.
+  - White pill with navy text, 48 px tall, with a small red calendar icon, a subtle border and shadow.
+  - Hover and press states.
+- **Placement:** a right-aligned column at the bottom right, with the pill above WhatsApp and 12 px between them.
+  - 16 px from the right and bottom edges on phones, 24 px from 810 px, plus the device's safe-area inset.
+  - `--fab-gap` and `--fab-stack` in `app/globals.css`.
+  - The group's own box ignores the pointer, so the empty corner beside the pill never blocks the page.
+- **Footer:** the last row (© and legal links) has `pb-fab` padding equal to the group's height, so at the end of the page nothing is covered.
+- **Hidden:** in the open menu (as before), in print, and on the 404 and error screens (`data-no-fab`).
+- **Accessibility:**
+  - Tab order runs after the footer: Upcoming Tours, then WhatsApp.
+  - A two-tone focus ring (navy inside, white outside) shows on both light and navy sections.
+  - Press scaling and fades are off for reduced motion.
+
+**Checks (production build):**
+
+| Check | Result |
+| --- | --- |
+| `lint` / `typecheck` / `check:forms` / `check:contacts` / `check:packages` / `check:testimonials` / `build` | Pass; trial mode |
+| `nav-test.mjs` (floating section rewritten) | 56/56. Covers: on screen on the first screen and at every 400 px of scrolling; hidden in the open menu and back after; Tab order and focus rings; Enter opens `/tours`; the "not connected yet" notice; present on Book A Trip, absent on 404. At 320, 360, 390, 430, 768, 1024, 1440 and 1920 px: on screen, apart from each other and the header pill, 48/56 px targets, equal right and bottom spacing, footer's last row clear at the page end, no horizontal overflow |
+| `site-qa.mjs` | 59 pages × 16 widths (320–2560), 944 probes, 0 issues; 14/14 must-be-404 URLs |
+| `form-test` / `testimonial-test` / `gallery-test` / `seo-check` | 13/13 / all passed (WhatsApp inactive without a verified number) / all passed / pass (59 pages `noindex`) |
+| JavaScript | `/` 148.7 KB gzip (was 149.0), `/tours` 147.7 KB, `/book-a-trip` 147.6 KB |
+| `perf.mjs` mobile | `/` LCP 2.05 s, `/tours` 2.32 s, CLS 0 on both |
+
+**Remaining:**
+
+- Because the buttons never hide, they cover the right edge of whatever scrolls beneath them. On phones that is about 165 × 116 px. Nothing is covered for good: the visitor can scroll on, and the footer is padded.
+- On desktop the padding adds about 164 px of navy below the © row.
+- Safe-area insets read 0 unless the page sets `viewport-fit=cover`. That setting is not enabled, because it would change the whole layout on notched phones in landscape.
+- Tested in Chrome only. Not tested on a real iPhone.

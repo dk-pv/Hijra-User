@@ -35,7 +35,6 @@ export function ShareActions({ title, url }: { title: string; url: string }) {
           target="_blank"
           rel="noopener noreferrer"
           className="btn btn-outline btn-sm"
-          data-wa-zone=""
         >
           <Icon name="whatsapp" className="wa-mark" />
           <span className="sr-only">Share on </span>WhatsApp{newTab}

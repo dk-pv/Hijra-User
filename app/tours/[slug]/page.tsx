@@ -14,6 +14,7 @@ import { Icon } from '@/components/ui/icons';
 import { Note, SampleTag } from '@/components/ui/pending';
 import { Photo } from '@/components/ui/photo';
 import { SectionIntro } from '@/components/ui/section';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { EnquirySection } from '@/components/travel/enquiry-section';
 import { Steps } from '@/components/travel/steps';
 import { TourTile, idealForLabel, tourLength, tourPlace } from '@/components/travel/tour-tile';
@@ -27,7 +28,7 @@ export function generateStaticParams() {
   return tours.map((t) => ({ slug: t.slug }));
 }
 
-type Props = { params: Promise<{ lang: string; slug: string }> };
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tour = getTour((await params).slug);
@@ -47,11 +48,11 @@ const splitNote = (note: string) => {
   return i > 0 && i < 24 ? [note.slice(0, i), note.slice(i + 2)] : ['Note', note];
 };
 
-/** Two tours from the same region, then one from the other, never repeating a photograph already on the page. */
+/** Three tours, the same region first, never repeating a photograph already on the page. */
 function relatedTo(tour: Tour) {
   const onPage = new Set([tour.image, ...tour.gallery]);
   const pool = tours.filter((t) => t.slug !== tour.slug && !onPage.has(t.image));
-  return [...pool.filter((t) => t.region === tour.region).slice(0, 2), ...pool.filter((t) => t.region !== tour.region).slice(0, 1)];
+  return [...pool.filter((t) => t.region === tour.region), ...pool.filter((t) => t.region !== tour.region)].slice(0, 3);
 }
 
 /** The slug is URL data: it is read inside Suspense so the route's shared App Shell stays valid (Partial Prefetching).
@@ -119,6 +120,7 @@ async function TourDetail({ params }: Props) {
                 </ContactAction>
               </div>
               <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-small text-muted">
+                <StatusBadge status={tour.status} />
                 <SampleTag>Sample itinerary</SampleTag>
                 Dates, hotels and the fare are confirmed by an advisor.
               </p>
@@ -307,7 +309,7 @@ async function TourDetail({ params }: Props) {
         <section className="py-section" aria-labelledby="related-h">
           <div className="wrap">
             <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
-              <SectionIntro eyebrow="More sample tours" title={<span id="related-h">You may also like</span>} />
+              <SectionIntro eyebrow="More sample tours" title={<span id="related-h">Explore more journeys</span>} />
               <Link href={routes.tours} className="link-arrow">
                 All tours
               </Link>

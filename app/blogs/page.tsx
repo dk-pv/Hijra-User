@@ -23,7 +23,6 @@ const topicNotes: Record<BlogCategory, { intro: string; link: { label: string; h
   preparation: { intro: 'Ihram, packing lists and getting ready to leave.', link: { label: 'Pilgrim guide', href: routes.pilgrimGuide } },
   documents: { intro: 'Passports, photographs and the papers to gather early.', link: { label: 'Visa assistance', href: routes.visa } },
   travel: { intro: 'Destinations abroad, seen through a Muslim traveller’s eyes.', link: { label: 'International tours', href: routes.tours } },
-  kerala: { intro: 'Family breaks close to home, at an easy pace.', link: { label: 'Tours in India', href: routes.tours } },
 };
 
 export function generateMetadata(): Metadata {
